@@ -1,9 +1,7 @@
-# suggestaurant
-GCC Senior Project 2022-23
+# Installation
 
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. You need node.js installed. Go [here](https://nodejs.org/en/) and install the version recommended for most users (version 18.12.1 LTS). 
+2. Now that node.js is installed, in the project directory run `npm i` to install the dependencies. 
 
 ## Available Scripts
 
