@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -24,11 +24,26 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
+// auth service account?
+const editor = require("firebase-editor");
+const serviceAccount = require("suggestaurant-873aa-d6566e2cfc10.json");
+
+editor.initializeApp({
+  credential: editor.credential.cert(serviceAccount)
+});
+
 async function getRestaurants(db) {
   const restaurantsCol = collection(db, 'restaurants');
   const restaurantsSnapshot = await getDocs(restaurantsCol);
   const restaurantsList = restaurantsSnapshot.docs.map(doc => doc.data());
   return restaurantsList;
+}
+
+async function getAccounts(db) {
+  const usersCol = collection(db, 'users');
+  const usersSnapshot = await getDocs(usersCol);
+  const usersList = usersSnapshot.docs.map(doc => doc.data());
+  return usersList;
 }
 
 // skeleton project
