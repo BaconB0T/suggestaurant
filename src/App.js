@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -57,6 +57,13 @@ async function getHistory()
   const historySnapshot = await getDocs(historyCol);
   const histList = historySnapshot.docs.map(doc => doc.data());
   return histList;
+}
+
+async function getAccounts(db) {
+  const usersCol = collection(db, 'users');
+  const usersSnapshot = await getDocs(usersCol);
+  const usersList = usersSnapshot.docs.map(doc => doc.data());
+  return usersList;
 }
 
 // skeleton project
