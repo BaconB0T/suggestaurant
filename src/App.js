@@ -1,7 +1,7 @@
 // import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAccounts } from './firestore';
+import { getAccounts, rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import HelloWorld from './components/HelloWorld';

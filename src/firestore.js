@@ -46,6 +46,16 @@ async function getAccounts() {
   return usersList;
 }
 
+async function getAccount() {
+  
+}
+
+/**
+ * Inserts an account into the users collection. account must include 
+ * these fields: `username`, `email` 
+ * @param {*} account 
+ * @returns 
+ */
 async function insertAccount(account) {
   const accRef = await addDoc(collection(db, 'users'), {
     id: account.get('username'),
