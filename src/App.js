@@ -40,4 +40,6 @@ function App() {
 //   );
 // }
 
+rateRestaurant("/restaurants/1", 0);
+
 export default App;
