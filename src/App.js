@@ -1,9 +1,9 @@
-// import logo from './logo.svg';
+import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, getDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, getDoc } from 'firebase/firestore';
 import { doc, setDoc, Timestamp } from "firebase/firestore"; 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -87,7 +87,5 @@ function App() {
     </div>
   );
 }
-
-rateRestaurant("/restaurants/1", 0);
 
 export default App;
