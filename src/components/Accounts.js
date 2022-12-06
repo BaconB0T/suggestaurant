@@ -1,36 +1,49 @@
-import React, { setState } from "react";
-import { insertAccount } from "../firestore";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { insertAccount, emailOrUsernameUsed } from "../firestore";
 
 function Account(props) {
+  // console.log(props);
   return (
-    <li id={props.account.id}>
-      <span>ID: {props.account.id}</span>
-      <span>Email: {props.account.email}</span>
-      <span>Username: {props.account.username}</span>
+    <li id={props.account.email}>
+      <span>ID: {props.account.username ? props.account.username : "No id"}</span><br></br>
+      <span>Email: {props.account.email}</span><br></br>
+      <span>Username: {props.account.username}</span><br></br>
     </li>
-  )
+  );
 }
 
 class Accounts extends React.Component {
   constructor(props) {
     super(props);
+    const accountsOL = document.createElement('ol');
+    accountsOL.id = 'accounts';
     // what's in props?
     this.state = {
+      accountsPromise: props.accounts,
+      root: createRoot(accountsOL),
+      accountsOL: accountsOL,
       email: '',
       password: '',
       username: '',
       handleChange: this.handleChange.bind(this),
       handleSubmit: this.handleSubmit.bind(this),
-    }
-    props.accounts.then(this.insertAccounts)
+    };
   }
 
-  insertAccounts(accounts) {
-    const accountsOl = document.getElementById('accounts');
+  renderAccounts = (accounts) => {
+    const root = this.state.root;
+    const listOfAccounts = [];
     for(const acc of accounts) {
-      React.createElement(Account, acc);
-      // accountsOl.appendChild(accountElem);
+      listOfAccounts.push(React.createElement(Account, {account: acc, key: acc.email}));
     }
+
+    root.render(listOfAccounts);
+  }
+
+  componentDidMount = () => {
+    document.getElementById('accountsContainer').appendChild(this.state.accountsOL);
+    this.state.accountsPromise.then(this.renderAccounts);
   }
 
   handleChange = (event) => {
@@ -42,18 +55,31 @@ class Accounts extends React.Component {
     });
   }
 
-  handleSubmit = (event) => {
-    alert('Form Submitted!');
+  handleSubmit = async (event) => {
     event.preventDefault();
+    // alert('Form Submitted!');
     // TODO: validate, insert
     // validatePassword(this.state.password)
-    // if(this.state.username && this.state.email && this.state.password)
-    // insert
-    insertAccount({
+    const docData = {
       id: this.state.username,
+      username: this.state.username,
       email: this.state.email,
       password: this.state.password,
-    })
+    };
+    const userExists = await emailOrUsernameUsed(docData);
+
+    if(!userExists) {
+      // insert
+      insertAccount(docData);
+      
+      this.setState({
+        username: '',
+        email: '',
+        password: ''
+      });
+  } else {
+      alert("That username or email is already in use!");
+    }
   }
 
   render() {
@@ -62,19 +88,17 @@ class Accounts extends React.Component {
         <form onSubmit={this.state.handleSubmit}>
           <label>Username:</label>
           <input type="text" id="username" name="username" value={this.state.username} onChange={this.handleChange} />
-
+          <br></br>
           <label>Email:</label>
           <input type="email" id="email" name="email" value={this.state.email} onChange={this.handleChange} />
-
+          <br></br>
           <label>Password:</label>
           <input type="password" id="password" name="password" minLength="8" value={this.state.password} onChange={this.handleChange} />
           <br></br>
           <br></br>
           <input type="submit" value="Submit" />
         </form>
-        <ol id="accounts">
-          {/* {this.state.accounts.map(({ account }) => <Account account={account} />)} */}
-        </ol>
+        <div id='accountsContainer'>{/* accounts list is appended here. */}</div>
       </div>
     );
   }
