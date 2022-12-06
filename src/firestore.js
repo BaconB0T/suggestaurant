@@ -161,14 +161,14 @@ async function rateRestaurant(restObject, restRating){
   console.log("after doc");
   setDoc(location, historyItem);
   console.log("After setDoc");
-}
+}  
 
 async function getHistory()
 {
-  const historyCol = collection(db, 'i7Bs7uChMXB5oacg0Dln' + '/' + 'history');
+  const historyCol = collection(db, 'users/i7Bs7uChMXB5oacg0Dln' + '/' + 'history');
   const historySnapshot = await getDocs(historyCol);
   const histList = historySnapshot.docs.map(doc => doc.data());
   return histList;
 }
 
-export { db, analytics, getRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, insertAccount }
+export { db, analytics, getRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory }

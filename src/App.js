@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAllAccounts } from './firestore';
+import { getAccounts, getHistory, getAllAccounts} from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -42,5 +42,6 @@ function App() {
 // getAllAccounts().then((accs) => { console.log(accs); });
 
 // getAccount('username', 'admin');
+// getHistory().then((history) => console.log(history))
 
 export default App;
