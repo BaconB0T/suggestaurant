@@ -1,20 +1,16 @@
 // import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAccounts } from './firestore';
+import { getAccount, getAllAccounts } from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import HelloWorld from './components/HelloWorld';
-import Header from './components/Header';
 import Accounts from './components/Accounts';
 
 function App() {
-  let accounts = getAccounts();
+  let accounts = getAllAccounts();
   return (
     <div>
-      {/* <Header />
-      <HelloWorld name="Ninja" lname="Monkey"/> */}
       <Accounts accounts={accounts}/>
     </div>
   )
@@ -43,5 +39,8 @@ function App() {
 // }
 
 // rateRestaurant("/restaurants/1", 0);
+// getAllAccounts().then((accs) => { console.log(accs); });
+
+// getAccount('username', 'admin');
 
 export default App;
