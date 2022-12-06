@@ -1,4 +1,4 @@
-import React from "react";
+import React, { setState } from "react";
 import { insertAccount } from "../firestore";
 
 function Account(props) {
@@ -15,21 +15,25 @@ class Accounts extends React.Component {
   constructor(props) {
     super(props);
     // what's in props?
-    console.log(props);
-
     this.state = {
-      accounts: props.accounts,
       email: '',
       password: '',
       username: '',
+      handleChange: this.handleChange.bind(this),
+      handleSubmit: this.handleSubmit.bind(this),
     }
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    props.accounts.then(this.insertAccounts)
   }
 
-  handleChange(event) {
-    console.log(event)
+  insertAccounts(accounts) {
+    const accountsOl = document.getElementById('accounts');
+    for(const acc of accounts) {
+      React.createElement(Account, acc);
+      // accountsOl.appendChild(accountElem);
+    }
+  }
 
+  handleChange = (event) => {
     const value = event.target.value;
     const name = event.target.name;
     
@@ -37,13 +41,13 @@ class Accounts extends React.Component {
       [name]: value
     });
   }
-  handleSubmit(event) {
-    console.log(event)
+
+  handleSubmit = (event) => {
     alert('Form Submitted!');
     event.preventDefault();
     // TODO: validate, insert
     // validatePassword(this.state.password)
-    if(this.state.username && this.state.email && this.state.password)
+    // if(this.state.username && this.state.email && this.state.password)
     // insert
     insertAccount({
       id: this.state.username,
@@ -55,22 +59,21 @@ class Accounts extends React.Component {
   render() {
     return (
       <div>
-        Hello
         <form onSubmit={this.state.handleSubmit}>
-          <label for="username">Username:</label>
+          <label>Username:</label>
           <input type="text" id="username" name="username" value={this.state.username} onChange={this.handleChange} />
 
-          <label for="email">Email:</label>
+          <label>Email:</label>
           <input type="email" id="email" name="email" value={this.state.email} onChange={this.handleChange} />
 
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" minlength="8" value={this.state.password} onChange={this.handleChange} />
+          <label>Password:</label>
+          <input type="password" id="password" name="password" minLength="8" value={this.state.password} onChange={this.handleChange} />
           <br></br>
           <br></br>
           <input type="submit" value="Submit" />
         </form>
-        <ol>
-          {this.state.accounts.map(({ account }) => <Account account={account} />)}
+        <ol id="accounts">
+          {/* {this.state.accounts.map(({ account }) => <Account account={account} />)} */}
         </ol>
       </div>
     );

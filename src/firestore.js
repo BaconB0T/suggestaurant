@@ -16,7 +16,7 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-const analytics = getAnalytics(firebaseApp)
+const analytics = getAnalytics(firebaseApp);
 
 // auth service account? This is for Node.js, NOT React.
 // We can't use the admin sdk in our context because everything
@@ -32,9 +32,9 @@ const analytics = getAnalytics(firebaseApp)
 //   credential: admin.credential.cert(serviceAccount)
 // });
 
-async function getRestaurants() {
+function getRestaurants() {
   const restaurantsCol = collection(db, 'restaurants');
-  const restaurantsSnapshot = await getDocs(restaurantsCol);
+  const restaurantsSnapshot = getDocs(restaurantsCol);
   const restaurantsList = restaurantsSnapshot.docs.map(doc => doc.data());
   return restaurantsList;
 }
@@ -57,21 +57,24 @@ async function getAccount() {
  * @returns 
  */
 async function insertAccount(account) {
-  const accRef = await addDoc(collection(db, 'users'), {
-    id: account.get('username'),
-    email: account.get('email'),
+  const diet = account.dietaryRestrictions ? account.dietaryRestrictions : [];
+  const exCui = account.excludedCuisines ? account.excludedCuisines : [];
+  const pref = account.preferences ? account.preferences : defaultPreferences();
+
+  const accRef = await setDoc(collection(db, 'users'), {
+    id: account.username,
+    email: account.email,
     password: account.password,
     // password: encrypt(account.password),
     filters: {
-      dietaryRestrictions: account.get('dietaryRestrictions', []),
-      excludedCuisines: account.get('excludedCuisines', []),
-      preferences: account.get('preferences', defaultPreferences()),
+      dietaryRestrictions: diet,
+      excludedCuisines: exCui,
+      preferences: pref,
     },
+  }).then((accRef) => {
+    // make history subcollection
+    return setDoc(doc(db, 'users', `${accRef.id}`, 'history', 'placeholder'), defaultHistory())
   });
-
-  // make history subcollection
-  addDoc(collection(db, 'users', `${accRef.id}`, 'history'), defaultHistory());
-  return accRef
 }
 
 function defaultPreferences() {
@@ -88,7 +91,7 @@ function defaultHistory() {
     dateAdded: Timestamp.now(),
     rating: 0,
     restaurant: 'this is just a placeholder'
-  })
+  });
 }
 
 export { db, analytics, getRestaurants, getAccounts, insertAccount }
