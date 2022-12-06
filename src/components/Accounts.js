@@ -57,7 +57,6 @@ class Accounts extends React.Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    // alert('Form Submitted!');
     // TODO: validate, insert
     // validatePassword(this.state.password)
     const docData = {
@@ -66,19 +65,41 @@ class Accounts extends React.Component {
       email: this.state.email,
       password: this.state.password,
     };
-    const userExists = await emailOrUsernameUsed(docData);
 
-    if(!userExists) {
-      // insert
-      insertAccount(docData);
-      
-      this.setState({
-        username: '',
-        email: '',
-        password: ''
-      });
-  } else {
-      alert("That username or email is already in use!");
+    if(this.validateForm(event)) {
+      alert('Form Submitted!');
+      const userExists = await emailOrUsernameUsed(docData);
+
+      if (!userExists) {
+        // insert
+        insertAccount(docData);
+
+        this.setState({
+          username: '',
+          email: '',
+          password: ''
+        });
+      } else {
+        alert("That username or email is already in use!");
+      }
+    } else {
+      alert("Check the errors below!");
+    }
+  }
+
+  validateForm = (event) => {
+    console.log(event);
+    const usernameField = event.target.querySelector('[name=username]')
+    const emailField = event.target.querySelector('[name=email]')
+    const passwordField = event.target.querySelector('[name=password]')
+    if(usernameField.value === '' || usernameField.value == null) {
+      return false;
+    }
+    if(emailField.value === '' || usernameField.value == null/* validate email */) {
+      return false;
+    }
+    if(passwordField.value === '' || usernameField.value.length < 8) {
+      return false;
     }
   }
 
