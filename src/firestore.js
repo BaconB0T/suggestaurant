@@ -94,4 +94,30 @@ function defaultHistory() {
   });
 }
 
+async function rateRestaurant(restObject, restRating){
+  let text1 = "users/";
+  let text2 = 'i7Bs7uChMXB5oacg0Dln' + '/history/';
+  let finalText = text1.concat(text2);
+  console.log(finalText);
+  const historyItem = {
+    dateAdded: Timestamp.now(),
+    rating: restRating,
+    restaurant: restObject
+  };
+  const myArray = restObject.split("/");
+  let word = myArray[2];
+  console.log(finalText.concat(word));
+  const location = doc(db, finalText.concat(word));
+  console.log("after doc");
+  setDoc(location, historyItem);
+  console.log("After setDoc");
+}  
+async function getHistory()
+{
+  const historyCol = collection(db, 'i7Bs7uChMXB5oacg0Dln' + '/' + 'history');
+  const historySnapshot = await getDocs(historyCol);
+  const histList = historySnapshot.docs.map(doc => doc.data());
+  return histList;
+}
+
 export { db, analytics, getRestaurants, getAccounts, insertAccount }
