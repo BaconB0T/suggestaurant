@@ -5,7 +5,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, getDoc } from 'firebase/firestore';
 import { doc, setDoc, Timestamp } from "firebase/firestore"; 
-import { getAccounts } from './firestore';
+import { getAccounts, getHistory} from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -45,5 +45,7 @@ function App() {
 //     </div>
 //   );
 // }
+
+getHistory().then((history) => console.log(history))
 
 export default App;
