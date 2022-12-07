@@ -1,25 +1,25 @@
 import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, getDoc } from 'firebase/firestore';
-import { doc, setDoc, Timestamp } from "firebase/firestore"; 
-import { getAccounts, getHistory} from './firestore';
+import { getAccounts, getHistory, getAllAccounts } from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import HelloWorld from './components/HelloWorld';
-import Header from './components/Header';
 import Accounts from './components/Accounts';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Login from './components/Login'
+import { Container } from 'react-bootstrap';
 
 function App() {
-  let accounts = getAccounts();
+  let accounts = getAllAccounts();
+
   return (
     <div>
-      {/* <Header />
-      <HelloWorld name="Ninja" lname="Monkey"/> */}
-      <Accounts accounts={accounts}/>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/accounts" element={<Accounts accounts={accounts} />} />
+      </Routes>
+
     </div>
   )
 }
@@ -46,6 +46,10 @@ function App() {
 //   );
 // }
 
-getHistory().then((history) => console.log(history))
+// rateRestaurant("/restaurants/1", 0);
+// getAllAccounts().then((accs) => { console.log(accs); });
+
+// getAccount('username', 'admin');
+// getHistory().then((history) => console.log(history))
 
 export default App;
