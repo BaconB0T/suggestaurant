@@ -2,7 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { insertAccount, emailOrUsernameUsed } from "../firestore";
 
-
 function Account(props) {
   // console.log(props);
   return (

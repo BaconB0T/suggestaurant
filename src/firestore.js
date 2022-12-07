@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, Timestamp, doc, setDoc, query, where } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, query, where, onSnapshot } from "firebase/firestore";
 import { withCookies } from "react-cookie";
 import { useCookies } from 'react-cookie';
 
@@ -29,11 +29,32 @@ const analytics = getAnalytics(firebaseApp);
  * Returns all the restaurants in a list
  * @returns a list of all restaurants in the db.
  */
- async function getAllRestaurants() {
+async function getAllRestaurants() {
   const restaurantsCol = collection(db, 'restaurants');
   const restaurantsSnapshot = await getDocs(restaurantsCol);
   const restaurantsList = restaurantsSnapshot.docs.map(doc => doc.data());
   return restaurantsList;
+}
+
+async function getRestaurantById(id) {
+  const docRef = doc(db, 'restaurants', id);
+  try {
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  } catch(e) {
+    console.log(e);
+    return null;
+  }
+}
+
+async function getRestaurant(docRef) {
+  try {
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  } catch(e) {
+    console.log(e);
+    return null;
+  }
 }
 
 /**
@@ -86,15 +107,17 @@ async function getAccount(field, value) {
   const q = query(usersCol, where(`${field}`, '==', `${value}`));
   
   const querySnapshot = await getDocs(q);
-  const docs = querySnapshot.docs.map((doc) => doc.data());
+  // const docs = querySnapshot.docs.map((doc) => doc.data());
+  
+  const docs = querySnapshot.docs;
   if(docs.length === 0) {
     return null;
   } else {
-    return docs[0];
+    const doc = docs[0].data()
+    doc.id = docs[0].id;
+    return doc;
   }
 }
-
-
 
 /**
  * 
@@ -204,8 +227,17 @@ async function getHistory(user)
   // const user = cookies.get("Name") || "";
   const historyCol = collection(db, 'users/' + user + '/' + 'history');
   const historySnapshot = await getDocs(historyCol);
-  const histList = historySnapshot.docs.map(doc => doc.data());
-  return histList;
+  // const histList = historySnapshot.docs.map(doc => doc.data());
+  const historyList = [];
+  for(const hist of historySnapshot.docs) {
+    let histor = hist.data();
+    histor.id=hist.id;
+    console.log("Hist id in getHistory");
+    console.log(hist.id);
+    historyList.push(histor);
+  }
+  console.log(historyList);
+  return historyList;
 }
 
 async function historyItem(historyDoc)
@@ -221,4 +253,4 @@ async function historyItem(historyDoc)
 
 
 
-export { db, analytics, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+export { db, analytics,getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }

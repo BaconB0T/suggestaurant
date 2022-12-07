@@ -3,7 +3,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { validateUser } from '../firestore'
+import { getAccount, validateUser } from '../firestore'
 
 const Login = () => {
     const [cookies, setCookie] = useCookies(['user']);
@@ -21,10 +21,15 @@ const Login = () => {
                 console.log("UNSUCCSSFUL");
                 throw ("Invalid username and password combination!");
             }
+            const user = await getAccount("username", usernameRef.current.value);
+            console.log(user);
+            console.log(user.id);
+
             console.log("SUCCESS");
             
 
             setCookie('Name', usernameRef.current.value, { path: '/' });
+            setCookie('id', user.id, { path: '/' });
             setCookie('Password', passwordRef.current.value, { path: '/' });
             navigate("/accounts");
         } catch (e) {
