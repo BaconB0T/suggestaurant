@@ -51,6 +51,6 @@ function App() {
 // getAllAccounts().then((accs) => { console.log(accs); });
 
 // getAccount('username', 'admin');
-// getHistory().then((history) => console.log(history))
+getHistory().then((history) => console.log(history))
 
 export default App;
