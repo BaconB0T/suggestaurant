@@ -1,6 +1,8 @@
 import { onSnapshot, collection, doc,  getDocs } from "firebase/firestore";
 import {useEffect, useState} from "react";
 import {db, getHistory, rateRestaurant} from "../firestore";
+import { useCookies } from 'react-cookie';
+
 
 export default function HistoryTest(){
 
@@ -8,6 +10,8 @@ export default function HistoryTest(){
     const [resDoc, setResDoc] = useState(0);
     const [dateAdd, setDateAdd] = useState(0);
     const [rating, setRating] = useState(0);
+    const [cookies, setCookie, removeCookie] = useCookies(['cookie-name']);
+
     useEffect(() => {
         async function getPath(){
             const path = await getHistory();
@@ -46,9 +50,6 @@ export default function HistoryTest(){
             <p>Restaurant: {resName}</p>
             <p>Date Added: {dateAdd}</p>
             <p>Rating: {rating}</p>
-            {/* <div>
-                <Button onClick={rateRestaurant()}>Add Restaurant</Button>
-            </div> */}
         </div>
     );
 }

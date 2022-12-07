@@ -22,6 +22,7 @@ const Login = () => {
                 throw ("Invalid username and password combination!");
             }
             console.log("SUCCESS");
+            
 
             setCookie('Name', usernameRef.current.value, { path: '/' });
             setCookie('Password', passwordRef.current.value, { path: '/' });
