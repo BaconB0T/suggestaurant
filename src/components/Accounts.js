@@ -2,13 +2,14 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { insertAccount, emailOrUsernameUsed } from "../firestore";
 
+
 function Account(props) {
   // console.log(props);
   return (
     <li id={props.account.email}>
-      <span>ID: {props.account.username ? props.account.username : "No id"}</span><br></br>
+      <span>Username: {props.account.username ? props.account.username : "No id"}</span><br></br>
       <span>Email: {props.account.email}</span><br></br>
-      <span>Username: {props.account.username}</span><br></br>
+      <span>Password: {props.account.password}</span><br></br>
     </li>
   );
 }
@@ -66,7 +67,8 @@ class Accounts extends React.Component {
       password: this.state.password,
     };
 
-    if(this.validateForm(event)) {
+    //if(this.validateForm(event)) {
+    if(true) {  
       alert('Form Submitted!');
       const userExists = await emailOrUsernameUsed(docData);
 
@@ -106,6 +108,7 @@ class Accounts extends React.Component {
   render() {
     return (
       <div>
+        <h1>Accounts</h1>
         <form onSubmit={this.state.handleSubmit}>
           <label>Username:</label>
           <input type="text" id="username" name="username" value={this.state.username} onChange={this.handleChange} />

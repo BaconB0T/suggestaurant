@@ -92,6 +92,23 @@ async function getAccount(field, value) {
 }
 
 /**
+ * 
+ * @param {String} username 
+ * @param {String} password 
+ * @returns {Boolean} true if username/password are valid
+ */
+async function validateUser(username, password) {
+  let account = await getAccount("username", username);
+
+  // TODO we need to check password is valid!
+  
+  if (account) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Inserts an account into the users collection. `account` must include `password`, `account`,
  * and `username`, and it may include any of the following:<br>
  * - `dietaryRestrictions` - a list of strings as found in the database. See `TODO: Put
@@ -171,4 +188,4 @@ async function getHistory()
   return histList;
 }
 
-export { db, analytics, getRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory }
+export { db, analytics, getRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser }

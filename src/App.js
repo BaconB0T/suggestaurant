@@ -1,17 +1,25 @@
 import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAccounts, getHistory, getAllAccounts} from './firestore';
+import { getAccounts, getHistory, getAllAccounts } from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import Accounts from './components/Accounts';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Login from './components/Login'
+import { Container } from 'react-bootstrap';
 
 function App() {
   let accounts = getAllAccounts();
+
   return (
     <div>
-      <Accounts accounts={accounts}/>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/accounts" element={<Accounts accounts={accounts} />} />
+      </Routes>
+
     </div>
   )
 }
