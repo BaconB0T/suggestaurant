@@ -20,12 +20,12 @@ export default function SearchPrint(){
         <div>
             Restaurants
             {restaurants.map(restaurant => ( 
-                <div>
+                <div key = {restaurant.name}>
                     <p>Restaurant: {restaurant.name}</p>
                     <p>Stars: {restaurant.stars}</p>
                     {<div>
-                        <button onClick={rateRestaurant(restaurant.name, 1, cookies.id || "")}>ThumbsUp</button>
-                        <button onClick={rateRestaurant(restaurant.name, 0, cookies.id || "")}>ThumbsDown</button>
+                        <button onClick={()=>rateRestaurant(restaurant.name, 1, cookies.id || "")}>ThumbsUp</button>
+                        <button onClick={()=>rateRestaurant(restaurant.name, 0, cookies.id || "")}>ThumbsDown</button>
                     </div>}
                 </div>
             ))}
