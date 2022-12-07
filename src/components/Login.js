@@ -26,6 +26,7 @@ const Login = () => {
             console.log(user.id);
 
             console.log("SUCCESS");
+            
 
             setCookie('Name', usernameRef.current.value, { path: '/' });
             setCookie('id', user.id, { path: '/' });

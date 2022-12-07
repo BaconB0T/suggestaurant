@@ -8,8 +8,8 @@ import { getAccounts, getHistory, getAllAccounts, getAccount } from './firestore
 import Accounts from './components/Accounts';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './components/Login'
-import History from './components/NewHistory';
-// import History from './components/History';
+import History from './components/History';
+import Search from './components/Search';
 
 function App() {
   let accounts = getAllAccounts();
@@ -20,7 +20,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/accounts" element={<Accounts accounts={accounts} />} />
         <Route path="/history" element={<History />} />
-        {/* <Route path="/history" element={<History user={userWithHistory}/>} /> */}
+        <Route path="/search" element={<Search />}/>
       </Routes>
 
     </div>
