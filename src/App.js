@@ -8,7 +8,7 @@ import { getAccounts, getHistory, getAllAccounts } from './firestore';
 import Accounts from './components/Accounts';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './components/Login'
-import { Container } from 'react-bootstrap';
+import History from './components/History';
 
 function App() {
   let accounts = getAllAccounts();
@@ -18,6 +18,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/accounts" element={<Accounts accounts={accounts} />} />
+        <Route path="/history" element={<History user="admin"/>} />
       </Routes>
 
     </div>
@@ -50,6 +51,6 @@ function App() {
 // getAllAccounts().then((accs) => { console.log(accs); });
 
 // getAccount('username', 'admin');
-// getHistory().then((history) => console.log(history))
+getHistory().then((history) => console.log(history))
 
 export default App;

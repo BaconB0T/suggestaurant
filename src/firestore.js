@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, Timestamp, doc, setDoc, query, where } from "firebase/firestore";
 import { withCookies } from "react-cookie";
+import { useCookies } from 'react-cookie';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -18,6 +19,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const analytics = getAnalytics(firebaseApp);
+
 
 // TODO: Authorization happens on Firestore's end and
 // that needs to be setup still. Currently, anybody
@@ -165,29 +167,41 @@ function defaultHistory() {
   });
 }
 
-async function rateRestaurant(restObject, restRating){
+// function Holder()
+// {
+//     const [cookies, setCookie, removeCookie] = useCookies(['cookie-name']);
+// }
+
+async function rateRestaurant(restObject, restRating, user){
+
   let text1 = "users/";
-  const user = this.props.cookies.get("Name") || "";
+  // const user = cookies.get("Name") || "";
   let text2 = user + '/history/';
   let finalText = text1.concat(text2);
+
   console.log(finalText);
+
   const historyItem = {
     dateAdded: Timestamp.now(),
     rating: restRating,
     restaurant: restObject
   };
+
   const myArray = restObject.split("/");
   let word = myArray[2];
   console.log(finalText.concat(word));
   const location = doc(db, finalText.concat(word));
+
   console.log("after doc");
+
   setDoc(location, historyItem);
+
   console.log("After setDoc");
 }  
 
-async function getHistory()
+async function getHistory(user)
 {
-  const user = this.props.cookies.get("Name") || "";
+  // const user = cookies.get("Name") || "";
   const historyCol = collection(db, 'users/' + user + '/' + 'history');
   const historySnapshot = await getDocs(historyCol);
   const histList = historySnapshot.docs.map(doc => doc.data());
@@ -204,5 +218,7 @@ async function historyItem(historyDoc)
   }
   return retVal;
 }
+
+
 
 export { db, analytics, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
