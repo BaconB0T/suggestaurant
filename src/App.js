@@ -1,24 +1,26 @@
 import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAccounts, getHistory, getAllAccounts } from './firestore';
+import { getAccounts, getHistory, getAllAccounts, getAccount } from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import Accounts from './components/Accounts';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './components/Login'
-import History from './components/History';
+import History from './components/NewHistory';
+// import History from './components/History';
 
 function App() {
   let accounts = getAllAccounts();
-
+  let userWithHistory = getAccount("username", "admin");
   return (
     <div>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/accounts" element={<Accounts accounts={accounts} />} />
-        <Route path="/history" element={<History user="admin"/>} />
+        <Route path="/history" element={<History />} />
+        {/* <Route path="/history" element={<History user={userWithHistory}/>} /> */}
       </Routes>
 
     </div>
@@ -51,6 +53,6 @@ function App() {
 // getAllAccounts().then((accs) => { console.log(accs); });
 
 // getAccount('username', 'admin');
-getHistory().then((history) => console.log(history))
+// getHistory().then((history) => console.log(history))
 
 export default App;
