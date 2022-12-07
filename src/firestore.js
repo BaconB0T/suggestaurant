@@ -23,12 +23,12 @@ const analytics = getAnalytics(firebaseApp);
 // can do anything to the database.
 
 /**
- * 
- * @returns All restaurants in the database.
+ * Returns all the restaurants in a list
+ * @returns a list of all restaurants in the db.
  */
-function getRestaurants() {
+ async function getAllRestaurants() {
   const restaurantsCol = collection(db, 'restaurants');
-  const restaurantsSnapshot = getDocs(restaurantsCol);
+  const restaurantsSnapshot = await getDocs(restaurantsCol);
   const restaurantsList = restaurantsSnapshot.docs.map(doc => doc.data());
   return restaurantsList;
 }
@@ -100,9 +100,10 @@ async function getAccount(field, value) {
 async function validateUser(username, password) {
   let account = await getAccount("username", username);
 
-  // TODO we need to check password is valid!
-  
-  if (account) {
+  // TODO We need to hash the password when we store it
+  // TODO THEN we need to hash the given password to check it!
+
+  if (account && account.password === password) {
     return true;
   }
   return false;
@@ -188,4 +189,4 @@ async function getHistory()
   return histList;
 }
 
-export { db, analytics, getRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser }
+export { db, analytics, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser }
