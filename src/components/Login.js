@@ -19,7 +19,7 @@ const Login = () => {
             // if successful login...
             if (await validateUser(usernameRef.current.value, passwordRef.current.value) === false) {
                 console.log("UNSUCCSSFUL");
-                throw ("Unsuccessful login!");
+                throw ("Invalid username and password combination!");
             }
             console.log("SUCCESS");
 
