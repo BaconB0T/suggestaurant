@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, Timestamp, doc, setDoc, query, where } from "firebase/firestore";
+import { withCookies } from "react-cookie";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -91,6 +92,8 @@ async function getAccount(field, value) {
   }
 }
 
+
+
 /**
  * 
  * @param {String} username 
@@ -164,7 +167,8 @@ function defaultHistory() {
 
 async function rateRestaurant(restObject, restRating){
   let text1 = "users/";
-  let text2 = 'i7Bs7uChMXB5oacg0Dln' + '/history/';
+  const user = this.props.cookies.get("Name") || "";
+  let text2 = user + '/history/';
   let finalText = text1.concat(text2);
   console.log(finalText);
   const historyItem = {
@@ -183,10 +187,22 @@ async function rateRestaurant(restObject, restRating){
 
 async function getHistory()
 {
-  const historyCol = collection(db, 'users/i7Bs7uChMXB5oacg0Dln' + '/' + 'history');
+  const user = this.props.cookies.get("Name") || "";
+  const historyCol = collection(db, 'users/' + user + '/' + 'history');
   const historySnapshot = await getDocs(historyCol);
   const histList = historySnapshot.docs.map(doc => doc.data());
   return histList;
 }
 
-export { db, analytics, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser }
+async function historyItem(historyDoc)
+{ 
+  const retVal = 
+  {
+    date: historyDoc.getString("dateAdded"),
+    rating: historyDoc.getString("rating"),
+    restaurant: historyDoc.getString("restaurant")
+  }
+  return retVal;
+}
+
+export { db, analytics, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
