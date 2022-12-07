@@ -9,7 +9,6 @@ function Account(props) {
     <li id={props.account.email}>
       <span>Username: {props.account.username ? props.account.username : "No id"}</span><br></br>
       <span>Email: {props.account.email}</span><br></br>
-      <span>Password: {props.account.password}</span><br></br>
     </li>
   );
 }
@@ -30,7 +29,7 @@ class Accounts extends React.Component {
       handleChange: this.handleChange.bind(this),
       handleSubmit: this.handleSubmit.bind(this),
     };
-  }
+  } 
 
   renderAccounts = (accounts) => {
     const root = this.state.root;
@@ -75,7 +74,7 @@ class Accounts extends React.Component {
       if (!userExists) {
         // insert
         insertAccount(docData);
-
+        
         this.setState({
           username: '',
           email: '',
@@ -91,16 +90,16 @@ class Accounts extends React.Component {
 
   validateForm = (event) => {
     console.log(event);
-    const usernameField = event.target.querySelector('[name=username]')
-    const emailField = event.target.querySelector('[name=email]')
-    const passwordField = event.target.querySelector('[name=password]')
+    const usernameField = event.target.querySelector('[name=username]');
+    const emailField = event.target.querySelector('[name=email]');
+    const passwordField = event.target.querySelector('[name=password]');
     if(usernameField.value === '' || usernameField.value == null) {
       return false;
     }
-    if(emailField.value === '' || usernameField.value == null/* validate email */) {
+    if(emailField.value === '' || emailField.value == null/* validate email */) {
       return false;
     }
-    if(passwordField.value === '' || usernameField.value.length < 8) {
+    if(passwordField.value === '' || passwordField.value.length < 8) {
       return false;
     }
   }
