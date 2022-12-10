@@ -3,7 +3,7 @@ import { getHistory, rateRestaurant, getRestaurant} from "../firestore";
 import { useCookies } from 'react-cookie';
 
 function HistoryElem(props) {
-  const [restaurant, setRestaurant] = useState({});
+  const [restaurant, setRestaurant] = useState([]);
   // get restaurant
   useEffect(() => {
     async function setRes() {
@@ -11,7 +11,7 @@ function HistoryElem(props) {
       setRestaurant(rest);
     }
     setRes();
-  }, {});
+  }, []);
 
   return (
   <li>
@@ -25,7 +25,6 @@ function HistoryElem(props) {
 function History() {
   const [cookies] = useCookies(['id']);
   const [history, setHistory] = useState([]);
-
   useEffect(() => {
     async function cried() {
       const usersHistory = await getHistory(cookies.id);
@@ -35,8 +34,11 @@ function History() {
   }, []);
 
   const historyComponents = [];
-  for (let index = 0; index < history.length; index++) {
-    historyComponents.push(<HistoryElem key={history[index].restaurant} history={history[index]} />);
+  for (const historyItem of history) {
+    // if(historyItem.restaurant !== "placeholder") {
+    //   console.log(historyItem);
+      historyComponents.push(<HistoryElem key={historyItem.restaurant} history={historyItem} />);
+    // }
   }
 
   return(
