@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import{db, getAllRestaurants} from "../firestore"
+import{ getAllRestaurants} from "../firestore"
 // import SearchIcon from "@material-ui/icons/Search";
 // import CloseIcon from "@material-ui/icons/Close";
 
