@@ -1,6 +1,5 @@
-import { onSnapshot, collection, doc,  getDocs } from "firebase/firestore";
 import {useEffect, useState} from "react";
-import {db, getHistory, rateRestaurant, getAllRestaurants} from "../firestore";
+import {getHistory, rateRestaurant, getAllRestaurants} from "../firestore";
 import { useCookies } from 'react-cookie';
 
 
@@ -24,8 +23,8 @@ export default function SearchPrint(){
                     <p>Restaurant: {restaurant.name}</p>
                     <p>Stars: {restaurant.stars}</p>
                     {<div>
-                        <button onClick={()=>rateRestaurant(restaurant.name, 1, cookies.id || "")}>ThumbsUp</button>
-                        <button onClick={()=>rateRestaurant(restaurant.name, 0, cookies.id || "")}>ThumbsDown</button>
+                        <button onClick={()=>rateRestaurant(restaurant, 1, cookies.id || "")}>ThumbsUp</button>
+                        <button onClick={()=>rateRestaurant(restaurant, -1, cookies.id || "")}>ThumbsDown</button>
                     </div>}
                 </div>
             ))}
