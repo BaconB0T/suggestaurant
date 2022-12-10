@@ -1,8 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, query, where, onSnapshot } from "firebase/firestore";
-import { withCookies } from "react-cookie";
-import { useCookies } from 'react-cookie';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -32,7 +30,12 @@ const analytics = getAnalytics(firebaseApp);
 async function getAllRestaurants() {
   const restaurantsCol = collection(db, 'restaurants');
   const restaurantsSnapshot = await getDocs(restaurantsCol);
-  const restaurantsList = restaurantsSnapshot.docs.map(doc => doc.data());
+  const restaurantsList = restaurantsSnapshot.docs.map(doc => {
+    const docData = doc.data();
+    docData.id = doc.id;
+    return docData;
+  });
+  console.log(restaurantsList);
   return restaurantsList;
 }
 
@@ -50,7 +53,9 @@ async function getRestaurantById(id) {
 async function getRestaurant(docRef) {
   try {
     const docSnap = await getDoc(docRef);
-    return docSnap.data();
+    const doc = docSnap.data();
+    doc.id = docSnap.id;
+    return doc;
   } catch(e) {
     console.log(e);
     return null;
@@ -64,7 +69,11 @@ async function getRestaurant(docRef) {
 async function getAllAccounts() {
   const usersCol = collection(db, 'users');
   const usersSnapshot = await getDocs(usersCol);
-  const usersList = usersSnapshot.docs.map(doc => doc.data());
+  const usersList = usersSnapshot.docs.map(doc => {
+    const docData = doc.data();
+    docData.id = doc.id;
+    return docData;
+  });
   return usersList;
 }
 
@@ -186,7 +195,7 @@ function defaultHistory() {
   return ({
     dateAdded: Timestamp.now(),
     rating: 0,
-    restaurant: 'this is just a placeholder'
+    restaurant: 'placeholder'
   });
 }
 
@@ -196,30 +205,36 @@ function defaultHistory() {
 // }
 
 async function rateRestaurant(restObject, restRating, user){
-
   let text1 = "users/";
   // const user = cookies.get("Name") || "";
   let text2 = user + '/history/';
   let finalText = text1.concat(text2);
-
-  console.log(finalText);
+  // console.log("rateRestaurant finalText")
+  // console.log(finalText);
 
   const historyItem = {
     dateAdded: Timestamp.now(),
     rating: restRating,
-    restaurant: restObject
+    restaurant: doc(db, `/restaurants/${restObject.id}`)
   };
 
-  const myArray = restObject.split("/");
-  let word = myArray[2];
-  console.log(finalText.concat(word));
-  const location = doc(db, finalText.concat(word));
+  // console.log("restObject")
+  // console.log(restObject)
+  // const myArray = restObject.split("/");
+  // console.log("myArray")
+  // console.log(myArray)
+  // let word = myArray[2];
+  // console.log("rateRestaurant finalText.concat(word)")
+  // console.log(finalText.concat(word));
+  // console.log('doc final path')
+  // console.log(`users/${user}/history/${restObject.id}`)
+  const location = doc(db, `users/${user}/history/${restObject.id}`);
 
-  console.log("after doc");
+  // console.log("after doc");
 
   setDoc(location, historyItem);
 
-  console.log("After setDoc");
+  // console.log("After setDoc");
 }  
 
 async function getHistory(user)
@@ -228,15 +243,21 @@ async function getHistory(user)
   const historyCol = collection(db, 'users/' + user + '/' + 'history');
   const historySnapshot = await getDocs(historyCol);
   // const histList = historySnapshot.docs.map(doc => doc.data());
-  const historyList = [];
+  let historyList = [];
   for(const hist of historySnapshot.docs) {
     let histor = hist.data();
     histor.id=hist.id;
-    console.log("Hist id in getHistory");
-    console.log(hist.id);
+    // console.log("Hist id in getHistory");
+    // console.log(hist.id);
     historyList.push(histor);
   }
-  console.log(historyList);
+  // console.log("historyList");
+  // console.log(historyList);
+  historyList = historyList.filter((elem) => {
+    if(elem.restaurant !== 'placeholder') {
+      return elem;
+    }
+  });
   return historyList;
 }
 
