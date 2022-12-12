@@ -89,7 +89,7 @@ async function emailOrUsernameUsed(doc) {
     throw new Error("doc must contain username and email!");
   }
   try {
-    const usernameCheck = await getAccount("username", doc.account);
+    const usernameCheck = await getAccount("username", doc.username);
     const emailCheck = await getAccount("email", doc.email);
     if(usernameCheck != null || emailCheck != null) {
       return true;
