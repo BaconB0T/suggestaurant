@@ -65,8 +65,8 @@ class Accounts extends React.Component {
       password: this.state.password,
     };
 
-    //if(this.validateForm(event)) {
-    if(true) {  
+    if(this.validateForm(event)) {
+    // if(true) {  
       alert('Form Submitted!');
       const userExists = await emailOrUsernameUsed(docData);
 
@@ -83,7 +83,8 @@ class Accounts extends React.Component {
         alert("That username or email is already in use!");
       }
     } else {
-      alert("Check the errors below!");
+      // Either empty fields or invalid email format.
+      alert("All fields must be filled out!");
     }
   }
 
