@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './components/Login'
 import History from './components/History';
 import Search from './components/Search';
+import HistorySearch from './components/HistorySearch'
 
 function App() {
   let accounts = getAllAccounts();
@@ -21,6 +22,7 @@ function App() {
         <Route path="/accounts" element={<Accounts accounts={accounts} />} />
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
+        <Route path="/historySearch" element={<HistorySearch />}/>
       </Routes>
 
     </div>
