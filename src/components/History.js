@@ -1,3 +1,4 @@
+
 import {useEffect, useState} from "react";
 import { getHistory, rateRestaurant, getRestaurant} from "../firestore";
 import { useCookies } from 'react-cookie';

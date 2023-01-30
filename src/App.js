@@ -11,6 +11,7 @@ import Login from './components/Login'
 import History from './components/History';
 import Search from './components/Search';
 import HistorySearch from './components/HistorySearch'
+import Recommendations from './components/Recommendations'
 
 function App() {
   let accounts = getAllAccounts();
@@ -18,6 +19,7 @@ function App() {
   return (
     <div>
       <Routes>
+        <Route path="/recommendations" element={<Recommendations recommendationIds={[1]}/>} />
         <Route path="/" element={<Login />} />
         <Route path="/accounts" element={<Accounts accounts={accounts} />} />
         <Route path="/history" element={<History />} />

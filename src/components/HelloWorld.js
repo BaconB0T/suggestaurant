@@ -24,7 +24,7 @@ class HelloWorld extends React.Component {
     )
   }
 
-  // render() {
+  // render() {   
   //   return (
   //     <h1>Hello {this.props.name}</h1>
   //   )

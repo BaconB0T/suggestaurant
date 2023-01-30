@@ -26,7 +26,7 @@ function History() {
   const [cookies] = useCookies(['id']);
   const [history, setHistory] = useState([]);
 
-  useEffect(() => {
+  useEffect(() => {x
     async function cried() {
       const usersHistory = await getHistory(cookies.id);
       setHistory(usersHistory);
