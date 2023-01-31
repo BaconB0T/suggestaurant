@@ -39,17 +39,24 @@ async function getAllRestaurants() {
   return restaurantsList;
 }
 
+/**
+ * Retrieves the restaurant from firestore by its id, or null
+ * if there is no restaurant by the given id.
+ * @param {String} id The id of the Restaurant
+ * @returns The restaurant as an object or null.
+ */
 async function getRestaurantById(id) {
+  id = String(id)
   const docRef = doc(db, 'restaurants', id);
-  try {
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
-  } catch(e) {
-    console.log(e);
-    return null;
-  }
+  return getRestaurant(docRef);
 }
 
+/**
+ * Returns the restaurant as a firebase document, or null if no document
+ * exists at that reference.
+ * @param {reference} docRef a doc reference
+ * @returns The restaurant, or null
+ */
 async function getRestaurant(docRef) {
   try {
     const docSnap = await getDoc(docRef);
