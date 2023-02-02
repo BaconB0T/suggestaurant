@@ -248,9 +248,8 @@ async function deleteHistoryItem(user, hisotryDoc){
   let usrHis = "users/" + user + "/history/";
 
   const location = doc(db, `users/${user}/history/${hisotryDoc.id}`);
-
-  console.log(hisotryDoc.id);
-  console.log(location);
+  // console.log(hisotryDoc.id);
+  // console.log(location);
   deleteDoc(location);
 
 }

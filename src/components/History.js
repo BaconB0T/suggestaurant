@@ -15,12 +15,19 @@ function HistoryElem(props) {
     setRes();
   }, []);
 
+
+  const handleClick = event =>{
+    deleteHistoryItem(cookies.id, restaurant);
+    event.currentTarget.disabled = true;
+    // console.log("Button Pressed");
+  };
+
   return (
   <li>
     Name: {restaurant.name}<br></br>
     Stars: {restaurant.stars}<br></br>
     Your Rating: {props.history.rating}<br></br>
-    <button onClick={()=>deleteHistoryItem(cookies.id, restaurant)}>X</button>
+    <button onClick={handleClick}>X</button>
   </li>
   );
 }
