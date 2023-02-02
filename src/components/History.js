@@ -1,10 +1,11 @@
 
 import {useEffect, useState} from "react";
-import { getHistory, rateRestaurant, getRestaurant} from "../firestore";
+import { getHistory, rateRestaurant, getRestaurant, deleteHistoryItem} from "../firestore";
 import { useCookies } from 'react-cookie';
 
 function HistoryElem(props) {
   const [restaurant, setRestaurant] = useState([]);
+  const[cookies, setCookie,removeCookie] = useCookies(['id']);
   // get restaurant
   useEffect(() => {
     async function setRes() {
@@ -19,6 +20,7 @@ function HistoryElem(props) {
     Name: {restaurant.name}<br></br>
     Stars: {restaurant.stars}<br></br>
     Your Rating: {props.history.rating}<br></br>
+    <button onClick={()=>deleteHistoryItem(cookies.id, restaurant)}>X</button>
   </li>
   );
 }
@@ -43,7 +45,10 @@ function History() {
   }
 
   return(
-    <ol id="history-list">{historyComponents}</ol>
+    <div>
+      <h1>History</h1>
+      <ol id="history-list">{historyComponents}</ol>
+    </div>
   )
 }
 

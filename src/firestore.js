@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, query, where, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, query, where, onSnapshot } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -244,6 +244,17 @@ async function rateRestaurant(restObject, restRating, user){
   // console.log("After setDoc");
 }  
 
+async function deleteHistoryItem(user, hisotryDoc){
+  let usrHis = "users/" + user + "/history/";
+
+  const location = doc(db, `users/${user}/history/${hisotryDoc.id}`);
+
+  console.log(hisotryDoc.id);
+  console.log(location);
+  deleteDoc(location);
+
+}
+
 async function getHistory(user)
 {
   // const user = cookies.get("Name") || "";
@@ -281,4 +292,4 @@ async function historyItem(historyDoc)
 
 
 
-export { db, analytics,getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+export { db, analytics,getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, deleteHistoryItem, getHistory, validateUser, historyItem }
