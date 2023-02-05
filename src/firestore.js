@@ -1,6 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, query, where, onSnapshot } from "firebase/firestore";
+import { getAuth } from "firebase/auth"
+import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
+import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, query, where, onSnapshot, refEqual } from "firebase/firestore";
+
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -16,6 +19,8 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+const storage = getStorage(firebaseApp)
 const analytics = getAnalytics(firebaseApp);
 
 
@@ -142,6 +147,8 @@ async function getAccount(field, value) {
  * @returns {Boolean} true if username/password are valid
  */
 async function validateUser(username, password) {
+  // TODO: Use firebase's auth services here!
+  
   let account = await getAccount("username", username);
 
   // TODO We need to hash the password when we store it
@@ -155,7 +162,7 @@ async function validateUser(username, password) {
 
 /**
  * Inserts an account into the users collection. `account` must include `password`, `account`,
- * and `username`, and it may include any of the following:<br>
+ * and `username`, and it may include any of the following:
  * - `dietaryRestrictions` - a list of strings as found in the database. See `TODO: Put
  * reference here` for what fields are allowed.<br>
  * - `excludedCuisines` - a list of references to cuisines. See `TODO: Put reference here`
@@ -268,6 +275,24 @@ async function getHistory(user)
   return historyList;
 }
 
+async function getImagesForBusiness(business_id) {
+  
+  const photosRef = ref(storage, `photos/${business_id}`);
+  const resp = await listAll(photosRef);
+  return resp.items
+}
+
+async function getImageURLsForBusiness(business_id) {
+  const items = await getImagesForBusiness(business_id)
+  const downloadUrls=[]
+  items.forEach((itemRef) => {
+    getDownloadURL(itemRef).then((url) => {
+      downloadUrls.push(url)
+    })
+  });
+  return downloadUrls
+}
+
 async function historyItem(historyDoc)
 { 
   const retVal = 
@@ -281,4 +306,4 @@ async function historyItem(historyDoc)
 
 
 
-export { db, analytics,getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+export { db, analytics, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
