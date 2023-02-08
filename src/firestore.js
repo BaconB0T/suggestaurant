@@ -397,7 +397,18 @@ async function deleteHistoryItem(user, hisotryDoc){
   // console.log(hisotryDoc.id);
   // console.log(location);
   deleteDoc(location);
+}
 
+function deleteUser() {
+  const user = auth.currentUser;
+  try {
+    user.delete();
+    return true;
+  } catch(error) {
+    console.log(error);
+    alert("You must log in again before you can delete the account.");
+    return false;
+  }
 }
 
 async function getHistory(user)
@@ -453,4 +464,4 @@ async function historyItem(historyDoc)
   return retVal;
 }
 
-export { db, analytics, auth, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+export { db, analytics, auth, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
