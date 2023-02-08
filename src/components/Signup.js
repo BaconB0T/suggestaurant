@@ -2,7 +2,6 @@ import React from "react";
 import { createUserEmailPassword } from "../firestore";
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { Link, Navigate } from 'react-router-dom'
-import { withCookies } from 'react-cookie';
 
 class Signup extends React.Component {
   constructor(props) {
@@ -53,9 +52,6 @@ class Signup extends React.Component {
         // Send some statistic for us to diagnose :)
       } else {
         // passed!
-        const { cookies } = this.props;
-        cookies.set('id', resp.uid, { path: '/' });
-        cookies.set('Name', resp.username, { path: '/' });
         // to render the Navigate component.
         this.setState({
           ['user']: true
@@ -153,4 +149,4 @@ class Signup extends React.Component {
   }
 }
 
-export default withCookies(Signup);
+export default Signup;

@@ -1,12 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
-import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { getAccount, validateUser, signInEmailPassword } from '../firestore'
+import { signInEmailPassword } from '../firestore'
 
 const Login = () => {
-    const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const usernameRef = useRef();
     const passwordRef = useRef();
@@ -16,27 +14,13 @@ const Login = () => {
         e.preventDefault(); // don't refresh the page
         setError("");
         signInEmailPassword(usernameRef.current.value, passwordRef.current.value)
-            .then((bool, idOrCode) => {
+            .then(({bool, idOrCode}) => {
                 if (bool) {
-                    setCookie('Name', usernameRef.current.value, { path: '/' });
-                    setCookie('id', idOrCode, { path: '/' });
                     navigate("/accounts");
                 } else {
                     setError("Invalid email and password combination.");
                 }
-            });
-        // if successful login...
-        // if (validateUser(usernameRef.current.value, passwordRef.current.value) === false) {
-        //     console.log("UNSUCCSSFUL");
-        //     throw ("Invalid username and password combination!");
-        // }
-        // const user = await getAccount("username", usernameRef.current.value);
-        // console.log(user);
-        // console.log(user.id);
-
-        // console.log("SUCCESS");
-
-
+        });
     }
 
     return (
@@ -72,29 +56,3 @@ const Login = () => {
     );
 };
 export default Login;
-
-
-/*
-
-
-        <div>
-            <h1>Login</h1>
-            <h1>Name of the user:</h1>
-            <input
-                placeholder="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-            />
-            <h1>Password of the user:</h1>
-            <input
-                type="password"
-                placeholder="name"
-                value={pwd}
-                onChange={(e) => setPwd(e.target.value)}
-            />
-            <div>
-                <button onClick={handleClick}>Set Cookie</button>
-            </div>
-        </div>
-
-*/

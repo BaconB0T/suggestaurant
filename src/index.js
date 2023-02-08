@@ -10,12 +10,11 @@ import { BrowserRouter as Router } from 'react-router-dom'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <CookiesProvider>
-      <Test />
-   </CookiesProvider>, */}
-    <Router>
-      <App/>
-    </Router>
+    <CookiesProvider>
+      <Router>
+        <App/>
+      </Router>
+   </CookiesProvider>
   </React.StrictMode>
 );
 
