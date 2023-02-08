@@ -6,7 +6,7 @@ import { getAccounts, getHistory, getAllAccounts, getAccount } from './firestore
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import Accounts from './components/Accounts';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import Login from './components/Login'
 import History from './components/History';
 import Search from './components/Search';
@@ -15,7 +15,6 @@ import Recommendations from './components/Recommendations'
 import Signup from './components/Signup'
 
 function App() {
-  let accounts = getAllAccounts();
   let userWithHistory = getAccount("username", "admin");
   return (
     <div>
@@ -23,43 +22,14 @@ function App() {
         <Route path="/recommendations" element={<Recommendations recommendationIds={[1]}/>} />
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/accounts" element={<Accounts accounts={accounts} />} />
+        <Route path="/accounts" element={<Accounts />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
         <Route path="/historySearch" element={<HistorySearch />}/>
       </Routes>
-
     </div>
   )
 }
-
-// skeleton project
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// rateRestaurant("/restaurants/1", 0);
-// getAllAccounts().then((accs) => { console.log(accs); });
-
-// getAccount('username', 'admin');
-// getHistory().then((history) => console.log(history))
 
 export default App;
