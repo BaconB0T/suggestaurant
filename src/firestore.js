@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail } from "firebase/auth"
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
 import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, query, where, onSnapshot } from "firebase/firestore";
 
@@ -19,9 +19,32 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-const storage = getStorage(firebaseApp)
-const analytics = getAnalytics(firebaseApp);
+// localize OAuth flow to user's preferred language.
+auth.languageCode = 'it';
+auth.useDeviceLanguage();
 
+const storage = getStorage(firebaseApp);
+const analytics = getAnalytics(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+// additional OAuth 2.0 scopes: 
+// googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+
+// For each of your app's pages that need 
+// information about the signed-in user, attach
+//  an observer to the global authentication 
+// object. This observer gets called whenever 
+// the user's sign-in state changes.
+// onAuthStateChanged(auth, (user) => {
+//   if (user) {
+//     // User is signed in, see docs for a list of available properties
+//     // https://firebase.google.com/docs/reference/js/firebase.User
+//     const uid = user.uid;
+//     // ...
+//   } else {
+//     // User is signed out
+//     // ...
+//   }
+// });
 
 // TODO: Authorization happens on Firestore's end and
 // that needs to be setup still. Currently, anybody
@@ -171,28 +194,148 @@ async function validateUser(username, password) {
  * @param {Object} account - Must include `username`, `email`, and `password` fields.
  * @returns 
  */
-async function insertAccount(account) {
-  const diet = account.dietaryRestrictions ? account.dietaryRestrictions : [];
-  const exCui = account.excludedCuisines ? account.excludedCuisines : [];
-  const pref = account.preferences ? account.preferences : defaultPreferences();
-  const docData = {
-    // id: account.username,
-    email: account.email,
-    password: account.password,
-    username: account.username,
-    // password: encrypt(account.password),
-    filters: {
-      dietaryRestrictions: diet,
-      excludedCuisines: exCui,
-      preferences: pref,
-    },
-  };
-  // TODO: Check if that user exists already
-
-  // Then insert
-  const accRef = await setDoc(doc(db, 'users', `${account.id}`), docData);
-  await setDoc(doc(db, 'users', `${account.id}`, 'history', 'placeholder'), defaultHistory())
+async function insertAccount(accountData) {
+  // insert
+  const accRef = await setDoc(doc(db, 'users', `${accountData.uid}`), accountData);
+  await setDoc(doc(db, 'users', `${accountData.uid}`, 'history', 'placeholder'), defaultHistory())
   return accRef;
+}
+
+async function createUserEmailPassword(username, email, password) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    // signed in
+    const user = userCredential.user;
+    insertAccount({
+      uid: user.uid,
+      email: email,
+      username: username,
+      // No need for password, firesbase handles that for us.
+      authProvider: "local",
+      filters: {
+        dietaryRestrictions: [],
+        excludedCuisines: [],
+        preferences: defaultPreferences(),
+      },
+    });
+    return "ok";
+  } catch(error) {
+    console.error(error);
+    alert(error.message);
+    // string: auth/specific-reason
+    return error.code
+  }
+}
+  
+
+async function signInEmailPassword(email, password) {
+  try {
+    const userCreds = await signInWithEmailAndPassword(auth, email, password);
+    return true, userCreds.user.uid;
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+    return false, error.code;
+  };
+}
+
+// idek if this works (or signInWithProviderRedirect).
+// May have to be called in the react component?
+function signInWithGoogleMobile() {
+  signInWithPopup(auth, googleProvider)
+    .then((result) => {
+      // Gives google access token. Can use to access Google API
+      const credential = googleProvider.credentialFromResult(result);
+      // const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      const q = query(collection(db, "users"), where("uid", "==", user.uid));
+      getDocs(q).then((docs) => {
+        if(docs.docs.length === 0) {
+          insertAccount({
+            uid: user.uid,
+            email: user.email,
+            username: user.displayName,
+            // No need for password, firesbase handles that for us.
+            authProvider: "google",
+            filters: {
+              dietaryRestrictions: [],
+              excludedCuisines: [],
+              preferences: defaultPreferences(),
+            },
+          });
+        }
+      });
+      // IdP data avail using getAdditionalUserInfo(result)
+      // ...
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(error.message)
+      // const email = error.customData.email;
+      // const credential = googleProvider.credentialFromError(error);
+    });
+}
+
+// idek if this works (or signInWithProviderPopup).
+function signInWithProviderRedirect(provider) {
+  signInWithRedirect(auth, provider);
+}
+
+function signInAnon() {
+  signInAnonymously(auth)
+    .then(() => {
+      // signed in...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(`Error: ${errorCode}: ${errorMessage}`);
+    });
+}
+
+function getRedirectSignInResult(provider) {
+  getRedirectResult(auth)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access Google APIs.
+    const credential = provider.credentialFromResult(result);
+    const token = credential.accessToken;
+
+    // The signed-in user info.
+    const user = result.user;
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = provider.credentialFromError(error);
+    // ...
+  });
+}
+
+function signOutUser() {
+  signOut(auth).then(() => {
+    // Sign-out successful.
+  }).catch((error) => {
+    // Oopsies! An error!
+    console.error(error);
+    alert(error.message);
+  });
+}
+
+function sendPasswordReset(email) {
+  sendPasswordResetEmail(auth, email)
+    .then((_) => {
+      alert("Password reset link sent!");
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(error.message);
+    });
 }
 
 function defaultPreferences() {
@@ -201,7 +344,7 @@ function defaultPreferences() {
     includeHistory: true,
     minimumRating: 1,
     requireFamilyFriendly: false
-  })
+  });
 }
 
 function defaultHistory() {
@@ -211,11 +354,6 @@ function defaultHistory() {
     restaurant: 'placeholder'
   });
 }
-
-// function Holder()
-// {
-//     const [cookies, setCookie, removeCookie] = useCookies(['cookie-name']);
-// }
 
 async function rateRestaurant(restObject, restRating, user){
   let text1 = "users/";
@@ -315,4 +453,4 @@ async function historyItem(historyDoc)
 
 
 
-export { db, analytics, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, insertAccount, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+export { db, analytics, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
