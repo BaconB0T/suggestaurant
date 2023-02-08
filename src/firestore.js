@@ -218,12 +218,12 @@ async function createUserEmailPassword(username, email, password) {
         preferences: defaultPreferences(),
       },
     });
-    return "ok";
+    return {uid: user.uid, name: username};
   } catch(error) {
     console.error(error);
     alert(error.message);
     // string: auth/specific-reason
-    return error.code
+    return null;
   }
 }
   

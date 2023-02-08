@@ -1,7 +1,7 @@
 import React from "react";
 import { createUserEmailPassword } from "../firestore";
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { withCookies } from 'react-cookie';
 
 class Signup extends React.Component {
@@ -16,9 +16,8 @@ class Signup extends React.Component {
       handleChange: this.handleChange.bind(this),
       handleSubmit: this.handleSubmit.bind(this),
       error: '',
+      user: false,
     };
-    this.navigation = this.props.navigation;
-    this.cookies = this.props.cookies
   } 
 
   handleChange = (event) => {
@@ -43,23 +42,25 @@ class Signup extends React.Component {
 
     if(this.validateForm(event)) {
       const errorMessage='';
-      switch (createUserEmailPassword(docData.username, docData.email, docData.password)) {
+      const resp = createUserEmailPassword(docData.username, docData.email, docData.password);
+      if (resp === null) {
         // error codes [here](https://firebase.google.com/docs/reference/js/auth#autherrorcodes)
-        case "auth/invalid-email":
-          errorMessage='That email is invalid.';
-          this.setState({
-            ['error']: errorMessage
-          });
-          alert(errorMessage);
-        case "ok":
-          // passed!
-          this.cookies.set('id', )
-        default:
-          console.log("Failed to create account. See console for details.");
-          // Send some statistic for us to diagnose :)
+        errorMessage='That email is invalid.';
+        this.setState({
+          ['error']: errorMessage
+        });
+        alert(errorMessage);
+        // Send some statistic for us to diagnose :)
+      } else {
+        // passed!
+        const { cookies } = this.props;
+        cookies.set('id', resp.uid, { path: '/' });
+        cookies.set('Name', resp.username, { path: '/' });
+        // to render the Navigate component.
+        this.setState({
+          ['user']: true
+        });
       }
-      
-      this.navigation.navigate('/accounts');
     } else {
       // Either empty fields or too short password.
       this.setState({
@@ -109,11 +110,15 @@ class Signup extends React.Component {
   }
 
   render() {
+    let {user} = this.state;
     return (
       <Container
           className="d-flex align-items-center justify-content-center"
           style={{ minHeight: "100vh" }}>
         <div className="w-100" style={{ maxWidth: "400px" }}>
+          {user && (
+            <Navigate to='/accounts' replace={true} />
+          )}
           <Card>
             <Card.Body>
               <h2 className="text-center mb-4">Create an Account</h2>
@@ -148,4 +153,4 @@ class Signup extends React.Component {
   }
 }
 
-export default Signup;
+export default withCookies(Signup);
