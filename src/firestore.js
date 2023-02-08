@@ -142,8 +142,8 @@ async function emailOrUsernameUsed(doc) {
  * exists.
  */
 async function getAccount(field, value) {
-  if(!['username', 'email'].includes(field)) {
-    throw new Error("Field must be either username or email");
+  if(!['username', 'email', 'uid'].includes(field)) {
+    throw new Error("Field must be one of username, email, or uid.");
   }
 
   const usersCol = collection(db, 'users');
@@ -157,7 +157,7 @@ async function getAccount(field, value) {
     return null;
   } else {
     const doc = docs[0].data()
-    doc.id = docs[0].id;
+    doc.uid = docs[0].uid;
     return doc;
   }
 }
@@ -231,11 +231,11 @@ async function createUserEmailPassword(username, email, password) {
 async function signInEmailPassword(email, password) {
   try {
     const userCreds = await signInWithEmailAndPassword(auth, email, password);
-    return true, userCreds.user.uid;
+    return {bool: true, idOrCode: userCreds.user.uid};
   } catch (error) {
     console.error(error);
     alert(error.message);
-    return false, error.code;
+    return {bool: false, idOrCode: error.code};
   };
 }
 
@@ -317,14 +317,16 @@ function getRedirectSignInResult(provider) {
   });
 }
 
-function signOutUser() {
-  signOut(auth).then(() => {
-    // Sign-out successful.
-  }).catch((error) => {
-    // Oopsies! An error!
+async function signOutUser() {
+  try {
+    signOut(auth);
+  } catch (error) {
     console.error(error);
     alert(error.message);
-  });
+    return false;
+  }
+  // Sign-out successful.
+  return true;
 }
 
 function sendPasswordReset(email) {
@@ -451,6 +453,4 @@ async function historyItem(historyDoc)
   return retVal;
 }
 
-
-
-export { db, analytics, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+export { db, analytics, auth, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
