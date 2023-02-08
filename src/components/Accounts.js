@@ -1,118 +1,39 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import { createUserEmailPassword } from "../firestore";
+import React, { useState, useEffect } from "react";
+import { signOutUser, auth } from "../firestore";
+import { Link, useNavigate } from 'react-router-dom';
 
-function Account(props) {
-  // console.log(props);
-  return (
-    <li id={props.account.email}>
-      <span>Username: {props.account.username ? props.account.username : "No id"}</span><br></br>
-      <span>Email: {props.account.email}</span><br></br>
-    </li>
-  );
-}
+const Account = () => {
+  const user = auth.currentUser;
+  const navigate = useNavigate();
 
-class Accounts extends React.Component {
-  constructor(props) {
-    super(props);
-    const accountsOL = document.createElement('ol');
-    accountsOL.id = 'accounts';
-    // what's in props?
-    this.state = {
-      accountsPromise: props.accounts,
-      root: createRoot(accountsOL),
-      accountsOL: accountsOL,
-      email: '',
-      password: '',
-      username: '',
-      handleChange: this.handleChange.bind(this),
-      handleSubmit: this.handleSubmit.bind(this),
-    };
-  } 
-
-  renderAccounts = (accounts) => {
-    const root = this.state.root;
-    const listOfAccounts = [];
-    for(const acc of accounts) {
-      listOfAccounts.push(React.createElement(Account, {account: acc, key: acc.email}));
-    }
-
-    root.render(listOfAccounts);
-  }
-
-  componentDidMount = () => {
-    document.getElementById('accountsContainer').appendChild(this.state.accountsOL);
-    this.state.accountsPromise.then(this.renderAccounts);
-  }
-
-  handleChange = (event) => {
-    const value = event.target.value;
-    const name = event.target.name;
-    
-    this.setState({
-      [name]: value
+  const sOut = () => {
+    signOutUser().then((res) => {
+      if(res) {
+        navigate('/');
+      } else {
+        alert("Something went wrong!")
+      }
     });
   }
 
-  handleSubmit = async (event) => {
-    event.preventDefault();
-    // TODO: validate, insert
-    // validatePassword(this.state.password)
-    const docData = {
-      id: this.state.username,
-      username: this.state.username,
-      email: this.state.email,
-      password: this.state.password,
-    };
-
-    if(this.validateForm(event)) {
-      createUserEmailPassword(docData.username, docData.email, docData.password);
-    } else {
-      // Either empty fields or too short password.
-      alert("All fields must be filled out!");
-    }
-  }
-
-  validateForm = (event) => {
-    const usernameField = event.target.querySelector('[name=username]');
-    const emailField = event.target.querySelector('[name=email]');
-    const passwordField = event.target.querySelector('[name=password]');
-    if(usernameField.value === '' || usernameField.value == null) {
-      alert("Invalid username")
-      return false;
-    }
-    if(emailField.value === '' || emailField.value == null/* validate email */) {
-      alert("Invalid email")
-      return false;
-    }
-    if(passwordField.value === '' || passwordField.value.length < 8) {
-      alert("Invalid password")
-      return false;
-    }
-    return true;
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>Accounts</h1>
-        <form onSubmit={this.state.handleSubmit}>
-          <label>Username:</label>
-          <input type="text" id="username" name="username" value={this.state.username} onChange={this.handleChange} />
-          <br></br>
-          <label>Email:</label>
-          <input type="email" id="email" name="email" value={this.state.email} onChange={this.handleChange} />
-          <br></br>
-          <label>Password:</label>
-          <input type="password" id="password" name="password" minLength="8" value={this.state.password} onChange={this.handleChange} />
-          <br></br>
-          <br></br>
-          <input type="submit" value="Submit" />
-        </form>
-        <div id='accountsContainer'>{/* accounts list is appended here. */}</div>
-      </div>
-    );
-  }
+  return (
+    <div display='block'>
+      <h1>Hello {user && user.username}</h1>
+      <div>Email: {user && user.email}</div>
+      <Link to='/account/allergies'>Allergies</Link>
+      <br></br>
+      <Link to='/account/filters'>Filters</Link>
+      <br></br>
+      <Link to='/account/history'>History</Link>
+      <br></br>
+      <button>Change Password (disabled)</button>
+      <br></br>
+      <button onClick={sOut}>Sign Out</button>
+      <br></br>
+      <button>Delete Account (disabled)</button>
+      <br></br>
+    </div>
+  );
 }
 
-export default Accounts
+export default Account
