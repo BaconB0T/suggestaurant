@@ -41,26 +41,28 @@ class Signup extends React.Component {
 
     if(this.validateForm(event)) {
       const errorMessage='';
-      const resp = createUserEmailPassword(docData.username, docData.email, docData.password);
-      if (resp === null) {
-        // error codes [here](https://firebase.google.com/docs/reference/js/auth#autherrorcodes)
-        errorMessage='That email is invalid.';
-        this.setState({
-          ['error']: errorMessage
-        });
-        alert(errorMessage);
-        // Send some statistic for us to diagnose :)
-      } else {
-        // passed!
-        // to render the Navigate component.
-        this.setState({
-          ['user']: true
-        });
-      }
+      createUserEmailPassword(docData.username, docData.email, docData.password)
+        .then((resp) => {
+          if (resp === null) {
+            // error codes [here](https://firebase.google.com/docs/reference/js/auth#autherrorcodes)
+            const errorMessage='That email is invalid.';
+            this.setState({
+              'error': errorMessage
+            });
+            alert(errorMessage);
+            // Send some statistic for us to diagnose :)
+          } else {
+            // passed!
+            // to render the Navigate component.
+            this.setState({
+              'user': true
+            });
+          }
+        })
     } else {
       // Either empty fields or too short password.
       this.setState({
-        ['error']: 'All fields must be filled out!'
+        'error': 'All fields must be filled out!'
       });
       alert("All fields must be filled out!");
     }
@@ -68,7 +70,7 @@ class Signup extends React.Component {
 
   validateForm = (event) => {
     this.setState({
-      ['error']: ''
+      'error': ''
     });
     const usernameField = event.target.querySelector('[name=username]');
     const emailField = event.target.querySelector('[name=email]');
@@ -76,28 +78,28 @@ class Signup extends React.Component {
     const confirmPasswordField = event.target.querySelector('[name=confirmPassword]');
     if(usernameField.value === '' || usernameField.value == null) {
       this.setState({
-        ['error']: "Invalid username."
+        'error': "Invalid username."
       });
       alert("Invalid username");
       return false;
     }
     if(emailField.value === '' || emailField.value == null/* validate email */) {
       this.setState({
-        ['error']: "That email is invalid."
+        'error': "That email is invalid."
       });
       alert("Invalid email");
       return false;
     }
     if(passwordField.value === '' || passwordField.value.length < 8) {
       this.setState({
-        ['error']: "Invalid password."
+        'error': "Invalid password."
       });
       alert("Invalid password")
       return false;
     }
     if(passwordField.value !== confirmPasswordField.value) {
       this.setState({
-        ['error']: "Passwords do not match."
+        'error': "Passwords do not match."
       });
       alert("Passwords do not match!");
       return false;

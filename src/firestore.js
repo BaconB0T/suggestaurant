@@ -402,7 +402,9 @@ async function deleteHistoryItem(user, hisotryDoc){
 function deleteUser() {
   const user = auth.currentUser;
   try {
+    const uid = user.uid;
     user.delete();
+    deleteDoc(doc(db, 'users', uid));
     return true;
   } catch(error) {
     console.log(error);
