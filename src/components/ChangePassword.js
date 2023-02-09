@@ -1,14 +1,14 @@
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { changePassword, auth } from '../firestore';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { useRef, useState } from 'react';
+import { useRef, useState } from 'react'
 
 const ChangePassword = () => {
     const navigate = useNavigate();
     const passRef = useRef();
     const confPassRef = useRef();
     const [error, setError] = useState("");
-    
+
     if(auth.currentUser === null) {
         return (
             <Navigate to='/login' />

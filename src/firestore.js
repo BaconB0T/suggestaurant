@@ -97,6 +97,28 @@ async function getRestaurant(docRef) {
   }
 }
 
+async function getRestaurantBy(field, value) {
+  // if(!['business_id', 'isOpen'].includes(field)) {
+  //   throw new Error("Field must be one of username, email, or uid.");
+  // }
+  const restCol = collection(db, 'restaurants');
+  const q = query(restCol, where(`${field}`, '==', `${value}`));
+  
+  const querySnapshot = await getDocs(q);
+  // const docs = querySnapshot.docs.map((doc) => doc.data());
+  
+  let docs = querySnapshot.docs;
+  if(docs.length === 0) {
+    return null;
+  } else {
+    let docsData = docs.map((doc) => doc.data());
+    for(let i = 0; i < docsData.length; ++i) {
+      docsData[i].uid = docs[i].uid;
+    }
+    return docsData;
+  }
+}
+
 /**
  * 
  * @returns All accounts in the database.
@@ -474,4 +496,4 @@ function changePassword(newPassword) {
   return true
 }
 
-export { db, analytics, auth, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+export { db, analytics, auth, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
