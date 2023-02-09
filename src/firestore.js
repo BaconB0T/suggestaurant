@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth"
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
-import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, query, where, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, query, where, limit, onSnapshot } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -33,7 +33,8 @@ const analytics = getAnalytics(firebaseApp);
  */
 async function getAllRestaurants() {
   const restaurantsCol = collection(db, 'restaurants');
-  const restaurantsSnapshot = await getDocs(restaurantsCol);
+  // const restaurantsSnapshot = await getDocs(restaurantsCol);
+  const restaurantsSnapshot = await getDocs(query(restaurantsCol, limit(100)));
   const restaurantsList = restaurantsSnapshot.docs.map(doc => {
     const docData = doc.data();
     docData.id = doc.id;
