@@ -13,6 +13,7 @@ import Search from './components/Search';
 import HistorySearch from './components/HistorySearch'
 import Recommendations from './components/Recommendations'
 import Signup from './components/Signup'
+import ChangePassword from './components/ChangePassword'
 
 function App() {
   let userWithHistory = getAccount("username", "admin");
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/accounts" element={<Accounts />} />
+        <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
