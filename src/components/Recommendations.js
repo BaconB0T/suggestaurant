@@ -52,6 +52,7 @@ const Stars = (props) => {
 const Recommendation = (props) => {
     const [textToCopy, setTextToCopy] = useState([]);
     const [restaurant, setRestaurant] = useState([]);
+    //const[img, setImg] = useState([]);
     //const [location, setLocation] = useState([]);
     //const [falseDietaryRestrictions, setFalseDietRestrict] = useState([]);
     console.log(props)
@@ -68,6 +69,7 @@ const Recommendation = (props) => {
             setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
             //console.log(this.state.textToCopy);
             //this.setState({ textToCopy: "Simplilearn" });
+            //setImg(getImageURLsForBusiness(this.state.restIds[0]))
         }
         setRes();
     }, []);

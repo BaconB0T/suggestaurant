@@ -18,9 +18,9 @@ import RecommendationMap from './components/RecommendationMap'
 import KeywordGrab from './components/KeywordGrab';
 import DisplayTest from './components/displayTest';
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faMoon, faRocket, faStar, faStarHalf } from "@fortawesome/free-solid-svg-icons";
+import { faMoon, faRocket, faStar, faStarHalf, faCopy } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faMoon, faRocket, faStar, faStarHalf);
+library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
 function App() {
   let userWithHistory = getAccount("username", "admin");
