@@ -16,7 +16,26 @@ const KeywordGrab = () => {
         try {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
+            // object for storing and using data
 
+            // Using fetch to fetch the api from
+            // flask server it will be redirected to proxy
+            fetch("http://localhost:5000/data ", {
+                method:"POST",
+                cache: "no-cache",
+                headers:{
+                    "content_type":"application/json",
+                    'Access-Control-Allow-Origin':'*'
+                },
+                body:JSON.stringify(cookies["keywords"])
+                }
+            ).then(response => {
+                return response.json()
+            })
+            .then(json => {
+                setCookie("businesslist", json, { path: '/' });
+                navigate("/displayTest");
+            })
         } catch (e) {
             // else set an error
             setError(e)

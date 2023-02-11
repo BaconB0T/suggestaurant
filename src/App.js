@@ -12,15 +12,12 @@ import History from './components/History';
 import Search from './components/Search';
 import HistorySearch from './components/HistorySearch'
 import Recommendations from './components/Recommendations'
-<<<<<<< Updated upstream
 import Signup from './components/Signup'
 import ChangePassword from './components/ChangePassword'
 import RecommendationMap from './components/RecommendationMap'
-=======
 import KeywordGrab from './components/KeywordGrab';
 import DisplayTest from './components/displayTest';
 
->>>>>>> Stashed changes
 
 function App() {
   let userWithHistory = getAccount("username", "admin");
@@ -37,12 +34,9 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
         <Route path="/historySearch" element={<HistorySearch />}/>
-<<<<<<< Updated upstream
         <Route path="/recommendation/map" element={<RecommendationMap loc={restaurant.location} zoomLevel={3}/>}/>
-=======
         <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab/>}/>
->>>>>>> Stashed changes
       </Routes>
     </div>
   )

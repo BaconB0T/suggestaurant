@@ -9,27 +9,7 @@ function DisplayTest() {
 
 
     // object for storing and using data
-	// Using useEffect for single rendering
-	useEffect(() => {
-		// Using fetch to fetch the api from
-		// flask server it will be redirected to proxy
-		fetch("http://localhost:5000/data ", {
-            method:"POST",
-            cache: "no-cache",
-            headers:{
-                "content_type":"application/json",
-                'Access-Control-Allow-Origin':'*'
-            },
-            body:JSON.stringify(cookies["keywords"])
-            }
-        ).then(response => {
-            return response.json()
-        })
-        .then(json => {
-            setBusiness_ID(json)
-            setCookie("businesslist", json, { path: '/' });
-        })
-	}, []);
+    setBusiness_ID(cookies["keywords"])
 
 	return (
 		<div className="App">
