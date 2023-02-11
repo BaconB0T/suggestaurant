@@ -1,50 +1,48 @@
-import {getRestaurantById} from "../firestore";
-import React, { useEffect, useState} from "react";
+import { getRestaurantById } from "../firestore";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCopy } from '@fortawesome/fontawesome-free-solid'
 
-class Recommendations extends React.Component{
-    constructor(props){
+class Recommendations extends React.Component {
+    constructor(props) {
         super(props)
         this.state = {
-            restIds : props.recommendationIds
+            restIds: props.recommendationIds,
         }
     }
 
-    
+
     render() {
         return (
             <div>
-            
                 <Recommendation restId={this.state.restIds[0]}></Recommendation>
-               
-
-
             </div>
-            
+
         )
-        
+
     }
 
 
 }
 
+
 const Stars = (props) => {
     const MAX_STARS = 5;
     const wholeStars = Math.floor(props.rating);
     let isHalfStar = (props.rating - wholeStars) > 0.2 && (props.rating - wholeStars) < 0.7;
-    if  (props.rating - wholeStars >= 0.7 ) {
+    if (props.rating - wholeStars >= 0.7) {
         wholeStars += 1;
     }
     let jsx = [];
     for (let i = 0; i < wholeStars; i++) {
-        jsx.push (<FontAwesomeIcon icon="star" color="orange" size="2x" /> );
+        jsx.push(<FontAwesomeIcon icon="star" color="orange" size="2x" />);
     }
     // TODO make prettier
-    if (isHalfStar){
-        jsx.push (<FontAwesomeIcon icon="star-half" color="orange" size="2x" /> );
+    if (isHalfStar) {
+        jsx.push(<FontAwesomeIcon icon="star-half" color="orange" size="2x" />);
     }
     for (let i = wholeStars + Number(isHalfStar); i < MAX_STARS; i++) {
-        jsx.push (<FontAwesomeIcon icon="star" color="silver" size="2x" /> );
+        jsx.push(<FontAwesomeIcon icon="star" color="silver" size="2x" />);
     }
 
 
@@ -52,42 +50,57 @@ const Stars = (props) => {
 }
 
 const Recommendation = (props) => {
+    const [textToCopy, setTextToCopy] = useState([]);
     const [restaurant, setRestaurant] = useState([]);
-    const [location, setLocation] = useState([]);
+    //const [location, setLocation] = useState([]);
     //const [falseDietaryRestrictions, setFalseDietRestrict] = useState([]);
     console.log(props)
     useEffect(() => {
         async function setRes() {
-          const rest = await getRestaurantById(String(props.restId));
-          setRestaurant(rest);
-          setLocation(rest.location)
-          //const array = []
-        //   for (const docRef of rest.dietaryRestrictions.false) {
-        //     array.push(docRef.id)
-        //   }
-          //setFalseDietRestrict(array)
-          console.log(rest)
+            const rest = await getRestaurantById(String(props.restId));
+            setRestaurant(rest);
+            //setLocation(rest.location)
+            //const array = []
+            //   for (const docRef of rest.dietaryRestrictions.false) {
+            //     array.push(docRef.id)
+            //   }
+            //setFalseDietRestrict(array)
+            setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
+            //console.log(this.state.textToCopy);
+            //this.setState({ textToCopy: "Simplilearn" });
         }
         setRes();
-      }, []);
+    }, []);
 
-      return (
+    return (
         <div>
             <h1>{restaurant.name} {restaurant.stars} </h1>
-            <h3>{restaurant.location ? restaurant.location.streetAddress : "Please wait"}</h3>
-            <h3> {restaurant.location? restaurant.location.city + ", " + restaurant.location.state + " " + restaurant.location.postalCode: "Please wait"} </h3>
-            {/* <h1>Not Allergies: {falseDietaryRestrictions[0]}</h1> */}
-            <Stars rating={restaurant.stars}/>
-            {/* <FontAwesomeIcon icon={faCoffee}/>
-            <FontAwesomeIcon icon={faCoffee}/>
-            <FontAwesomeIcon icon={faCoffee}/>
-            <FontAwesomeIcon icon={faCoffee}/> */}
-            
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p>{restaurant.location ? restaurant.location.streetAddress : "Please wait"} <br />
+                                {restaurant.location ? restaurant.location.city + ", " + restaurant.location.state + " " + restaurant.location.postalCode : "Please wait"} </p>
+                        </td>
+                        <td>
+                            <div>
+                                <button onClick={() => { navigator.clipboard.writeText(textToCopy) }}>
+                                    <FontAwesomeIcon icon={faCopy} outline="none" color="green" size="2x" />
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            <Stars rating={restaurant.stars} />
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
 
         </div>
-            
+
     )
-  
+
 }
 
 // const starRating = useMemo(() => {
@@ -104,3 +117,6 @@ const Recommendation = (props) => {
 // }, [count, rating]);
 
 export default Recommendations
+
+// getImageURLsForBusiness(business_id)
+// getImagesForBusiness(business_id)
