@@ -17,7 +17,10 @@ import ChangePassword from './components/ChangePassword'
 import RecommendationMap from './components/RecommendationMap'
 import KeywordGrab from './components/KeywordGrab';
 import DisplayTest from './components/displayTest';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faMoon, faRocket, faStar, faStarHalf } from "@fortawesome/free-solid-svg-icons";
 
+library.add(faMoon, faRocket, faStar, faStarHalf);
 
 function App() {
   let userWithHistory = getAccount("username", "admin");
@@ -25,7 +28,7 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={[1]}/>} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={["---kPU91CF4Lq2-WlRu9Lw"]}/>} />
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/accounts" element={<Accounts />} />
