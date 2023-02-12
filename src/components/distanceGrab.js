@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, Component  } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import Geocode from "react-geocode";
+import { useGeolocated } from "react-geolocated";
 
 const DistanceGrab = () => {
     const [cookies, setCookie] = useCookies(['user']);
@@ -10,6 +11,13 @@ const DistanceGrab = () => {
     const latRef = useRef()
     const longRef = useRef()
     const [error, setError] = useState("")
+    const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: false,
+            },
+            userDecisionTimeout: 5000,
+        });
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
@@ -26,11 +34,8 @@ const DistanceGrab = () => {
             //     console.error(error);
             //     }
             // );
-            latlong = {
-                latitude: latRef,
-                longitude: longRef
-            }
-            
+            const latlong = [latRef, longRef]
+
             setCookie('latlong', latlong, { path: '/' });
 
             navigate("/dietaryRestrictions");
@@ -51,15 +56,15 @@ const DistanceGrab = () => {
                     <Card>
                         <Card.Body>
                             {
-                                this.props.isGeolocationAvailable ? (
+                                isGeolocationAvailable ? (
  
                                     // Check location is enable in
                                     // browser or not
-                                    this.props.isGeolocationEnabled ? (
+                                    isGeolocationEnabled ? (
                                 
                                       // Check coordinates of current
                                       // location is available or not
-                                      this.props.coords ? (
+                                      coords ? (
                                         <div>
                                             <h2 className="text-center mb-4">We've pulled your Location</h2>
                                             {error && <Alert variant="danger">{error}</Alert>}
@@ -68,14 +73,14 @@ const DistanceGrab = () => {
                                                     <Form.Label>Latitude</Form.Label>
                                                     <Form.Control 
                                                         ref={latRef} required 
-                                                        defaultValue={this.props.coords.latitude}
+                                                        defaultValue={coords.latitude}
                                                     />
                                                 </Form.Group>
                                                 <Form.Group id="longitude" className="mb-2">
                                                     <Form.Label>Longitude</Form.Label>
                                                     <Form.Control 
                                                         ref={longRef} required 
-                                                        defaultValue={this.props.coords.longitude}
+                                                        defaultValue={coords.longitude}
                                                     />
                                                 </Form.Group>
                                                 <Button className="w-40 mt-10" type="submit">
