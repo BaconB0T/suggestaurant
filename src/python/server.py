@@ -1,11 +1,12 @@
 # Import flask and datetime module for showing date and time
-from flask import Flask
+from flask import Flask, jsonify
 from flask import request
 from flask_cors import CORS
-import json
+import json, os
 import firebase_admin
 from firebase_admin import firestore
 from geopy.distance import geodesic
+from dotenv import load_dotenv;
 
 import datetime
 
@@ -20,6 +21,9 @@ from nltk.tokenize import WordPunctTokenizer
 
 import nltk
 from nltk.corpus import stopwords
+load_dotenv()
+GOOGLE_MAPS_KEY=os.getenv("GOOGLE_MAPS_API_KEY")
+
 nltk.download('stopwords')
 stopwords = stopwords.words('english')
 df_business = pd.read_json('restaurants.json')
@@ -119,6 +123,11 @@ def keywords():
 	predictItemRating=pd.DataFrame(np.dot(test_v_df.loc[0],Q2),index=Q2.columns,columns=['Rating'])
 	topRecommendations=pd.DataFrame.sort_values(predictItemRating,['Rating'],ascending=[0])[:7]
 	return topRecommendations.index.values.tolist()
+
+	
+@app.route('/google-maps-key', methods=['GET'])
+def google_maps_key():
+	return jsonify(key=GOOGLE_MAPS_KEY)
 
 	
 # Running app
