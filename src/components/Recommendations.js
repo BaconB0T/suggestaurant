@@ -26,6 +26,18 @@ class Recommendations extends React.Component {
 }
 
 
+const Categories = (props) => {
+    const myArr = props.categories;
+    if (myArr == null) {
+        return;
+    }
+    const myArrCreatedFromMap = myArr.map((item, i) => (<li key={item + i}>{item}</li>)); // `.map()` creates/returns a new array from calling a function on every element in the array it's called on
+    const myList = (
+        <ul>{myArrCreatedFromMap}</ul> // `myArrCreatedFromMap` will evaluate to a list of `<li>` elements
+    );
+    return myList;
+}
+
 const Stars = (props) => {
     const MAX_STARS = 5;
     const wholeStars = Math.floor(props.rating);
@@ -44,45 +56,29 @@ const Stars = (props) => {
     for (let i = wholeStars + Number(isHalfStar); i < MAX_STARS; i++) {
         jsx.push(<FontAwesomeIcon icon="star" color="silver" size="2x" />);
     }
-
-
     return jsx;
 }
 
 const Recommendation = (props) => {
     const [textToCopy, setTextToCopy] = useState([]);
     const [restaurant, setRestaurant] = useState([]);
-    const[imageURL, setImg] = useState([]);
+    const [imageURL, setImg] = useState([]);
     //const [location, setLocation] = useState([]);
     //const [falseDietaryRestrictions, setFalseDietRestrict] = useState([]);
-    console.log(props)
     useEffect(() => {
         async function setRes() {
             const rest = await getRestaurantById(String(props.restId));
             setRestaurant(rest);
-            //setLocation(rest.location)
-            //const array = []
-            //   for (const docRef of rest.dietaryRestrictions.false) {
-            //     array.push(docRef.id)
-            //   }
-            //setFalseDietRestrict(array)
             setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
-            //console.log(this.state.textToCopy);
-            //this.setState({ textToCopy: "Simplilearn" });
-            
             let images = await getImageURLsForBusiness(String(props.restId));
-            //images = ["https://firebasestorage.googleapis.com/v0/b/suggestaurant-873aa.appspot.com/o/photos%2F-0FX23yAacC4bbLaGPvyxw%2FoYHkQ5nn1AZXBMrJhiLzCQ.jpg?alt=media&token=dd9f37fb-f572-49cd-bc52-53a2ab2b3fcb"];
-            console.log("I'm back from calling getImageURLsForBusiness() !!");
-            console.log("There are " + images.length + " elements in the list.");
-
-            setImg(await images[0]);
+            setImg(images[0]);
         }
         setRes();
     }, []);
 
     return (
         <div>
-            <h1>{restaurant.name} {restaurant.stars} </h1>
+            <h1>{restaurant.name}</h1>
             <img src={imageURL}></img>
             <table>
                 <tbody>
@@ -102,10 +98,12 @@ const Recommendation = (props) => {
                             <Stars rating={restaurant.stars} />
                         </td>
                     </tr>
+
+
                 </tbody>
 
             </table>
-
+            <Categories categories={restaurant.categories} />
         </div>
 
     )
