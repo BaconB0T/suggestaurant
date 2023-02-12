@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail } from "firebase/auth"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail, updatePassword } from "firebase/auth"
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
 import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, query, where, limit, onSnapshot } from "firebase/firestore";
 
@@ -494,8 +494,12 @@ async function historyItem(historyDoc)
 /**
  * TODO: Finish. See firebase docs.
  */
-function changePassword(newPassword) {
-  return true
+async function changePassword(newPassword) {
+  try {
+    await updatePassword(auth.currentUser, newPassword);
+  } catch(err) {
+    return Promise.reject(err.message);
+  }
 }
 
 export { db, analytics, auth, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
