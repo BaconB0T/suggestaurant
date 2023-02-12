@@ -23,10 +23,16 @@ const ChangePassword = () => {
                 alert("Passwords do not match!");
                 setError("Passwords do not match!");
             } else {
-                changePassword(pass);
-                console.log("Password changed!");
-                alert("Password successfully changed!");
-                navigate('/accounts');
+                changePassword(pass)
+                    .then(() => {
+                        console.log("Password changed!");
+                        alert("Password successfully changed!");
+                        navigate('/accounts');
+                }).catch((reason) => {
+                    alert("Something went wrong!");
+                    setError("Something went wrong!");
+                    console.log(reason);
+                });
             }
         }
         function check() {
