@@ -88,7 +88,7 @@ def keywords():
 	req = request.json
 	words = req["keywords"]
 
-	dt = datetime.now()
+	# dt = datetime.now()
 
 	collection = db.collection('restaurants')
 	id_list = collection \
