@@ -9,7 +9,12 @@ function DisplayTest() {
 
 
     // object for storing and using data
-    setBusiness_ID(cookies["keywords"])
+	// Using useEffect for single rendering
+	useEffect(() => {
+		// Using fetch to fetch the api from
+		// flask server it will be redirected to proxy
+        setBusiness_ID(cookies["businesslist"])
+	}, []);
 
 	return (
 		<div className="App">

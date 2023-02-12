@@ -17,6 +17,10 @@ import ChangePassword from './components/ChangePassword'
 import RecommendationMap from './components/RecommendationMap'
 import KeywordGrab from './components/KeywordGrab';
 import DisplayTest from './components/displayTest';
+import PriceGrab from './components/priceCheck';
+import TimeGrab from './components/timeGrab';
+import DietCheck from './components/dietCheck';
+import DistanceGrab from './components/distanceGrab';
 
 
 function App() {
@@ -37,6 +41,10 @@ function App() {
         <Route path="/recommendation/map" element={<RecommendationMap loc={restaurant.location} zoomLevel={3}/>}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab/>}/>
+        <Route path="/priceCheck"element={<PriceGrab/>}/>
+        <Route path="/timeGrab"element={<TimeGrab/>}/>
+        <Route path="/dietaryRestrictions"element={<DietCheck/>}/>
+        <Route path="/location"element={<DistanceGrab/>}/>
       </Routes>
     </div>
   )
