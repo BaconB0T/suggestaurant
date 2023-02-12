@@ -1,13 +1,24 @@
-import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import validateJSON from '../security/web';
 import GoogleMapReact from 'google-map-react';
 // import Marker from 'google-map-react';
-import { getRestaurant } from '../firestore';
+import { Button } from 'react-bootstrap';
+import clipboardy from 'clipboardy';
 
-const LocationPin = ({ text }) => <div>{text}</div>;
+const ShareIcon = ({provider}) => {
+    return (
+        <>
+            <span style={{display: 'inline'}}>{provider}</span>
+            <Button onClick={() => alert(`Share with ${provider}`)}>
+                <img src='https://placeholder.com/50x50'/>
+            </Button>
+        </>
+    );
+}
 
-const RecommendationMap = ({ loc, zoomLevel }) => {
+const RecommendationMap = ({ res }) => {
+    const zoomLevel = 15;
+    const loc = res.location;
     const [apiKey, setApiKey] = useState('');
     const location = {
         address: `${loc.streetAddress}, ${loc.city}, ${loc.state}`,
@@ -15,6 +26,8 @@ const RecommendationMap = ({ loc, zoomLevel }) => {
         lng: loc.longitude,
         label: "Hello!"
     }
+
+    const supportedProviders = ['Twitter', 'Email', 'Telegram', 'WhatsApp', 'Facebook'];
 
     useEffect(() => {
         const getApiKey = () => {
@@ -43,12 +56,30 @@ const RecommendationMap = ({ loc, zoomLevel }) => {
         });
     };
 
+    function openInApp() {
+        console.log("Open sesame!");
+        alert("Pretend Google or Apple maps opened.");
+        // if on mobile, but don't use navigate. XS
+        // navigate(`geo:${loc.latitude},${loc.longitude}`);
+    }
+    
+    function shareIcons() {
+        return supportedProviders.map((provider) => <ShareIcon key={provider} provider={provider}></ShareIcon>);
+    }
+
+    function clipboardAddress() {
+        const addr = `${loc.streetAddress} ${loc.city}, ${loc.state} ${loc.postalCode}`;
+        clipboardy.write(addr).then(() => {
+            console.log(`Copied addres to clipboard`);
+        });
+    }
+
     // api key AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I
     if(apiKey !== '' && apiKey !== null) {
         return (
             <>
                 {/* TODO: Disable drag/recenter */}
-                <div className="google-map" style={{height:'100vh',width:'100%'}}>
+                <div className="google-map" style={{height:'30vh',width:'80%'}}>
                     <GoogleMapReact
                         bootstrapURLKeys={{ key: apiKey }}
                         center={location}
@@ -57,6 +88,17 @@ const RecommendationMap = ({ loc, zoomLevel }) => {
                         onGoogleApiLoaded={({map, maps}) => handleApiLoaded(map, maps, [location])}
                     >
                     </GoogleMapReact>
+                    <h1>{res.name}</h1>
+                    <div>{loc.streetAddress}</div>
+                    <div style={{display: 'inline'}}>{loc.city}, {loc.state} {loc.postalCode}</div>
+                    <Button onClick={clipboardAddress}>Copy Address</Button>
+                    <Button style={{display: 'block'}} onClick={openInApp}>Take me there!</Button>
+                    <div>Share with your friends by clicking the icons below!</div>
+                    <div id='share-icons'>
+                        <ul id='icons-list'>
+                            {shareIcons()}
+                        </ul>
+                    </div>
                 </div>
             </>
         );
