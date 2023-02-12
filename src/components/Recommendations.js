@@ -92,6 +92,9 @@ const Recommendation = (props) => {
     const handleClick2 = (your_lat, your_lng) => {
         window.open("https://maps.google.com?q="+your_lat+","+your_lng );
     }
+    const handleClick3 = () => {
+        window.open("http://localhost:3000/recommendation/map" );
+    }
 
     
     return (
@@ -125,7 +128,10 @@ const Recommendation = (props) => {
 
             <button onClick={() => handleClick2(restaurant.location.latitude, restaurant.location.longitude)}>
                     Open Map
-                </button>
+            </button>
+            <button onClick={() => handleClick3()}>
+                    Go to Map Page
+            </button>
         </div>
 
     )
