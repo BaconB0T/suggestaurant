@@ -16,8 +16,15 @@ const KeywordGrab = () => {
         try {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
-            // object for storing and using data
 
+            var jsonData = {
+                keywords: cookies["keywords"],
+                time: cookies["time"],
+                price: cookies["price"],
+                diet: cookies["diet"]
+            }
+            // object for storing and using data
+            // Using useEffect for single rendering
             // Using fetch to fetch the api from
             // flask server it will be redirected to proxy
             fetch("http://localhost:5000/data ", {
@@ -27,7 +34,9 @@ const KeywordGrab = () => {
                     "content_type":"application/json",
                     'Access-Control-Allow-Origin':'*'
                 },
-                body:JSON.stringify(cookies["keywords"])
+                body:JSON.stringify(
+                        jsonData
+                    )
                 }
             ).then(response => {
                 return response.json()
@@ -44,7 +53,6 @@ const KeywordGrab = () => {
 
     return (
         <Container
-
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
