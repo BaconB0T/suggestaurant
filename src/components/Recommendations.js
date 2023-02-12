@@ -1,4 +1,4 @@
-import { getRestaurantById } from "../firestore";
+import { getRestaurantById, getImageURLsForBusiness } from "../firestore";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
@@ -52,7 +52,7 @@ const Stars = (props) => {
 const Recommendation = (props) => {
     const [textToCopy, setTextToCopy] = useState([]);
     const [restaurant, setRestaurant] = useState([]);
-    //const[img, setImg] = useState([]);
+    const[imageURL, setImg] = useState([]);
     //const [location, setLocation] = useState([]);
     //const [falseDietaryRestrictions, setFalseDietRestrict] = useState([]);
     console.log(props)
@@ -69,7 +69,13 @@ const Recommendation = (props) => {
             setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
             //console.log(this.state.textToCopy);
             //this.setState({ textToCopy: "Simplilearn" });
-            //setImg(getImageURLsForBusiness(this.state.restIds[0]))
+            
+            let images = await getImageURLsForBusiness(String(props.restId));
+            //images = ["https://firebasestorage.googleapis.com/v0/b/suggestaurant-873aa.appspot.com/o/photos%2F-0FX23yAacC4bbLaGPvyxw%2FoYHkQ5nn1AZXBMrJhiLzCQ.jpg?alt=media&token=dd9f37fb-f572-49cd-bc52-53a2ab2b3fcb"];
+            console.log("I'm back from calling getImageURLsForBusiness() !!");
+            console.log("There are " + images.length + " elements in the list.");
+
+            setImg(await images[0]);
         }
         setRes();
     }, []);
@@ -77,6 +83,7 @@ const Recommendation = (props) => {
     return (
         <div>
             <h1>{restaurant.name} {restaurant.stars} </h1>
+            <img src={imageURL}></img>
             <table>
                 <tbody>
                     <tr>
