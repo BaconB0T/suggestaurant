@@ -8,8 +8,6 @@ from firebase_admin import firestore
 from geopy.distance import geodesic
 from dotenv import load_dotenv;
 
-import datetime
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -88,18 +86,17 @@ def keywords():
 	req = request.json
 	words = req["keywords"]
 
-	dt = datetime.now()
-
 	collection = db.collection('restaurants')
 	id_list = collection \
 		.where('attributes.RestaurantsPriceRange2', '<=', req["price"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["Halal"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["Vegan"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["Gluten"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["Dairy"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["Kosher"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["Soy"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["Vegetarian"])\
+		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["halal"])\
+		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["vegan"])\
+		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["gluten"])\
+		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["dairy"])\
+		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["kosher"])\
+		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["soy"])\
+		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["veggie"])\
+		.get()
 		# .where('hours.' + dt.strftime('%A') + ".start", '>=', req["time"])\
 		# .where('hours.' + dt.strftime('%A') + ".end", '<=', req["time"])\
 
