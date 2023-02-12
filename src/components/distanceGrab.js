@@ -23,7 +23,8 @@ const DistanceGrab = () => {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-            
+            console.log("check1")
+
             // // Get latitude & longitude from address.
             // Geocode.fromAddress("Eiffel Tower").then(
             //     (response) => {
@@ -34,15 +35,20 @@ const DistanceGrab = () => {
             //     console.error(error);
             //     }
             // );
-            const latlong = [latRef, longRef]
-
+            const latlong = {
+                latitude: latRef.current.value,
+                longitude: longRef.current.value
+            }
+            console.log("check2")
             setCookie('latlong', latlong, { path: '/' });
+            console.log("check3")
 
             navigate("/dietaryRestrictions");
+            console.log("check4")
             
         } catch (e) {
             // else set an error
-            setError(e)
+            setError(e.message)
         }
     }
 

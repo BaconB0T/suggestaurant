@@ -24,14 +24,23 @@ const DietCheck = () => {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-            console.log("check")
-            const dietData = [halalRef, veganRef, dairyRef, glutenRef, soyRef, kosherRef, veggieRef]
+            console.log("check1")
+            const dietData = {
+                halal: halalRef.current.value,
+                vegan: veganRef.current.value,
+                dairy: dairyRef.current.value,
+                gluten: glutenRef.current.value,
+                soy: soyRef.current.value,
+                kosher: kosherRef.current.value,
+                veggie: veggieRef.current.value
+            }
             setCookie('diet', dietData, { path: '/' });
             console.log("check2")
             navigate("/timeGrab");
         } catch (e) {
             // else set an error
-            setError(e)
+            console.log(e)
+            setError(e.message)
         }
     }
     
