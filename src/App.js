@@ -41,7 +41,7 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
         <Route path="/historySearch" element={<HistorySearch />}/>
-        <Route path="/recommendation/map" element={<RecommendationMap loc={restaurant.location} zoomLevel={3}/>}/>
+        <Route path="/recommendation/map" element={<RecommendationMap loc={restaurant.location} zoomLevel={15}/>}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab/>}/>
         <Route path="/priceCheck"element={<PriceGrab/>}/>
