@@ -8,15 +8,28 @@ class Recommendations extends React.Component {
         super(props)
         this.state = {
             restIds: props.recommendationIds,
+            index: props.indexNum,
+            rest: (<Recommendation restId={props.recommendationIds[props.indexNum]}></Recommendation>)
         }
     }
 
+    handleClick() {
+        this.setState(prevState => ({
+            index: this.state.index + 1,
+            rest: (<Recommendation restId={this.state.restIds[this.state.index]}></Recommendation>)
+          }));
+          console.log("index:"+ this.state.index + ", " + this.state.restIds[this.state.index] ) 
+    }
 
     render() {
         return (
             <div>
-                <Recommendation restId={this.state.restIds[0]}></Recommendation>
-            </div>
+                {this.state.index}
+                {this.state.rest}
+                <button onClick={() => this.handleClick()}>
+                    Reject Recommendation
+                </button>
+            </div >
 
         )
 
@@ -74,8 +87,13 @@ const Recommendation = (props) => {
             setImg(images[0]);
         }
         setRes();
-    }, []);
+    });
 
+    const handleClick2 = (your_lat, your_lng) => {
+        window.open("https://maps.google.com?q="+your_lat+","+your_lng );
+    }
+
+    
     return (
         <div>
             <h1>{restaurant.name}</h1>
@@ -104,6 +122,10 @@ const Recommendation = (props) => {
 
             </table>
             <Categories categories={restaurant.categories} />
+
+            <button onClick={() => handleClick2(restaurant.location.latitude, restaurant.location.longitude)}>
+                    Open Map
+                </button>
         </div>
 
     )

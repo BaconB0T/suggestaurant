@@ -32,7 +32,7 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={["-0TffRSXXIlBYVbb5AwfTg"]}/>} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={["-0TffRSXXIlBYVbb5AwfTg","-1b2kNOowsPrPpBOK4lNkQ","-6L7ckMsebhvS_nk4wjhIA"]} indexNum = {0}/>} />
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/accounts" element={<Accounts />} />
