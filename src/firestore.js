@@ -461,21 +461,23 @@ async function getHistory(user)
 }
 
 async function getImagesForBusiness(business_id) {
-  
   const photosRef = ref(storage, `photos/${business_id}`);
   const resp = await listAll(photosRef);
   return resp.items
 }
 
 async function getImageURLsForBusiness(business_id) {
-  const items = await getImagesForBusiness(business_id)
-  const downloadUrls=[]
-  items.forEach((itemRef) => {
-    getDownloadURL(itemRef).then((url) => {
-      downloadUrls.push(url)
-    })
-  });
-  return downloadUrls
+  const items = await getImagesForBusiness(business_id);
+  const downloadUrls=[];
+  for(const itemRef of items) {
+    try {
+      const url = await getDownloadURL(itemRef);
+      downloadUrls.push(url);
+    } catch(error) {
+      console.log(error);
+    }
+  }
+  return downloadUrls;
 }
 
 async function historyItem(historyDoc)
