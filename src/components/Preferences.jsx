@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
-import { auth, getFilters, setPreferences, db } from "../firestore"
+import { auth, getFilters, setPreferences, db } from "../firestore";
+import {Link} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import {getDoc, doc} from "firebase/firestore";
 import "./preferences.css"
@@ -91,6 +92,11 @@ function Preferences(){
                         );
                     })}
                 </div>
+            </div>
+
+            <div>
+                <h4>Preselect Cuisines</h4>
+                <button><Link to='/selectCuisine'>Select Cuisine</Link></button>
             </div>
 
 

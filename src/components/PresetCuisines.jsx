@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import {auth} from '../firestore';
+import {auth, getCuisines, updateUserCuisine, getFilters} from '../firestore';
 
 function PreSetCuisines(){
     const user = auth.currentUser;
@@ -11,14 +11,33 @@ function PreSetCuisines(){
 
     if(!t){
         //getInformation
+        Promise.resolve(getFilters(user.uid)).then(val =>{
+            setUserCuisine(val.filters.excludedCuisines);
+        })
+
         setT(true);
     }
+    
+    if(listOfCuisines.length === 0){
+        console.log('reached');
+        Promise.resolve(getCuisines()).then(val =>{
+            let test = [];
+                for(let i = 0; i<val.length; i++){
+                    test.push(val[i].name);
+                }
+                setCuisineList(test);
+        })
+    }
+
+    // console.log(listOfCuisines);
+    
+    
 
 
     return(
         <div>
             <h1>Select Some Cuisines</h1>
-            <ButtonGroup>
+            <ButtonGroup style={{flexWrap: "wrap"}}>
                 {listOfCuisines.map(cuisine =>{
                     return(
                         <button
@@ -33,13 +52,13 @@ function PreSetCuisines(){
                             else{
                                 tempList.splice(tempList.indexOf(cuisine),1);
                             }
+                            updateUserCuisine(user.uid, tempList);
                             //add update function 
                         }}
                         >{cuisine}</button>
                     )
                 })}
             </ButtonGroup>
-
 
         </div>
     )
