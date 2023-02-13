@@ -44,7 +44,7 @@ const KeywordGrab = () => {
             })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
-                navigate("/displayTest");
+                navigate("/recommendations");
             })
         } catch (e) {
             // else set an error

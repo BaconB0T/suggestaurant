@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords 
 from nltk.tokenize import WordPunctTokenizer
+from datetime import datetime
 
 import nltk
 from nltk.corpus import stopwords
@@ -75,6 +76,8 @@ Q = pickle.load(input)
 
 input.close()
 
+collection = db.collection('restaurants')
+
 # Initializing flask app
 app = Flask(__name__)
 
@@ -83,30 +86,28 @@ CORS(app)
 
 # Route for seeing a data
 @app.route('/data', methods=['POST'])
-def keywords():
-	print(request.data, file=sys.stderr)
-	
+def keywords():	
 	req = json.loads(request.data)
 
 	words = req["keywords"]
 
-	# dt = datetime.now()
+	dt = datetime.now()
+	id_list = collection.where(u'attributes.RestaurantsPriceRange2', u'<=', 4).get()
 
-	collection = db.collection('restaurants')
-	id_list = collection \
-		.where('attributes.RestaurantsPriceRange2', '<=', req["price"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["halal"])\
-		.get()
-	# id_list = id_list.where('dietaryRestrictions.true', 'array_contains', req["diet"]["vegan"]).get()
-	# id_list = id_list.where('dietaryRestrictions.true', 'array_contains', req["diet"]["gluten"]).get()
-	# id_list = id_list.where('dietaryRestrictions.true', 'array_contains', req["diet"]["dairy"]).get()
-	# id_list = id_list.where('dietaryRestrictions.true', 'array_contains', req["diet"]["kosher"]).get()
-	# id_list = id_list.where('dietaryRestrictions.true', 'array_contains', req["diet"]["soy"]).get()
-	# id_list = id_list.where('dietaryRestrictions.true', 'array_contains', req["diet"]["veggie"]).get()
-		# .where('hours.' + dt.strftime('%A') + ".start", '>=', req["time"])\
-		# .where('hours.' + dt.strftime('%A') + ".end", '<=', req["time"])\
+	id_list = [x.to_dict() for x in id_list]
+	
+	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= req["time"]]
+	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
 
-	business_list = [doc.id for doc in id_list]
+	# id_list = [x for x in id_list if req["halal"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["vegan"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["dairy"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["gluten"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["kosher"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["veggie"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["soy"] in x["dietaryRestrictions"]["true"]]
+	
+	business_list = [doc["business_id"] for doc in id_list]
 
 	business_2 = df_business[df_business['business_id'].isin(business_list)]
 
@@ -115,13 +116,13 @@ def keywords():
 	business_list_final = []
 
 	def filter_func(id, row1, row2):
-		if (geodesic(user_loc,(row1, row2)).miles < req["distance"]):
+		if (geodesic(user_loc,(row1, row2)).miles < float(req["latlong"]["distance"])):
 			business_list_final.append(id)
 			return True
 		else:
 			return False
 
-	business_2.apply(lambda x: filter_func(x["business_id"], x["latitude"], x["longitude"]))
+	business_2.apply(lambda x: filter_func(x['business_id'], x['latitude'], x['longitude']), axis=1)
 
 	Q2 = Q[Q.columns.intersection(business_list_final)]
 
