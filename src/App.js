@@ -24,6 +24,9 @@ import DistanceGrab from './components/distanceGrab';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faMoon, faRocket, faStar, faStarHalf, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from 'react-cookie';
+import Preferences from'./components/Preferences';
+import Allergies from './components/Allergies';
+import Cuisine from './components/PresetCuisines';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
@@ -50,6 +53,9 @@ function App() {
         <Route path="/timeGrab"element={<TimeGrab/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck/>}/>
         <Route path="/location"element={<DistanceGrab/>}/>
+        <Route path="/account/filters" element={<Preferences />}/>
+        <Route path="/account/allergies" element={<Allergies />}/>
+        <Route path='/selectCuisine' element={<Cuisine />} />
       </Routes>
     </div>
   )

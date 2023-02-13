@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail, updatePassword } from "firebase/auth"
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
-import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, query, where, limit, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, updateDoc, query, where, limit, onSnapshot } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -491,6 +491,23 @@ async function historyItem(historyDoc)
   return retVal;
 }
 
+
+async function getFilters(user){
+  const userCol = collection(db, 'users');
+  const que = await getDoc(doc(db,'users', user));
+
+  return que.data();
+}
+
+async function setPreferences(user, FamVal, HisVal, FastFoodVal, rating){
+  updateDoc(doc(db, 'users', user), {
+    'filters.preferences.includeFastFood' : FastFoodVal,
+    'filters.preferences.includeHistory' : HisVal,
+    'filters.preferences.requireFamilyFriendly' : FamVal,
+    'filters.preferences.minimumRating': rating
+  })
+}
+
 /**
  * TODO: Finish. See firebase docs.
  */
@@ -502,4 +519,35 @@ async function changePassword(newPassword) {
   }
 }
 
-export { db, analytics, auth, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+async function getDietRest(){
+  const diet = await getDoc(doc(db, 'preferenceFields', 'allFields'));
+
+  return diet.data();
+}
+
+async function updateDietRestrictions(user, listOfRestrictions){
+  updateDoc(doc(db,'users', user), {
+    'filters.dietaryRestrictions' : listOfRestrictions
+  })
+}
+
+async function getCuisines(){
+  const cuisineCol = collection(db, 'cuisines');
+  const cuiSnapshot = await getDocs(cuisineCol);
+
+  let cuisineList = [];
+  for(const cui of cuiSnapshot.docs) {
+    let cuis = cui.data();
+    cuis.id=cui.id;
+    cuisineList.push(cuis); 
+  }
+  return cuisineList;
+}
+
+async function updateUserCuisine(user, listOfCuisine){
+  updateDoc(doc(db, 'users', user), {
+    'filters.excludedCuisines' : listOfCuisine
+  })
+}
+
+export { db, analytics, auth, getCuisines, updateUserCuisine,updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
