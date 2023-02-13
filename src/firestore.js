@@ -520,7 +520,7 @@ async function changePassword(newPassword) {
 }
 
 async function getDietRest(){
-  const diet = await getDoc(doc(db, 'preferenceFields/allFields'));
+  const diet = await getDoc(doc(db, 'preferenceFields', 'allFields'));
 
   return diet.data();
 }
