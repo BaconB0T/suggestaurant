@@ -24,9 +24,9 @@ import DistanceGrab from './components/distanceGrab';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faMoon, faRocket, faStar, faStarHalf, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from 'react-cookie';
+import Preferences from'./components/Preferences'
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
-import Preferences from'./components/Preferences'
 
 function App() {
   const [cookies, setCookie] = useCookies(['user']);
@@ -44,6 +44,14 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
         <Route path="/historySearch" element={<HistorySearch />}/>
+        <Route path="/recommendation/map" element={<RecommendationMap res={restaurant}/>}/>
+        <Route path="/displayTest"element={<DisplayTest/>}/>
+        <Route path="/keywordGrab"element={<KeywordGrab/>}/>
+        <Route path="/priceCheck"element={<PriceGrab/>}/>
+        <Route path="/timeGrab"element={<TimeGrab/>}/>
+        <Route path="/dietaryRestrictions"element={<DietCheck/>}/>
+        <Route path="/location"element={<DistanceGrab/>}/>
+        <Route path="/account/filters" element={<Preferences />}/>
       </Routes>
     </div>
   )
