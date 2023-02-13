@@ -132,6 +132,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.flaskenv
 
 # Spyder project settings
 .spyderproject
@@ -200,3 +201,4 @@ $RECYCLE.BIN/
 
 # Keys
 suggestaurant-873aa-d6566e2cfc10.json
+*.pkl

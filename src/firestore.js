@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail } from "firebase/auth"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail, updatePassword } from "firebase/auth"
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
 import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, updateDoc, query, where, limit, onSnapshot } from "firebase/firestore";
 
@@ -94,6 +94,28 @@ async function getRestaurant(docRef) {
   } catch(e) {
     console.log(e);
     return null;
+  }
+}
+
+async function getRestaurantBy(field, value) {
+  // if(!['business_id', 'isOpen'].includes(field)) {
+  //   throw new Error("Field must be one of username, email, or uid.");
+  // }
+  const restCol = collection(db, 'restaurants');
+  const q = query(restCol, where(`${field}`, '==', `${value}`));
+  
+  const querySnapshot = await getDocs(q);
+  // const docs = querySnapshot.docs.map((doc) => doc.data());
+  
+  let docs = querySnapshot.docs;
+  if(docs.length === 0) {
+    return null;
+  } else {
+    let docsData = docs.map((doc) => doc.data());
+    for(let i = 0; i < docsData.length; ++i) {
+      docsData[i].uid = docs[i].uid;
+    }
+    return docsData;
   }
 }
 
@@ -439,21 +461,23 @@ async function getHistory(user)
 }
 
 async function getImagesForBusiness(business_id) {
-  
   const photosRef = ref(storage, `photos/${business_id}`);
   const resp = await listAll(photosRef);
   return resp.items
 }
 
 async function getImageURLsForBusiness(business_id) {
-  const items = await getImagesForBusiness(business_id)
-  const downloadUrls=[]
-  items.forEach((itemRef) => {
-    getDownloadURL(itemRef).then((url) => {
-      downloadUrls.push(url)
-    })
-  });
-  return downloadUrls
+  const items = await getImagesForBusiness(business_id);
+  const downloadUrls=[];
+  for(const itemRef of items) {
+    try {
+      const url = await getDownloadURL(itemRef);
+      downloadUrls.push(url);
+    } catch(error) {
+      console.log(error);
+    }
+  }
+  return downloadUrls;
 }
 
 async function historyItem(historyDoc)
@@ -487,8 +511,13 @@ async function setPreferences(user, FamVal, HisVal, FastFoodVal, rating){
 /**
  * TODO: Finish. See firebase docs.
  */
-function changePassword(newPassword) {
-  return true
+async function changePassword(newPassword) {
+  try {
+    await updatePassword(auth.currentUser, newPassword);
+  } catch(err) {
+    return Promise.reject(err.message);
+  }
 }
 
 export { db, analytics, auth, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, auth, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }

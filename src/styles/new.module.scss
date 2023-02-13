@@ -1,0 +1,23 @@
+.rating {
+  
+    & svg {
+        color: #c7c7c7;
+        cursor: pointer;
+    }
+  
+    & div {
+        width: 120px;
+    }
+  
+    & div:hover svg {
+        color: rgb(212, 180, 0);
+    }
+  
+    & svg:hover~svg {
+        color: #c7c7c7;
+    }
+    
+    .clickeddollar {
+        color: rgb(212, 180, 0);
+    }
+  }
