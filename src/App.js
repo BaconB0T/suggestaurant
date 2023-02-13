@@ -14,6 +14,7 @@ import HistorySearch from './components/HistorySearch'
 import Recommendations from './components/Recommendations'
 import Signup from './components/Signup'
 import ChangePassword from './components/ChangePassword'
+import Preferences from'./components/Preferences'
 
 function App() {
   let userWithHistory = getAccount("username", "admin");
@@ -29,6 +30,7 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
         <Route path="/historySearch" element={<HistorySearch />}/>
+        <Route path="/account/filters" element={<Preferences />}/>
       </Routes>
     </div>
   )
