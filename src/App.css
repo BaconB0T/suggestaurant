@@ -43,3 +43,9 @@
   width: 100%; /* The width is the width of the web page */
 }
 
+.center_thingie
+{
+  display:flex;
+  justify-content:center;
+  justify-content: center
+}

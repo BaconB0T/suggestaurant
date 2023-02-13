@@ -52,7 +52,7 @@ const PriceGrab = () => {
                     <Card>
                         <Card.Body>
                             <div className={styles.rating}>
-                                <p>Rating</p>
+                                <p>Price</p>
                                 <div>
                                     <FaDollarSign
                                         onClick={(e) => handleStarClick(e, 0)}

@@ -27,6 +27,7 @@ import { useCookies } from 'react-cookie';
 import Preferences from'./components/Preferences';
 import Allergies from './components/Allergies';
 import Cuisine from './components/PresetCuisines';
+import HomePage from './components/HomePage';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
@@ -38,7 +39,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} indexNum = {0}/>} />
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/accounts" element={<Accounts />} />
         <Route path="/change-password" element={<ChangePassword />} />
