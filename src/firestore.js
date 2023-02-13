@@ -531,4 +531,23 @@ async function updateDietRestrictions(user, listOfRestrictions){
   })
 }
 
-export { db, analytics, auth, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+async function getCuisines(){
+  const cuisineCol = collection(db, 'cuisines');
+  const cuiSnapshot = await getDocs(cuisineCol);
+
+  let cuisineList = [];
+  for(const cui of cuiSnapshot.docs) {
+    let cuis = cui.data();
+    cuis.id=cui.id;
+    cuisineList.push(cuis); 
+  }
+  return cuisineList;
+}
+
+async function updateUserCuisine(user, listOfCuisine){
+  updateDoc(doc(db, 'users', user), {
+    'filters.excludedCuisines' : listOfCuisine
+  })
+}
+
+export { db, analytics, auth, getCuisines, updateUserCuisine,updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
