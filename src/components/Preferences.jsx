@@ -1,12 +1,25 @@
 import {useEffect, useState} from "react";
-import { auth, getFilters, setPreferences, db } from "../firestore";
+import { getFilters, setPreferences, db } from "../firestore";
 import {Link} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import {getDoc, doc} from "firebase/firestore";
 import "./preferences.css"
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-function Preferences(){
-    const user = auth.currentUser;
+function Preferences() {  
+    const [user, setUser] = useState([]);
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+        setUser(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        } else {
+        // User is signed out
+        setUser(null);
+        }
+    });
 
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);

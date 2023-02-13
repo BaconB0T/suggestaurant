@@ -1,15 +1,28 @@
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
-import { changePassword, auth } from '../firestore';
+import { changePassword } from '../firestore';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useRef, useState } from 'react'
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const ChangePassword = () => {
     const navigate = useNavigate();
     const passRef = useRef();
     const confPassRef = useRef();
     const [error, setError] = useState("");
+    const [user, setUser] = useState([]);
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+        setUser(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        } else {
+        // User is signed out
+        setUser(null);
+        }
+    });
 
-    if(auth.currentUser === null) {
+    if(user === null) {
         return (
             <Navigate to='/login' />
         );

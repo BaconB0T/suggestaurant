@@ -1,11 +1,24 @@
 import {useState} from "react";
 import { ButtonGroup } from "react-bootstrap";
-import {auth, getFilters, getDietRest, updateDietRestrictions} from "../firestore";
+import { getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 import "../styles/Allergies.css";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 
 function Allergies(){
 
-    const user = auth.currentUser;
+    const [user, setUser] = useState([]);
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+        setUser(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        } else {
+        // User is signed out
+        setUser(null);
+        }
+    });
 
     const[dietRestList, setRestList] = useState([]);
     const[usersDietRest, setUserDietRest] = useState([]);

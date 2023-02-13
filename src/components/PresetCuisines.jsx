@@ -1,10 +1,23 @@
 import {useState} from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import {auth, getCuisines, updateUserCuisine, getFilters} from '../firestore';
+import { getCuisines, updateUserCuisine, getFilters} from '../firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-function PreSetCuisines(){
-    const user = auth.currentUser;
-
+function PreSetCuisines() {
+  
+    const [user, setUser] = useState([]);
+  
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+    });
     const [listOfCuisines, setCuisineList] = useState([]);
     const [userCuisineList, setUserCuisine] = useState([]);
     const [t, setT] = useState(false);

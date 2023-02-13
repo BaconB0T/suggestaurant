@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { signOutUser, auth, deleteUser } from "../firestore";
+import { signOutUser, deleteUser } from "../firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Alert, Button } from "react-bootstrap";
 
@@ -24,10 +25,23 @@ const DeleteAlert = (props) => {
 }
 
 const Account = () => {
-  const user = auth.currentUser;
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
-  if(auth.currentUser === null) {
+  const [user, setUser] = useState([]);
+
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUser(user);
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+    } else {
+      // User is signed out
+      setUser(null);
+    }
+  });
+  if(user === null) {
+    console.log(user);
     return (
         <Navigate to='/login' />
     );
