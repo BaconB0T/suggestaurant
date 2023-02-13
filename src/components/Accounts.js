@@ -51,7 +51,7 @@ const Account = () => {
         <br></br>
         <Link to='/account/filters'>Filters</Link>
         <br></br>
-        <Link to='/account/history'>History</Link>
+        <Link to='/history'>History</Link>
         <br></br>
         <button>
           <Link to='/change-password'>Change Password</Link>

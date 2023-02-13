@@ -48,21 +48,21 @@ function Preferences(){
             <div className = 'oneline'>
                 <h4>Include Family Friendly</h4>
                 <label className='switch'>
-                    <input type = 'checkbox' checked = {FamilyFriendly} onClick = {handleFFChange}/>
+                    <input id = 'checkb' type = 'checkbox' checked = {FamilyFriendly} onClick = {handleFFChange}/>
                     <span className = 'slider' />
                 </label>
             </div>
             <div className = 'oneline'>
                 <h4>Include History</h4>
                 <label className='switch'>
-                    <input type = 'checkbox' checked = {includeHis} onClick = {handleIncHisChange}/>
+                    <input id = 'checkb' type = 'checkbox' checked = {includeHis} onClick = {handleIncHisChange}/>
                     <span className = 'slider' />
                 </label>
             </div>
             <div className = 'oneline'>
                 <h4>Include Fast Food</h4>
                 <label className='switch'>
-                    <input type = 'checkbox' checked = {FastFood} onClick = {handleFFoodChange}/>
+                    <input id = 'checkb' type = 'checkbox' checked = {FastFood} onClick = {handleFFoodChange}/>
                     <span className = 'slider' />
                 </label>
             </div>

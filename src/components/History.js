@@ -1,7 +1,7 @@
-
 import {useEffect, useState} from "react";
 import { getHistory, rateRestaurant, getRestaurant, deleteHistoryItem} from "../firestore";
 import { useCookies } from 'react-cookie';
+import {Link} from 'react-router-dom';
 
 function HistoryElem(props) {
   const [restaurant, setRestaurant] = useState([]);
@@ -54,6 +54,10 @@ function History() {
   return(
     <div>
       <h1>History</h1>
+      <div>
+          <h4>Add To History</h4>
+          <button><Link to='/search'>Select Restaurants</Link></button>
+        </div>
       <ol id="history-list">{historyComponents}</ol>
     </div>
   )
