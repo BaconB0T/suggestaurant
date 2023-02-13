@@ -17,11 +17,12 @@ const KeywordGrab = () => {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
-            var jsonData = {
+            const jsonData = {
                 keywords: cookies["keywords"],
                 time: cookies["time"],
                 price: cookies["price"],
-                diet: cookies["diet"]
+                diet: cookies["diet"],
+                latlong: cookies["latlong"]
             }
             // object for storing and using data
             // Using useEffect for single rendering
