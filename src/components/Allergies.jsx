@@ -1,8 +1,10 @@
 import {useState} from "react";
 import { ButtonGroup } from "react-bootstrap";
-import {auth, getDietRest} from "../firestore";
+import {auth, getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 
 function Allergies(){
+
+    const user = auth.currentUser;
 
     const[dietRestList, setRestList] = useState([]);
     const[usersDietRest, setUserDietRest] = useState([]);
@@ -12,14 +14,12 @@ function Allergies(){
         Promise.resolve(getDietRest()).then(val =>{
             setRestList(val.names[4].values);
         });
+        Promise.resolve(getFilters(user.uid)).then(val =>{
+            setUserDietRest(val.filters.dietaryRestrictions)
+        });
         setT(true);
     }
-
-    // console.log(t);
-
-    // console.log(dietRestList);
-
-
+    
     return(
         <div>
             <h1>Dietary Restrinctions</h1>
@@ -35,15 +35,13 @@ function Allergies(){
                             else{
                                 tempList.splice(tempList.indexOf(alergy),1);
                             }
-                            setUserDietRest(tempList);
-                            console.log(usersDietRest);
+                            updateDietRestrictions(user.uid, tempList);
                         }}
                         >{alergy}</button>
 
                     )
                 })}
             </ButtonGroup>
-            {/* {console.log(usersDietRest)} */}
 
         </div>
     )
