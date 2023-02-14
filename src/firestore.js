@@ -181,7 +181,8 @@ async function getAccount(field, value) {
     return null;
   } else {
     const doc = docs[0].data()
-    doc.uid = docs[0].uid;
+    doc.uid = docs[0].id;
+    console.log(doc);
     return doc;
   }
 }
@@ -258,7 +259,6 @@ async function signInEmailPassword(email, password) {
     return {bool: true, idOrCode: userCreds.user.uid};
   } catch (error) {
     console.error(error);
-    alert(error.message);
     return {bool: false, idOrCode: error.code};
   };
 }
@@ -295,7 +295,6 @@ function signInWithGoogleMobile() {
     })
     .catch((error) => {
       console.error(error);
-      alert(error.message)
       // const email = error.customData.email;
       // const credential = googleProvider.credentialFromError(error);
     });
@@ -346,7 +345,6 @@ async function signOutUser() {
     signOut(auth);
   } catch (error) {
     console.error(error);
-    alert(error.message);
     return false;
   }
   // Sign-out successful.
