@@ -57,12 +57,9 @@ const RecommendationMap = ({ res }) => {
     };
 
     function openInApp() {
-        console.log("Open sesame!");
-        alert("Pretend Google or Apple maps opened.");
-        // if on mobile, but don't use navigate. XS
-        // navigate(`geo:${loc.latitude},${loc.longitude}`);
+        window.open("https://www.google.com/maps/dir/?api=1&destination="+loc.latitude+","+loc.longitude);
     }
-    
+
     function shareIcons() {
         return supportedProviders.map((provider) => <ShareIcon key={provider} provider={provider}></ShareIcon>);
     }
