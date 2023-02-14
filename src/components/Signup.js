@@ -1,5 +1,5 @@
 import React from "react";
-import { createUserEmailPassword } from "../firestore";
+import { createUserEmailPassword, getAccount } from "../firestore";
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { Link, Navigate } from 'react-router-dom'
 
@@ -22,7 +22,6 @@ class Signup extends React.Component {
   handleChange = (event) => {
     const value = event.target.value;
     const name = event.target.name;
-    console.log(event);
     this.setState({
       [name]: value
     });
@@ -40,25 +39,31 @@ class Signup extends React.Component {
     };
 
     if(this.validateForm(event)) {
-      const errorMessage='';
-      createUserEmailPassword(docData.username, docData.email, docData.password)
-        .then((resp) => {
-          if (resp === null) {
-            // error codes [here](https://firebase.google.com/docs/reference/js/auth#autherrorcodes)
-            const errorMessage='That email is invalid.';
-            this.setState({
-              'error': errorMessage
-            });
-            alert(errorMessage);
-            // Send some statistic for us to diagnose :)
-          } else {
-            // passed!
-            // to render the Navigate component.
-            this.setState({
-              'user': true
-            });
-          }
-        })
+      var errorMessage='';
+      const acc = await getAccount('username', docData.username);
+
+      if(acc && acc.uid) {
+        alert(errorMessage="That username is already in use.");
+        this.setState({
+          'error': errorMessage
+        });
+      } else {
+        const resp = await createUserEmailPassword(docData.username, docData.email, docData.password);
+        if (resp === null) {
+          // error codes [here](https://firebase.google.com/docs/reference/js/auth#autherrorcodes)
+          errorMessage='That email is invalid.';
+          this.setState({
+            'error': errorMessage
+          });
+          alert(errorMessage);
+        } else {
+          // passed!
+          // to render the Navigate component.
+          this.setState({
+            'user': true
+          });
+        }
+      }
     } else {
       // Either empty fields or too short password.
       this.setState({
