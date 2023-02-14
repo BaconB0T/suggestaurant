@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import { getFilters, setPreferences, db } from "../firestore";
-import {Link} from 'react-router-dom';
+import {Link, Navigate} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import {getDoc, doc} from "firebase/firestore";
 import "./preferences.css"
@@ -10,25 +10,22 @@ function Preferences() {
     const [user, setUser] = useState([]);
 
     const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-        setUser(user);
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        } else {
-        // User is signed out
-        setUser(null);
-        }
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            setUser(user);
+        });    
     });
-
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
     const [minRating, setMR] = useState(0);
     const [hover, setHover] = useState(0);
     const [FastFood, setff] = useState(false);
-
     const [t,setT] = useState(false);
-    if (!t){
+    
+    
+    if(!t && user && user.uid){
+        console.log(user);
+        console.log(user.uid);
         Promise.resolve(getFilters(user.uid)).then(val => {
             setFF(val.filters.preferences.requireFamilyFriendly);
             setHis(val.filters.preferences.includeHistory);
