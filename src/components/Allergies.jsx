@@ -25,7 +25,7 @@ function Allergies(){
     const[selected, setSelected] = useState("not-selected");
     const [t, setT] = useState(false);
 
-    if(!t){
+    if(!t && user && user.uid){
         Promise.resolve(getDietRest()).then(val =>{
             setRestList(val.names[4].values);
         });

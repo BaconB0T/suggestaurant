@@ -2,6 +2,7 @@ import {useState} from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { getCuisines, updateUserCuisine, getFilters} from '../firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Navigate } from 'react-router-dom';
 
 function PreSetCuisines() {
   
@@ -18,18 +19,32 @@ function PreSetCuisines() {
         setUser(null);
       }
     });
+
+    // console.log(user);
+
     const [listOfCuisines, setCuisineList] = useState([]);
     const [userCuisineList, setUserCuisine] = useState([]);
     const [t, setT] = useState(false);
 
-    if(!t){
+
+    if(user === null) {
+        return (
+            <Navigate to='/login' />
+        );
+    }
+
+    if(!t && user && user.uid){
         //getInformation
-        Promise.resolve(getFilters(user.uid)).then(val =>{
-            setUserCuisine(val.filters.excludedCuisines);
-        })
+        if(userCuisineList.length === 0){
+            Promise.resolve(getFilters(user.uid)).then(val =>{
+                setUserCuisine(val.filters.excludedCuisines);
+            })
+        }
 
         setT(true);
     }
+
+    console.log(userCuisineList);
     
     if(listOfCuisines.length === 0){
         console.log('reached');
