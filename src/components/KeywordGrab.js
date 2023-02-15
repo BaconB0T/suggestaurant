@@ -44,7 +44,14 @@ const KeywordGrab = () => {
             })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
-                navigate("/recommendations");
+                if (json.length == 0)
+                {
+                    navigate("/expandRadius");
+                }
+                else
+                {
+                    navigate("/recommendations");
+                }
             })
         } catch (e) {
             // else set an error
@@ -66,7 +73,8 @@ const KeywordGrab = () => {
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="keywords" className="mb-2">
                                     <Form.Label>Keywords</Form.Label>
-                                    <Form.Control ref={keywordRef} required />
+                                    <Form.Control ref={keywordRef} required
+                                        defaultValue={cookies["keywords"]}/>
                                 </Form.Group>
                                 <Button className="w-40 mt-10" type="submit">
                                     Go

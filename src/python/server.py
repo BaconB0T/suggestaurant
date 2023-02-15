@@ -76,7 +76,7 @@ Q = pickle.load(input)
 
 input.close()
 
-collection = db.collection('restaurants')
+collection = db.collection('restaurants').get()
 
 # Initializing flask app
 app = Flask(__name__)
@@ -91,11 +91,51 @@ def keywords():
 
 	words = req["keywords"]
 
-	dt = datetime.now()
-	id_list = collection.where(u'attributes.RestaurantsPriceRange2', u'<=', 4).get()
+	print(int(req["latlong"]["distance"]))
+	print(float(req["latlong"]["latitude"]))
+	print(int(req["price"]))
 
-	id_list = [x.to_dict() for x in id_list]
+	dt = datetime.now()
+
+	id_list = [x.to_dict() for x in collection]
+
+	print(len(id_list))
+
+	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
 	
+	print(user_loc)
+
+	# for x in id_list: 
+	# 	if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles <  int(req["latlong"]["distance"]):
+	# 		print("check\n")
+
+	id_list = [x for x in id_list if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles < int(req["latlong"]["distance"])]
+
+	print(len(id_list))
+
+	none_list = [x for x in id_list if x["attributes"] is None]
+
+	id_list = [x for x in id_list if x["attributes"] is not None]
+
+	print(len(id_list))
+
+	priced_list = []
+
+	for x in id_list:
+		if "RestaurantsPriceRange2" in x["attributes"]:
+			priced_list.append(x)
+	
+	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > int(req["price"])]
+
+	print(len(id_list))
+
+	for x in priced_list:
+		id_list.remove(x)
+
+	print(len(id_list))
+
+	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+
 	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= req["time"]]
 	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
 
@@ -107,22 +147,22 @@ def keywords():
 	# id_list = [x for x in id_list if req["veggie"] in x["dietaryRestrictions"]["true"]]
 	# id_list = [x for x in id_list if req["soy"] in x["dietaryRestrictions"]["true"]]
 	
-	business_list = [doc["business_id"] for doc in id_list]
+	# business_list = [doc["business_id"] for doc in id_list]
 
-	business_2 = df_business[df_business['business_id'].isin(business_list)]
+	# print(business_list, file=sys.stderr)
 
-	user_loc = (req["latlong"]["latitude"], (req["latlong"]["longitude"]))
+	# business_2 = df_business[df_business['business_id'].isin(business_list)]
 
-	business_list_final = []
+	# def filter_func(id, row1, row2):
+	# 	if (geodesic(user_loc,(row1, row2)).miles < float(req["latlong"]["distance"])):
+	# 		business_list_final.append(id)
+	# 		return True
+	# 	else:
+	# 		return False
 
-	def filter_func(id, row1, row2):
-		if (geodesic(user_loc,(row1, row2)).miles < float(req["latlong"]["distance"])):
-			business_list_final.append(id)
-			return True
-		else:
-			return False
+	# business_2.apply(lambda x: filter_func(x['business_id'], x['latitude'], x['longitude']), axis=1)
 
-	business_2.apply(lambda x: filter_func(x['business_id'], x['latitude'], x['longitude']), axis=1)
+	business_list_final = [x["business_id"] for x in id_list]
 
 	Q2 = Q[Q.columns.intersection(business_list_final)]
 

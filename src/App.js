@@ -28,6 +28,7 @@ import Preferences from'./components/Preferences';
 import Allergies from './components/Allergies';
 import Cuisine from './components/PresetCuisines';
 import HomePage from './components/HomePage';
+import ExpandRadius from './components/ExpandRadiusPage';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
@@ -57,6 +58,7 @@ function App() {
         <Route path="/account/filters" element={<Preferences />}/>
         <Route path="/account/allergies" element={<Allergies />}/>
         <Route path='/selectCuisine' element={<Cuisine />} />
+        <Route path='/expandRadius' element={<ExpandRadius />} />
       </Routes>
     </div>
   )
