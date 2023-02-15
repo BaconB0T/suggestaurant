@@ -122,7 +122,7 @@ def keywords():
 	priced_list = []
 
 	for x in id_list:
-		if "RestaurantsPriceRange2" in x["attributes"]:
+		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"]["RestaurantsPriceRange2"] is not None:
 			priced_list.append(x)
 	
 	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > int(req["price"])]
