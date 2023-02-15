@@ -48,7 +48,7 @@ function Allergies(){
     // const [sel, setSel] = useState('not-selected');
     return(
         <div>
-            <h1>Dietary Restrinctions</h1>
+            <h1>Dietary Restrictions</h1>
             <ButtonGroup>
                 {dietRestList.map(alergy => {
                     return (

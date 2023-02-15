@@ -73,7 +73,7 @@ const Account = () => {
         <br></br>
         <button onClick={sOut}>Sign Out</button>
         <br></br>
-        <button onClick={() => {setShow(true)}}>Delete Account (disabled)</button>
+        <button onClick={() => {setShow(true)}}>Delete Account</button>
         <br></br>
       </div>
     );
