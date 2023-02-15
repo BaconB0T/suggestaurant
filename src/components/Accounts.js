@@ -5,12 +5,10 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Alert, Button } from "react-bootstrap";
 
 const DeleteAlert = (props) => {
-  const { setShow } = props;
-  const { show } = props;
-  const { alertCallback } = props;
+  const { setShow, show, alertCallback } = props;
   
   return (
-    <>
+    <div style={{display: 'flex', 'justify-content': 'center'}}>
       <Alert show={show} variant="danger">
         <Alert.Heading>Account Deletion</Alert.Heading>
         <p>Are you sure you want to delete your account? This cannot be undone.</p>
@@ -20,7 +18,7 @@ const DeleteAlert = (props) => {
           <Button variant="success-outline" onClick={() => { setShow(false); }}>Cancel</Button>
         </div>
       </Alert>
-    </>
+    </div>
   )
 }
 
@@ -30,18 +28,20 @@ const Account = () => {
   const [user, setUser] = useState([]);
 
   const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setUser(user);
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-    } else {
-      // User is signed out
-      setUser(null);
-    }
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+    });
   });
+
   if(user === null) {
-    console.log(user);
     return (
         <Navigate to='/login' />
     );
@@ -51,7 +51,7 @@ const Account = () => {
         if(res) {
           navigate('/');
         } else {
-          alert("Something went wrong!")
+          alert("Something went wrong!");
         }
       });
     }
