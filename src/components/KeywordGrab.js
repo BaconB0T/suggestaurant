@@ -18,7 +18,7 @@ const KeywordGrab = () => {
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
             const jsonData = {
-                keywords: cookies["keywords"],
+                keywords: keywordRef.current.value,
                 time: cookies["time"],
                 price: cookies["price"],
                 diet: cookies["diet"],

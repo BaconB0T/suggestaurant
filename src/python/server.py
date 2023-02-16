@@ -8,6 +8,8 @@ from firebase_admin import firestore
 from geopy.distance import geodesic
 from dotenv import load_dotenv;
 import sys
+from google.api_core.retry import Retry
+
 
 
 import numpy as np
@@ -76,7 +78,12 @@ Q = pickle.load(input)
 
 input.close()
 
-collection = db.collection('restaurants').get()
+collection = db.collection('restaurants').get(retry=Retry())
+
+# collection = [x.to_dict() for x in collection]
+
+# with open('parrot.pkl', 'wb') as f:
+# 	pickle.dump(collection, f)
 
 # Initializing flask app
 app = Flask(__name__)

@@ -41,6 +41,7 @@ const HomePage = () => {
                 <>
                     <Card>
                         <Card.Body>
+                            <h2 className="text-center mb-4">Suggestaurant</h2>
                             <Button onClick={() => handleClickQuiz()}>
                                 Start Quiz
                             </Button>

@@ -39,6 +39,7 @@ const TimeGrab = () => {
                 <>
                     <Card>
                         <Card.Body>
+                            <p>Time</p>
                             <div>
                                 <TimePicker onChange={onChange} value={value} />
                             </div>

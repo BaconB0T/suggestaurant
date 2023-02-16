@@ -65,6 +65,8 @@ function Allergies(){
                                 tempList.splice(tempList.indexOf(alergy),1);
                             }
                             updateDietRestrictions(user.uid, tempList);
+                            // setUserDietRest(tempList)
+                            // console.log(usersDietRest)
                         }}
                         >{alergy}</button>
 
