@@ -438,7 +438,7 @@ function deleteUser() {
 async function getHistory(user)
 {
   // const user = cookies.get("Name") || "";
-  const historyCol = collection(db, 'users/' + user + '/' + 'history');
+  const historyCol = collection(db, 'users/' + user + '/history');
   const historySnapshot = await getDocs(historyCol);
   // const histList = historySnapshot.docs.map(doc => doc.data());
   let historyList = [];
