@@ -40,7 +40,7 @@ const ChangePassword = () => {
                     .then(() => {
                         console.log("Password changed!");
                         alert("Password successfully changed!");
-                        navigate('/accounts');
+                        navigate('/account');
                 }).catch((reason) => {
                     alert("Something went wrong!");
                     setError("Something went wrong!");

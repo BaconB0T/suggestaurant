@@ -5,7 +5,7 @@ import { getAccounts, getHistory, getAllAccounts, getRestaurantBy, getAccount, g
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import Accounts from './components/Accounts';
+import Account from './components/Accounts';
 import { Routes, Route } from 'react-router-dom'
 import Login from './components/Login'
 import History from './components/History';
@@ -42,7 +42,7 @@ function App() {
         <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} indexNum = {0}/>} />
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/accounts" element={<Accounts />} />
+        <Route path="/account" element={<Account />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/history" element={<History />} />

@@ -19,7 +19,7 @@ const Login = () => {
             signInEmailPassword(email, passwordRef.current.value)
                 .then(({bool, idOrCode}) => {
                     if (bool) {
-                        navigate("/accounts");
+                        navigate("/account");
                     } else {
                         setError("Invalid username (or email) and password combination.");
                     }
