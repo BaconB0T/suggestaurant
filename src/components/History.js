@@ -2,6 +2,8 @@ import {useEffect, useState} from "react";
 import { getHistory, rateRestaurant, getRestaurant, deleteHistoryItem} from "../firestore";
 import { useCookies } from 'react-cookie';
 import {Link} from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 function HistoryElem(props) {
   const [restaurant, setRestaurant] = useState([]);
@@ -35,13 +37,37 @@ function HistoryElem(props) {
 function History() {
   const [cookies] = useCookies(['id']);
   const [history, setHistory] = useState([]);
+
+  const [user, setUser] = useState([]);
+
+  const auth = getAuth();
+
+  useEffect(() => {
+      onAuthStateChanged(auth, (user) => {
+      if (user) {
+          setUser(user);
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+      } else {
+          // User is signed out
+          setUser(null);
+      }
+      });
+  });
+
   useEffect(() => {
     async function cried() {
-      const usersHistory = await getHistory(cookies.id);
+      const usersHistory = await getHistory(user.uid);
       setHistory(usersHistory);
     }
     cried();
   }, []);
+
+  if(user === null) {
+    return (
+        <Navigate to='/login' />
+    );
+  }
 
   const historyComponents = [];
   for (const historyItem of history) {

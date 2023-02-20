@@ -380,7 +380,7 @@ function defaultHistory() {
 }
 
 async function rateRestaurant(restObject, restRating, user){
-  let text1 = "users/";
+  let text1 = "users";
   // const user = cookies.get("Name") || "";
   let text2 = user + '/history/';
   let finalText = text1.concat(text2);
