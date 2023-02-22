@@ -70,8 +70,6 @@ const PeepeePoopoo = () => {
         setError(e)
       }
     }
-    console.log(user)
-    console.log(user.username)
     return (
       <div display='block'>
         <Container
