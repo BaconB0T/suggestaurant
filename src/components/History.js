@@ -58,7 +58,7 @@ function History() {
         setUser(null);
       }
     });
-  });
+  }, []);
 
   // useEffect(() => {
   //   async function cried() {
@@ -76,8 +76,8 @@ function History() {
   const historyComponents = [];
   for (const historyItem of history) {
     // if(historyItem.restaurant !== "placeholder") {
-    //   console.log(historyItem);
-    historyComponents.push(<HistoryElem key={historyItem.restaurant} history={historyItem} />);
+    // console.log(historyItem);
+    historyComponents.push(<HistoryElem key={historyItem.id} history={historyItem} />);
     // }
   }
 
