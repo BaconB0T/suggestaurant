@@ -14,7 +14,7 @@ const PriceGrab = () => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
-    const [price, setPrice] = useState("")
+    const [price, setPrice] = useState(5)
 
 
     const handleStarClick = (e, index) => {
@@ -33,7 +33,8 @@ const PriceGrab = () => {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-            setCookie('price', price, { path: '/' });
+
+            setCookie('price', price + 1, { path: '/' });
             
             navigate("/keywordGrab");
         } catch (e) {
@@ -52,7 +53,7 @@ const PriceGrab = () => {
                     <Card>
                         <Card.Body>
                             <div className={styles.rating}>
-                                <p>Rating</p>
+                                <p>Price</p>
                                 <div>
                                     <FaDollarSign
                                         onClick={(e) => handleStarClick(e, 0)}

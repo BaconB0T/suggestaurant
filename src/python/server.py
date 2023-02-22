@@ -7,6 +7,10 @@ import firebase_admin
 from firebase_admin import firestore
 from geopy.distance import geodesic
 from dotenv import load_dotenv;
+import sys
+from google.api_core.retry import Retry
+
+
 
 import numpy as np
 import pandas as pd
@@ -16,6 +20,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords 
 from nltk.tokenize import WordPunctTokenizer
+from datetime import datetime
 
 import nltk
 from nltk.corpus import stopwords
@@ -25,7 +30,6 @@ GOOGLE_MAPS_KEY=os.getenv("GOOGLE_MAPS_API_KEY")
 nltk.download('stopwords')
 stopwords = stopwords.words('english')
 df_business = pd.read_json('restaurants.json')
-
 
 import string
 from nltk.corpus import stopwords
@@ -74,6 +78,13 @@ Q = pickle.load(input)
 
 input.close()
 
+collection = db.collection('restaurants').get(retry=Retry())
+
+# collection = [x.to_dict() for x in collection]
+
+# with open('parrot.pkl', 'wb') as f:
+# 	pickle.dump(collection, f)
+
 # Initializing flask app
 app = Flask(__name__)
 
@@ -82,38 +93,85 @@ CORS(app)
 
 # Route for seeing a data
 @app.route('/data', methods=['POST'])
-def keywords():
-	req = request.json
+def keywords():	
+	req = json.loads(request.data)
+
 	words = req["keywords"]
 
-	# dt = datetime.now()
+	print(int(req["latlong"]["distance"]))
+	print(float(req["latlong"]["latitude"]))
+	print(int(req["price"]))
 
-	collection = db.collection('restaurants')
-	id_list = collection \
-		.where('attributes.RestaurantsPriceRange2', '<=', req["price"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["halal"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["vegan"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["gluten"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["dairy"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["kosher"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["soy"])\
-		.where('dietaryRestrictions.true', 'array_contains', req["diet"]["veggie"])\
-		.get()
-		# .where('hours.' + dt.strftime('%A') + ".start", '>=', req["time"])\
-		# .where('hours.' + dt.strftime('%A') + ".end", '<=', req["time"])\
+	dt = datetime.now()
 
+	id_list = [x.to_dict() for x in collection]
 
-	business_list = [doc.id for doc in id_list]
+	print(len(id_list))
 
-	df_business = df_business[df_business['business_id'].isin(business_list)]
+	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
+	
+	print(user_loc)
 
-	user_loc = req["latlong"]
+	# for x in id_list: 
+	# 	if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles <  int(req["latlong"]["distance"]):
+	# 		print("check\n")
 
-	df_business = df_business.where(geodesic(user_loc,(df_business["location.latitude"], df_business["location.longitude"])).miles < req["distance"])
+	id_list = [x for x in id_list if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles < int(req["latlong"]["distance"])]
 
-	business_list = df_business['business_id'].tolist()
+	print(len(id_list))
 
-	Q2 = Q[Q['business_id'].isin(business_list)]
+	none_list = [x for x in id_list if x["attributes"] is None]
+
+	id_list = [x for x in id_list if x["attributes"] is not None]
+
+	print(len(id_list))
+
+	priced_list = []
+
+	for x in id_list:
+		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"]["RestaurantsPriceRange2"] is not None:
+			priced_list.append(x)
+	
+	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > int(req["price"])]
+
+	print(len(id_list))
+
+	for x in priced_list:
+		id_list.remove(x)
+
+	print(len(id_list))
+
+	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+
+	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= req["time"]]
+	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+
+	# id_list = [x for x in id_list if req["halal"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["vegan"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["dairy"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["gluten"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["kosher"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["veggie"] in x["dietaryRestrictions"]["true"]]
+	# id_list = [x for x in id_list if req["soy"] in x["dietaryRestrictions"]["true"]]
+	
+	# business_list = [doc["business_id"] for doc in id_list]
+
+	# print(business_list, file=sys.stderr)
+
+	# business_2 = df_business[df_business['business_id'].isin(business_list)]
+
+	# def filter_func(id, row1, row2):
+	# 	if (geodesic(user_loc,(row1, row2)).miles < float(req["latlong"]["distance"])):
+	# 		business_list_final.append(id)
+	# 		return True
+	# 	else:
+	# 		return False
+
+	# business_2.apply(lambda x: filter_func(x['business_id'], x['latitude'], x['longitude']), axis=1)
+
+	business_list_final = [x["business_id"] for x in id_list]
+
+	Q2 = Q[Q.columns.intersection(business_list_final)]
 
 	test_df= pd.DataFrame([words], columns=['text'])
 	test_df['text'] = test_df['text'].apply(text_process)
@@ -121,6 +179,9 @@ def keywords():
 	test_v_df = pd.DataFrame(test_vectors.toarray(), index=test_df.index, columns=userid_vectorizer.get_feature_names_out())
 	predictItemRating=pd.DataFrame(np.dot(test_v_df.loc[0],Q2),index=Q2.columns,columns=['Rating'])
 	topRecommendations=pd.DataFrame.sort_values(predictItemRating,['Rating'],ascending=[0])[:7]
+
+	print(topRecommendations.index.values.tolist(), file=sys.stderr)
+
 	return topRecommendations.index.values.tolist()
 
 	

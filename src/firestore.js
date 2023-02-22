@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail, updatePassword } from "firebase/auth"
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
-import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, query, where, limit, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, updateDoc, query, where, limit, onSnapshot } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -19,6 +19,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
+
 // localize OAuth flow to user's preferred language.
 auth.languageCode = 'it';
 auth.useDeviceLanguage();
@@ -180,7 +181,8 @@ async function getAccount(field, value) {
     return null;
   } else {
     const doc = docs[0].data()
-    doc.uid = docs[0].uid;
+    doc.uid = docs[0].id;
+    console.log(doc);
     return doc;
   }
 }
@@ -257,7 +259,6 @@ async function signInEmailPassword(email, password) {
     return {bool: true, idOrCode: userCreds.user.uid};
   } catch (error) {
     console.error(error);
-    alert(error.message);
     return {bool: false, idOrCode: error.code};
   };
 }
@@ -294,7 +295,6 @@ function signInWithGoogleMobile() {
     })
     .catch((error) => {
       console.error(error);
-      alert(error.message)
       // const email = error.customData.email;
       // const credential = googleProvider.credentialFromError(error);
     });
@@ -345,7 +345,6 @@ async function signOutUser() {
     signOut(auth);
   } catch (error) {
     console.error(error);
-    alert(error.message);
     return false;
   }
   // Sign-out successful.
@@ -381,7 +380,7 @@ function defaultHistory() {
 }
 
 async function rateRestaurant(restObject, restRating, user){
-  let text1 = "users/";
+  let text1 = "users";
   // const user = cookies.get("Name") || "";
   let text2 = user + '/history/';
   let finalText = text1.concat(text2);
@@ -439,7 +438,7 @@ function deleteUser() {
 async function getHistory(user)
 {
   // const user = cookies.get("Name") || "";
-  const historyCol = collection(db, 'users/' + user + '/' + 'history');
+  const historyCol = collection(db, 'users/' + user + '/history');
   const historySnapshot = await getDocs(historyCol);
   // const histList = historySnapshot.docs.map(doc => doc.data());
   let historyList = [];
@@ -491,6 +490,23 @@ async function historyItem(historyDoc)
   return retVal;
 }
 
+
+async function getFilters(user){
+  const userCol = collection(db, 'users');
+  const que = await getDoc(doc(db,'users', user));
+
+  return que.data();
+}
+
+async function setPreferences(user, FamVal, HisVal, FastFoodVal, rating){
+  updateDoc(doc(db, 'users', user), {
+    'filters.preferences.includeFastFood' : FastFoodVal,
+    'filters.preferences.includeHistory' : HisVal,
+    'filters.preferences.requireFamilyFriendly' : FamVal,
+    'filters.preferences.minimumRating': rating
+  })
+}
+
 /**
  * TODO: Finish. See firebase docs.
  */
@@ -502,4 +518,35 @@ async function changePassword(newPassword) {
   }
 }
 
-export { db, analytics, auth, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem }
+async function getDietRest(){
+  const diet = await getDoc(doc(db, 'preferenceFields', 'allFields'));
+
+  return diet.data();
+}
+
+async function updateDietRestrictions(user, listOfRestrictions){
+  updateDoc(doc(db,'users', user), {
+    'filters.dietaryRestrictions' : listOfRestrictions
+  })
+}
+
+async function getCuisines(){
+  const cuisineCol = collection(db, 'cuisines');
+  const cuiSnapshot = await getDocs(cuisineCol);
+
+  let cuisineList = [];
+  for(const cui of cuiSnapshot.docs) {
+    let cuis = cui.data();
+    cuis.id=cui.id;
+    cuisineList.push(cuis); 
+  }
+  return cuisineList;
+}
+
+async function updateUserCuisine(user, listOfCuisine){
+  updateDoc(doc(db, 'users', user), {
+    'filters.excludedCuisines' : listOfCuisine
+  })
+}
+
+export { db, analytics, getCuisines, updateUserCuisine,updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }

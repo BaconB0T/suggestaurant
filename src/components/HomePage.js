@@ -3,32 +3,34 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import TimePicker from 'react-time-picker';
 
-
-
-const TimeGrab = () => {
+const HomePage = () => {
   
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
-    const [price, setPrice] = useState("")
-    const [value, onChange] = useState('10:00');
+    const [loginOrAccount, setLoginOrAccount] = useState("Login")
 
 
-    async function handleSubmit(e) {
-        e.preventDefault(); // don't refresh the page
+    async function handleClickQuiz() {
         try {
-            setError("")
-            setCookie('time', value, { path: '/' });
-            
-            navigate("/priceCheck");
+            navigate("/location");
         } catch (e) {
             // else set an error
             setError(e)
         }
     }
+
+    async function handleClickLogin() {
+        try {
+            navigate("/login");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+    
     
     return(
         <Container
@@ -39,16 +41,15 @@ const TimeGrab = () => {
                 <>
                     <Card>
                         <Card.Body>
-                            <p>Time</p>
-                            <div>
-                                <TimePicker onChange={onChange} value={value} />
-                            </div>
+                            <h2 className="text-center mb-4">Suggestaurant</h2>
+                            <Button onClick={() => handleClickQuiz()}>
+                                Start Quiz
+                            </Button>
                             <br></br>
-                            <Form onSubmit={handleSubmit}>
-                                <Button className="w-40 mt-10" type="submit">
-                                    Next
-                                </Button>
-                            </Form>
+                            <br></br>
+                            <Button onClick={() => handleClickLogin()}>
+                                {loginOrAccount}
+                            </Button>
                         </Card.Body>
                     </Card>
                 </>
@@ -57,4 +58,4 @@ const TimeGrab = () => {
     )
   }
 
-  export default TimeGrab;
+  export default HomePage;

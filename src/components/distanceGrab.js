@@ -10,6 +10,7 @@ const DistanceGrab = () => {
     const navigate = useNavigate();
     const latRef = useRef()
     const longRef = useRef()
+    const distRef = useRef()
     const [error, setError] = useState("")
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
         useGeolocated({
@@ -37,7 +38,8 @@ const DistanceGrab = () => {
             // );
             const latlong = {
                 latitude: latRef.current.value,
-                longitude: longRef.current.value
+                longitude: longRef.current.value,
+                distance: distRef.current.value
             }
             console.log("check2")
             setCookie('latlong', latlong, { path: '/' });
@@ -87,6 +89,13 @@ const DistanceGrab = () => {
                                                     <Form.Control 
                                                         ref={longRef} required 
                                                         defaultValue={coords.longitude}
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group id="distance" className="mb-2">
+                                                    <Form.Label>Distance</Form.Label>
+                                                    <Form.Control 
+                                                        ref={distRef} required
+                                                        defaultValue={25}
                                                     />
                                                 </Form.Group>
                                                 <Button className="w-40 mt-10" type="submit">

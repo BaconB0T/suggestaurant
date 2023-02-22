@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { signOutUser, auth, deleteUser } from "../firestore";
+import { signOutUser, deleteUser } from "../firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
-import { Alert, Button } from "react-bootstrap";
+import { Container, Card, Alert, Button, Form } from "react-bootstrap";
+
 
 const DeleteAlert = (props) => {
-  const { setShow } = props;
-  const { show } = props;
-  const { alertCallback } = props;
-  
+  const { setShow, show, alertCallback } = props;
+
   return (
-    <>
+    <div style={{ display: 'flex', 'justify-content': 'center' }}>
       <Alert show={show} variant="danger">
         <Alert.Heading>Account Deletion</Alert.Heading>
         <p>Are you sure you want to delete your account? This cannot be undone.</p>
@@ -19,51 +19,99 @@ const DeleteAlert = (props) => {
           <Button variant="success-outline" onClick={() => { setShow(false); }}>Cancel</Button>
         </div>
       </Alert>
-    </>
+    </div>
   )
 }
 
-const Account = () => {
-  const user = auth.currentUser;
+const PeepeePoopoo = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
-  if(auth.currentUser === null) {
+  const [user, setUser] = useState([]);
+  const [error, setError] = useState("")
+
+  
+  const auth = getAuth();
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+    });
+  });
+
+  if (user === null) {
     return (
-        <Navigate to='/login' />
+      <Navigate to='/login' />
     );
   } else {
     const sOut = () => {
       signOutUser().then((res) => {
-        if(res) {
+        if (res) {
           navigate('/');
         } else {
-          alert("Something went wrong!")
+          alert("Something went wrong!");
         }
       });
     }
-  
+
+    async function handleSubmit(e) {
+      e.preventDefault(); // don't refresh the page
+      try {
+        setError("")
+
+        navigate("/");
+      } catch (e) {
+        // else set an error
+        setError(e)
+      }
+    }
+    console.log(user)
+    console.log(user.username)
     return (
       <div display='block'>
-        <DeleteAlert alertCallback={() => {deleteUser(); navigate('/login');}} show={show} setShow={setShow}></DeleteAlert>
-        <h1>Hello {user && user.username}</h1>
-        <div>Email: {user && user.email}</div>
-        <Link to='/account/allergies'>Allergies</Link>
-        <br></br>
-        <Link to='/account/filters'>Filters</Link>
-        <br></br>
-        <Link to='/account/history'>History</Link>
-        <br></br>
-        <button>
-          <Link to='/change-password'>Change Password</Link>
-        </button>
-        <br></br>
-        <button onClick={sOut}>Sign Out</button>
-        <br></br>
-        <button onClick={() => {setShow(true)}}>Delete Account (disabled)</button>
-        <br></br>
+        <Container
+          className="d-flex align-items-center justify-content-center"
+          style={{ minHeight: "100vh" }}
+        >
+          <div className="w-100" style={{ maxWidth: "400px" }}>
+            <>
+              <Card>
+                <Card.Body>
+                  <DeleteAlert alertCallback={() => { deleteUser(); navigate('/login'); }} show={show} setShow={setShow}></DeleteAlert>
+                  <h1>Hello {user && user.username}</h1>
+                  <div>Email: {user && user.email}</div>
+                  <Link to='/account/allergies'>Allergies</Link>
+                  <br></br>
+                  <Link to='/account/filters'>Filters</Link>
+                  <br></br>
+                  <Link to='/history'>History</Link>
+                  <br></br>
+                  <button>
+                    <Link to='/change-password'>Change Password</Link>
+                  </button>
+                  <br></br>
+                  <button onClick={sOut}>Sign Out</button>
+                  <br></br>
+                  <button onClick={() => { setShow(true) }}>Delete Account</button>
+                  <Form onSubmit={handleSubmit}>
+                    <Button className="w-40 mt-10" type="submit">
+                      Home
+                    </Button>
+                  </Form>
+                  <br></br>
+                </Card.Body>
+              </Card>
+            </>
+          </div>
+        </Container >
       </div>
     );
   }
 }
 
-export default Account
+export default PeepeePoopoo

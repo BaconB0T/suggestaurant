@@ -26,13 +26,13 @@ const DietCheck = () => {
             setError("")
             console.log("check1")
             const dietData = {
-                halal: halalRef.current.value,
-                vegan: veganRef.current.value,
-                dairy: dairyRef.current.value,
-                gluten: glutenRef.current.value,
-                soy: soyRef.current.value,
-                kosher: kosherRef.current.value,
-                veggie: veggieRef.current.value
+                halal: (halalRef.current.value == "on") ? "" : "halal",
+                vegan: (veganRef.current.value == "on") ? "" : "vegan",
+                dairy: (dairyRef.current.value == "on") ? "" : "dairy",
+                gluten: (glutenRef.current.value == "on") ? "" : "gluten",
+                soy: (soyRef.current.value == "on") ? "" : "soy",
+                kosher: (kosherRef.current.value == "on") ? "" : "kosher",
+                veggie: (veggieRef.current.value == "on") ? "" : "veggie"
             }
             setCookie('diet', dietData, { path: '/' });
             console.log("check2")

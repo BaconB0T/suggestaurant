@@ -5,7 +5,7 @@ import { getAccounts, getHistory, getAllAccounts, getRestaurantBy, getAccount, g
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import Accounts from './components/Accounts';
+import Account from './components/Accounts';
 import { Routes, Route } from 'react-router-dom'
 import Login from './components/Login'
 import History from './components/History';
@@ -23,6 +23,12 @@ import DietCheck from './components/dietCheck';
 import DistanceGrab from './components/distanceGrab';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faMoon, faRocket, faStar, faStarHalf, faCopy } from "@fortawesome/free-solid-svg-icons";
+import { useCookies } from 'react-cookie';
+import Preferences from'./components/Preferences';
+import Allergies from './components/Allergies';
+import Cuisine from './components/PresetCuisines';
+import HomePage from './components/HomePage';
+import ExpandRadius from './components/ExpandRadiusPage';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
@@ -32,10 +38,10 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={["-0TffRSXXIlBYVbb5AwfTg","-1b2kNOowsPrPpBOK4lNkQ","-6L7ckMsebhvS_nk4wjhIA"]} indexNum = {0}/>} />
-        <Route path="/" element={<Login />} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} indexNum = {0}/>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/accounts" element={<Accounts />} />
+        <Route path="/account" element={<Account />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/history" element={<History />} />
@@ -48,6 +54,10 @@ function App() {
         <Route path="/timeGrab"element={<TimeGrab/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck/>}/>
         <Route path="/location"element={<DistanceGrab/>}/>
+        <Route path="/account/filters" element={<Preferences />}/>
+        <Route path="/account/allergies" element={<Allergies />}/>
+        <Route path='/selectCuisine' element={<Cuisine />} />
+        <Route path='/expandRadius' element={<ExpandRadius />} />
       </Routes>
     </div>
   )

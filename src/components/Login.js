@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { signInEmailPassword } from '../firestore'
+import { signInEmailPassword,getAccount } from '../firestore'
 
 const Login = () => {
     const navigate = useNavigate();
@@ -13,13 +13,17 @@ const Login = () => {
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         setError("");
-        signInEmailPassword(usernameRef.current.value, passwordRef.current.value)
-            .then(({bool, idOrCode}) => {
-                if (bool) {
-                    navigate("/accounts");
-                } else {
-                    setError("Invalid email and password combination.");
-                }
+        const username=usernameRef.current.value;
+        getAccount('username', username).then((acc) => {
+            const email = (acc && acc.email) || username
+            signInEmailPassword(email, passwordRef.current.value)
+                .then(({bool, idOrCode}) => {
+                    if (bool) {
+                        navigate("/account");
+                    } else {
+                        setError("Invalid username (or email) and password combination.");
+                    }
+            });
         });
     }
 

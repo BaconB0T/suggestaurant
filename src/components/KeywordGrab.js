@@ -17,11 +17,12 @@ const KeywordGrab = () => {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
-            var jsonData = {
-                keywords: cookies["keywords"],
+            const jsonData = {
+                keywords: keywordRef.current.value,
                 time: cookies["time"],
                 price: cookies["price"],
-                diet: cookies["diet"]
+                diet: cookies["diet"],
+                latlong: cookies["latlong"]
             }
             // object for storing and using data
             // Using useEffect for single rendering
@@ -43,7 +44,14 @@ const KeywordGrab = () => {
             })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
-                navigate("/displayTest");
+                if (json.length == 0)
+                {
+                    navigate("/expandRadius");
+                }
+                else
+                {
+                    navigate("/recommendations");
+                }
             })
         } catch (e) {
             // else set an error
@@ -65,7 +73,8 @@ const KeywordGrab = () => {
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="keywords" className="mb-2">
                                     <Form.Label>Keywords</Form.Label>
-                                    <Form.Control ref={keywordRef} required />
+                                    <Form.Control ref={keywordRef} required
+                                        defaultValue={cookies["keywords"]}/>
                                 </Form.Group>
                                 <Button className="w-40 mt-10" type="submit">
                                     Go

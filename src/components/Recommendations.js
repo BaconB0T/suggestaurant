@@ -2,6 +2,8 @@ import { getRestaurantById, getImageURLsForBusiness } from "../firestore";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
+import { useCookies } from 'react-cookie';
+
 
 class Recommendations extends React.Component {
     constructor(props) {
@@ -18,7 +20,6 @@ class Recommendations extends React.Component {
             index: this.state.index + 1,
             rest: (<Recommendation restId={this.state.restIds[this.state.index]}></Recommendation>)
           }));
-          console.log("index:"+ this.state.index + ", " + this.state.restIds[this.state.index] ) 
     }
 
     render() {
@@ -76,6 +77,7 @@ const Recommendation = (props) => {
     const [textToCopy, setTextToCopy] = useState([]);
     const [restaurant, setRestaurant] = useState([]);
     const [imageURL, setImg] = useState([]);
+    const [cookies, setCookie] = useCookies(['user']);
     //const [location, setLocation] = useState([]);
     //const [falseDietaryRestrictions, setFalseDietRestrict] = useState([]);
     useEffect(() => {

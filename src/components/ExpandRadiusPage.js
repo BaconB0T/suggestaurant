@@ -1,36 +1,38 @@
-import React, {useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import TimePicker from 'react-time-picker';
+import { getAccount, validateUser } from '../firestore'
 
-
-
-const TimeGrab = () => {
-  
-    const [clicked, setClicked] = useState([false, false, false, false, false]);
+const ExpandRadius = () => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
-    const [price, setPrice] = useState("")
-    const [value, onChange] = useState('10:00');
-
+    const distRef = useRef()
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-            setCookie('time', value, { path: '/' });
             
-            navigate("/priceCheck");
+            const latlong = {
+                latitude: cookies["latlong"]["latitude"],
+                longitude: cookies["latlong"]["longitude"],
+                distance: distRef.current.value
+            }
+            console.log("check2")
+            setCookie('latlong', latlong, { path: '/' });
+
+            navigate("/keywordGrab");
+
         } catch (e) {
             // else set an error
             setError(e)
         }
     }
-    
-    return(
+
+    return (
         <Container
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
@@ -39,22 +41,27 @@ const TimeGrab = () => {
                 <>
                     <Card>
                         <Card.Body>
-                            <p>Time</p>
-                            <div>
-                                <TimePicker onChange={onChange} value={value} />
-                            </div>
-                            <br></br>
+                            <h2 className="text-center mb-4">No Matches Found!</h2>
+                            {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit}>
+                                <Form.Group id="distance" className="mb-2">
+                                    <Form.Label>Distance</Form.Label>
+                                    <Form.Control 
+                                        ref={distRef} required
+                                        defaultValue={cookies["latlong"]["distance"]}
+                                    />
+                                </Form.Group>
                                 <Button className="w-40 mt-10" type="submit">
-                                    Next
+                                    Expand Radius?
                                 </Button>
                             </Form>
                         </Card.Body>
                     </Card>
                 </>
+
             </div>
         </Container >
-    )
-  }
 
-  export default TimeGrab;
+    );
+};
+export default ExpandRadius;
