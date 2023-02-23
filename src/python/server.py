@@ -25,7 +25,22 @@ from datetime import datetime
 import nltk
 from nltk.corpus import stopwords
 load_dotenv()
+
 GOOGLE_MAPS_KEY=os.getenv("GOOGLE_MAPS_API_KEY")
+API_KEY=os.getenv("API_KEY")
+MESSAGING_SENDER_ID=os.getenv("MESSAGING_SENDER_ID")
+APP_ID=os.getenv("APP_ID")
+
+config = {
+  "apiKey": API_KEY,
+  "authDomain": "suggestaurant-873aa.firebaseapp.com",
+  "projectId": "suggestaurant-873aa",
+  "storageBucket": "suggestaurant-873aa.appspot.com",
+  "messagingSenderId": MESSAGING_SENDER_ID,
+  "appId": APP_ID,
+  "measurementId": "G-XGH587V93D",
+  "serviceAccount": "./suggestaurant-873aa-d6566e2cfc10.json"
+}
 
 nltk.download('stopwords')
 stopwords = stopwords.words('english')
@@ -47,17 +62,6 @@ def text_process(mess):
     
     # Now just remove any stopwords
     return " ".join([word for word in nopunc.split() if word.lower() not in stop])
-
-config = {
-  "apiKey": "AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I",
-  "authDomain": "suggestaurant-873aa.firebaseapp.com",
-  "projectId": "suggestaurant-873aa",
-  "storageBucket": "suggestaurant-873aa.appspot.com",
-  "messagingSenderId": "1095104791586",
-  "appId": "1:1095104791586:web:cc8a3de7a061762c84f67b",
-  "measurementId": "G-XGH587V93D",
-  "serviceAccount": "./suggestaurant-873aa-d6566e2cfc10.json"
-}
 
 cred_obj = firebase_admin.credentials.Certificate(config['serviceAccount'])
 default_app = firebase_admin.initialize_app(cred_obj, config)
