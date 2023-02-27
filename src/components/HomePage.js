@@ -15,7 +15,27 @@ const HomePage = () => {
 
     async function handleClickQuiz() {
         try {
+            setCookie('groupcode', 0, { path: '/' });
             navigate("/location");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickQuiz2() {
+        try {
+            setCookie()
+            navigate("/generateCodePage");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickQuiz3() {
+        try {
+            navigate("/getCodePage");
         } catch (e) {
             // else set an error
             setError(e)
@@ -49,6 +69,14 @@ const HomePage = () => {
                             <br></br>
                             <Button onClick={() => handleClickLogin()}>
                                 {loginOrAccount}
+                            </Button>
+                            <br></br>
+                            <br></br>
+                            <Button onClick={() => handleClickQuiz2()}>
+                                Host Group Quiz
+                            </Button>
+                            <Button onClick={() => handleClickQuiz3()}>
+                                Join Group Quiz
                             </Button>
                         </Card.Body>
                     </Card>
