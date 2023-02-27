@@ -29,17 +29,21 @@ import Allergies from './components/Allergies';
 import Cuisine from './components/PresetCuisines';
 import HomePage from './components/HomePage';
 import ExpandRadius from './components/ExpandRadiusPage';
+import { useState } from 'react';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
 function App() {
   const [cookies, setCookie] = useCookies(['user'])
   let userWithHistory = getAccount("username", "admin");
+  const [state, setState] = useState({});
   const restaurant = {name: "Fake Restaurant!", location: {streetAddress: "4903 State Rd 54", state: "FL", city: "New Port Richey", postalCode: '16127', latitude: 28.2172884, longitude: -82.7333444}};
+
   return (
     <div>
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} indexNum = {0}/>} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} indexNum = {0}/>} />
+        <Route path="/recommendations/map" element={<RecommendationMap state={state}/>}/>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={<Account />} />
@@ -48,7 +52,6 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
         <Route path="/historySearch" element={<HistorySearch />}/>
-        <Route path="/recommendation/map" element={<RecommendationMap res={restaurant}/>}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab/>}/>
         <Route path="/priceCheck"element={<PriceGrab/>}/>
