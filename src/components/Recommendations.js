@@ -96,11 +96,11 @@ const Recommendation = (props) => {
     }, [restaurant]);
 
     // const handleClick2 = (your_lat, your_lng) => {
-    //     window.open("https://maps.google.com?q="+your_lat+","+your_lng );
+    //     window.open("https://maps.google.com?q="+ your_lat+","+your_lng );
     // }
     const handleClick3 = () => {
         setGlobalState({business_id: restaurant.business_id});
-        navigate('/recommendations/map');
+        navigate(`/recommendations/map?business_id=${restaurant.business_id}`);
         // window.open("http://localhost:3000/recommendations/map" );
     }
 

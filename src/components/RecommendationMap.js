@@ -4,6 +4,7 @@ import GoogleMapReact from 'google-map-react';
 // import Marker from 'google-map-react';
 import { Button } from 'react-bootstrap';
 import { getRestaurantById } from '../firestore';
+import { Navigate } from 'react-router-dom';
 
 const ShareIcon = ({provider}) => {
     return (
@@ -16,10 +17,10 @@ const ShareIcon = ({provider}) => {
     );
 }
 
-const RecommendationMap = ({state: globalState}) => {
+const RecommendationMap = ({state: globalState, business_id: id}) => {
     const zoomLevel = 15;
     // console.log(globalState);
-    const business_id = globalState.business_id;
+    const business_id = globalState.business_id || id;
     const [apiKey, setApiKey] = useState('');
     const [res, setRes] = useState('');
     const supportedProviders = ['Twitter', 'Email', 'Telegram', 'WhatsApp', 'Facebook'];
@@ -72,7 +73,7 @@ const RecommendationMap = ({state: globalState}) => {
     }
     console.log('res');
     console.log(res);
-    if(res === '') {
+    if(apiKey === '' || apiKey === null || res === '') {
         // restaurant has not been fetched yet.
         console.log('loading')
         return (
@@ -80,8 +81,8 @@ const RecommendationMap = ({state: globalState}) => {
                 <p className='loading-animation'>Loading...</p>
             </>
         );
-    } else if(apiKey !== '' && apiKey !== null && res !== null) {
-        // api key AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I        
+        // apiKey !== '' && apiKey !== null && 
+    } else if(res !== null) {
         const googleLocation = {
             address: `${res.location.streetAddress}, ${res.location.city}, ${res.location.state}`,
             lat: res.location.latitude,
@@ -119,6 +120,7 @@ const RecommendationMap = ({state: globalState}) => {
     } else {
         return (
             <>
+                <Navigate to='/recommendations'/>
                 <p>TODO: Finish. Restaurant doesn't exist.</p>
             </>
         );
