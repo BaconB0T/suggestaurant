@@ -18,9 +18,11 @@ class Recommendations extends React.Component {
     }
 
     handleClick() {
+        console.log("entered handleClick()")
+        let newIndex = this.state.index + 1;
         this.setState(prevState => ({
-            index: this.state.index + 1,
-            rest: (<Recommendation setGlobalState={this.state.setGlobalState} restId={this.state.restIds[this.state.index]}></Recommendation>)
+            index: newIndex,
+            rest: (<Recommendation setGlobalState={this.state.setGlobalState} restId={this.state.restIds[newIndex]}></Recommendation>)
           }));
     }
 
@@ -78,22 +80,26 @@ const Stars = (props) => {
 const Recommendation = (props) => {
     const [textToCopy, setTextToCopy] = useState([]);
     const [restaurant, setRestaurant] = useState([]);
-    const [imageURL, setImg] = useState([]);
+    const [imageURL, setImg] = useState("");
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const {setGlobalState} = props;
-    //const [location, setLocation] = useState([]);
-    //const [falseDietaryRestrictions, setFalseDietRestrict] = useState([]);
+
     useEffect(() => {
         async function setRes() {
+            console.log("Entered setRes()")
             const rest = await getRestaurantById(String(props.restId));
             setRestaurant(rest);
-            setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
+            
+            if (rest.location != null) {
+                setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
+            }
+           
             let images = await getImageURLsForBusiness(String(props.restId));
             setImg(images[0]);
         }
-        setRes();
-    }, [restaurant]);
+         setRes();
+    }, [props.restId]);
 
     // const handleClick2 = (your_lat, your_lng) => {
     //     window.open("https://maps.google.com?q="+ your_lat+","+your_lng );
@@ -103,7 +109,7 @@ const Recommendation = (props) => {
         navigate(`/recommendations/map?business_id=${restaurant.business_id}`);
         // window.open("http://localhost:3000/recommendations/map" );
     }
-
+    
     
     return (
         <div>
