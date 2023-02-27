@@ -379,6 +379,20 @@ function defaultHistory() {
   });
 }
 
+function getGroupInfo(groupID)
+{
+  let docRef = db.collection("groups").doc(groupID);
+
+  const jsonData = {
+    keywords: docRef.keywords,
+    time: docRef.time,
+    price: docRef.price,
+    diet: docRef.diet,
+    latlong: docRef.latlong,
+  }
+  return jsonData
+}
+
 async function rateRestaurant(restObject, restRating, user){
   let text1 = "users";
   // const user = cookies.get("Name") || "";
@@ -549,4 +563,4 @@ async function updateUserCuisine(user, listOfCuisine){
   })
 }
 
-export { db, analytics, getCuisines, updateUserCuisine,updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, getGroupInfo, getCuisines, updateUserCuisine,updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }

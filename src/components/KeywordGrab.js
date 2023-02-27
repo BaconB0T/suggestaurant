@@ -10,6 +10,7 @@ const KeywordGrab = () => {
     const navigate = useNavigate();
     const keywordRef = useRef()
     const [error, setError] = useState("")
+    const [urlString, setURL] = useState("")
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
@@ -17,18 +18,40 @@ const KeywordGrab = () => {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
+
+
+
             const jsonData = {
                 keywords: keywordRef.current.value,
                 time: cookies["time"],
                 price: cookies["price"],
                 diet: cookies["diet"],
-                latlong: cookies["latlong"]
+                latlong: cookies["latlong"],
+                groupcode: cookies["groupcode"],
+                host: cookies["host"]
             }
             // object for storing and using data
             // Using useEffect for single rendering
             // Using fetch to fetch the api from
             // flask server it will be redirected to proxy
-            fetch("http://localhost:5000/data ", {
+            
+            if (cookies["groupcode"] == 0)
+            {
+                setURL("http://localhost:5000/data")
+            }
+            else
+            {
+                if(cookies["host"] == 0)
+                {
+                    setURL("http://localhost:5000/groupMode")
+                }
+                else
+                {
+                    setURL("http://localhost:5000/groupMode")
+                }
+            }
+
+            fetch(urlString, {
                 method:"POST",
                 cache: "no-cache",
                 headers:{
@@ -44,6 +67,14 @@ const KeywordGrab = () => {
             })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
+                if (cookies["host"] != 0)
+                {
+                    navigate("/hostRoom")
+                }
+                if (cookies["groupcode"] != 0)
+                {
+                    navigate("/waitingRoom")
+                }
                 if (json.length == 0)
                 {
                     navigate("/expandRadius");
