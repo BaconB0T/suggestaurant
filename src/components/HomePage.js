@@ -26,7 +26,8 @@ const HomePage = () => {
     async function handleClickQuiz2() {
         try {
             setCookie()
-            navigate("/generateCodePage");
+            // navigate("/generateCodePage");
+            navigate("/group/host");
         } catch (e) {
             // else set an error
             setError(e)
@@ -35,7 +36,8 @@ const HomePage = () => {
 
     async function handleClickQuiz3() {
         try {
-            navigate("/getCodePage");
+            // navigate("/getCodePage");
+            navigate("/group/join");
         } catch (e) {
             // else set an error
             setError(e)

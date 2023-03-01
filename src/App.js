@@ -29,6 +29,8 @@ import Allergies from './components/Allergies';
 import Cuisine from './components/PresetCuisines';
 import HomePage from './components/HomePage';
 import ExpandRadius from './components/ExpandRadiusPage';
+import Group from './components/Group';
+import GetCodePage from './components/getCodePage';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
@@ -59,6 +61,9 @@ function App() {
         <Route path="/account/allergies" element={<Allergies />}/>
         <Route path='/selectCuisine' element={<Cuisine />} />
         <Route path='/expandRadius' element={<ExpandRadius />} />
+        {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
+        <Route path='/group/join' element={<Group isHost={false}/>}/>
+        <Route path='/group/host' element={<Group isHost={true}/>}/>
       </Routes>
     </div>
   )
