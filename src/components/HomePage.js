@@ -77,6 +77,8 @@ const HomePage = () => {
                             <Button onClick={() => handleClickQuiz2()}>
                                 Host Group Quiz
                             </Button>
+                            <br></br>
+                            <br></br>
                             <Button onClick={() => handleClickQuiz3()}>
                                 Join Group Quiz
                             </Button>

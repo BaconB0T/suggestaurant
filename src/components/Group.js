@@ -1,14 +1,94 @@
+import { getAuth } from 'firebase/auth';
 import React, { useEffect, useRef, useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
-import { groupExists, createGroup, getCode } from '../firestore';
+import { groupExists, createGroup, getCode, joinGroup } from '../firestore';
 
 const Member = () => {
+  const groupCodeRef = useRef();
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [cookies, setCookie] = useCookies(['user']);
+  const [variant, setVariant] = useState("danger");
+
+  async function handleSubmit(e) {
+    e.preventDefault(); // don't refresh the page
+    setError('');
+    const code = e.target.querySelector('[name=code]').value;
+    console.log('typeof(code)');
+    console.log(typeof (code));
+    console.log(code);
+    // errors are set inside of validateForm(e);
+    if (validateForm(e)) {
+      groupExists(code).then((val) => {
+        if (val) {
+          // Group exists, join it.
+          setCookie('groupcode', groupCodeRef.current.value, { path: '/' });
+          joinGroup(code, getAuth().currentUser);
+          navigate("/dietaryRestrictions");
+        } else {
+          // Group doesn't exist.
+          setError("Invalid code: Group doesn't exist.");
+        }
+      });
+    }
+  }
+
+  function validateForm(event) {
+    setVariant('danger');
+    setError('');
+    const codeField = event.target.querySelector('[name=code]');
+    const code = codeField.value;
+    const missingCode = code === '' || code === null;
+
+    if(missingCode) {
+      setError('You must include a code.');
+      return false;
+    }
+
+    if(code.length !== 6) {
+      setError('Code must be 6 digits long.');
+      return false;
+    }
+    return true;
+  }
+
+  function handleChange(event) {
+    const value = event.target.value;
+    if(value.length !== 6) {
+      setVariant('warning');
+      setError('Code must be 6 digits long.')
+    } else {
+      setVariant('danger');
+      setError('')
+    }
+  }
+
   return (
-    <>
-      <div>Join a Group</div>
-    </>
+    <Container
+      className="d-flex align-items-center justify-content-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <div className="w-100" style={{ maxWidth: "400px" }}>
+        <Card>
+          <Card.Body>
+            <h2 className="text-center mb-4">Keywords</h2>
+            {error && <Alert variant={variant || "danger"}>{error}</Alert>}
+            <Form onSubmit={handleSubmit}>
+              <Form.Group id="keywords" className="mb-2">
+                <Form.Label>Group Code</Form.Label>
+                <Form.Control name='code' ref={groupCodeRef} 
+                  onChange={handleChange} minLength="6" maxLength="6" 
+                  placeholder='Group code' required 
+                />
+              </Form.Group>
+              <Button className="w-40 mt-10" type="submit">Go</Button>
+            </Form>
+          </Card.Body>
+        </Card>
+      </div>
+    </Container>
   );
 }
 
@@ -24,7 +104,7 @@ const Host = ({ setGlobalState }) => {
   useEffect(() => {
     getCode().then((code) => {
       setCode(code);
-      groupCodeRef.current = code;  
+      groupCodeRef.current = code;
     });
   }, []);
 
@@ -35,7 +115,7 @@ const Host = ({ setGlobalState }) => {
     // errors are set inside of validateForm(e);
     if (validateForm(e)) {
       groupExists(code).then((val) => {
-        if(val) {
+        if (val) {
           console.log("Group code already taken");
           setError('That code is already taken.');
         } else {

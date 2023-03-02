@@ -421,11 +421,14 @@ function getGroupInfo(groupID) {
 }
 
 async function getGroup(groupId) {
-  return await getDocument(doc(db, 'groups', groupId));
+  return await getDocument(doc(db, 'groups', String(groupId)));
 }
 
 async function groupExists(groupId) {
-  const docRef = await getDoc(doc(db, 'groups', groupId));
+  console.log('typeof(groupId)');
+  console.log(groupId);
+  console.log(typeof(groupId));
+  const docRef = await getDoc(doc(db, 'groups', String(groupId)));
   return docRef.exists();
 }
 
@@ -659,4 +662,31 @@ function defaultGroup(code, currentUser) {
   });
 }
 
-export { db, analytics, groupExists,  getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+async function joinGroup(code, user) {
+  // code = 903233;
+  if(!(await groupExists(code))) {
+    console.log("Group doesn't exist.");
+    return null;
+  }
+  const groupDocRef = doc(db, 'groups', code);
+  const groupDoc = (await getDoc(groupDocRef)).data();
+
+  if(groupDoc.users.includes(user.uid)) {
+    console.log("Already in group");
+    return true;
+  }
+  const newUsers = groupDoc.users.concat(user.uid);
+  try {
+    updateDoc(groupDocRef, {
+      'users': newUsers,
+    });
+    return true;
+  } catch(e) {
+    console.log("Failed to join group, see below reason:");
+    console.error(e);
+    return false;
+  }
+  
+}
+
+export { db, analytics, joinGroup, groupExists,  getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
