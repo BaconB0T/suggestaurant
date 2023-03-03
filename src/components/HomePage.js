@@ -15,7 +15,7 @@ const HomePage = () => {
 
     async function handleClickQuiz() {
         try {
-            setCookie('groupcode', 0, { path: '/' });
+            setCookie('groupCode', 0, { path: '/' });
             navigate("/location");
         } catch (e) {
             // else set an error
@@ -25,8 +25,8 @@ const HomePage = () => {
 
     async function handleClickQuiz2() {
         try {
-            setCookie()
-            // navigate("/generateCodePage");
+            setCookie('host', true, { path: '/' });
+            console.log(cookies);
             navigate("/group/host");
         } catch (e) {
             // else set an error
@@ -36,7 +36,7 @@ const HomePage = () => {
 
     async function handleClickQuiz3() {
         try {
-            // navigate("/getCodePage");
+            setCookie('host', false, { path: '/' });
             navigate("/group/join");
         } catch (e) {
             // else set an error

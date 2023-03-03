@@ -19,6 +19,8 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
+const supportedMemberGroupKeys = ['diet', 'keywords', 'price', 'users'];
+const supportedHostGroupKeys = supportedMemberGroupKeys.concat('latlong', 'time');
 
 // localize OAuth flow to user's preferred language.
 auth.languageCode = 'it';
@@ -334,9 +336,7 @@ function signInAnon() {
       // signed in...
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(`Error: ${errorCode}: ${errorMessage}`);
+      console.error(error);
     });
 }
 
@@ -425,9 +425,6 @@ async function getGroup(groupId) {
 }
 
 async function groupExists(groupId) {
-  console.log('typeof(groupId)');
-  console.log(groupId);
-  console.log(typeof(groupId));
   const docRef = await getDoc(doc(db, 'groups', String(groupId)));
   return docRef.exists();
 }
@@ -608,16 +605,16 @@ async function updateUserCuisine(user, listOfCuisine) {
  * @returns A code with 'length' values each in the range [min, max) (if max > 10, 
  * there may be more than 'length' digits in the code if a value is itself multiple digits)
  */
-async function getCode(length=6, max=10, min=0) {
-  let id='';
+async function getCode(length = 6, max = 10, min = 0) {
+  let id = '';
   // low collision rate, this should be fine
   let numDupCodes = 1;
   do {
-    for(let i=0; i < length; ++i) {
-      id += `${Math.floor(Math.random()*max)+min}`;
+    for (let i = 0; i < length; ++i) {
+      id += `${Math.floor(Math.random() * max) + min}`;
     }
     numDupCodes = (await getCountFromServer(query(collection(db, 'groups'), where('code', '==', id)))).data().count;
-  } while(numDupCodes !== 0);
+  } while (numDupCodes !== 0);
   return id;
 }
 
@@ -625,15 +622,34 @@ async function getCode(length=6, max=10, min=0) {
 // This may as well be the ID of the group in Firestore.
 async function createGroup(code) {
   const groupRef = doc(db, 'groups', code);
-  
+
   if (getDoc(groupRef).exists) return null;
 
-  await setDoc(groupRef, defaultGroup(code, auth.currentUser));
+  await setDoc(groupRef, defaultGroup(code, getAuth().currentUser));
   return (await getDocument(groupRef));
 }
 
 // What about anon users?
 function defaultGroup(code, currentUser) {
+  const dataObj = defaultGroupUserData(currentUser);
+
+  const data = {};
+  data[currentUser.uid] = dataObj;
+
+  return ({
+    host: currentUser.uid,
+    users: [
+      currentUser.uid
+    ],
+    latlong: { latitude: 0, longitude: 0, distance: 0 },
+    numUsers: 1,
+    numUsersReady: 0,
+    groupCode: code,
+    data: data
+  });
+}
+
+function defaultGroupUserData(currentUser) {
   const dids = {
     "Halal": '',
     "Gluten-free": '',
@@ -643,50 +659,113 @@ function defaultGroup(code, currentUser) {
     "Soy-free": '',
     "Vegetarian": '',
   }
+  
   const uf = currentUser.filters;
   const dr = (uf && uf.dietaryRestrictions) || [];
-  
-  for(const k of dr) dids[k] = k;
-  
-  return ({
-    host: currentUser.uid,
-    keywords: '',
-    time: 0, // host only
+
+  for (const k of dr) dids[k] = k;
+  return {
+    diet: dids,
     price: [1],
-    diet: dids, // started by host
-    groupCode: code,
-    latlong: { latitude: 0, longitude: 0, distance: 0 }, // also host only
-    users: [
-      currentUser.uid
-    ],
-  });
+    keywords: '',
+  }
 }
 
 async function joinGroup(code, user) {
-  // code = 903233;
-  if(!(await groupExists(code))) {
+  if (!(await groupExists(code))) {
     console.log("Group doesn't exist.");
     return null;
   }
+
+  return await updateGroupMember(code, 'users', user.uid);
+}
+
+/**
+ * 
+ * @param {string} code The code to the group to update.
+ * @param {*} user The firebase auth object
+ * @param {string} key The key in the group doc to update.
+ * @param {*} value The value to add to the group's `key`. Value is not used if updating users.
+ * @returns 
+ */
+async function updateGroupMember(code, key, value) {
+  if(!(await groupExists(code))) {
+    console.log("Group doesn't exist.");
+    return false;
+  }
+  const user = getAuth().currentUser;
   const groupDocRef = doc(db, 'groups', code);
   const groupDoc = (await getDoc(groupDocRef)).data();
-
-  if(groupDoc.users.includes(user.uid)) {
-    console.log("Already in group");
-    return true;
+  const userData = groupDoc['data'][user.uid];
+  switch(key) {
+    case 'users':
+      if (groupDoc.users.includes(value)) {
+        console.log("Already in group");
+        return true;
+      }
+      // console.log(groupDoc[key]);
+      groupDoc[key] = groupDoc[key].concat(value);
+      groupDoc['numUsers'] = groupDoc[key].length;
+      groupDoc['data'][user.uid] = defaultGroupUserData(user);
+      break;
+    case 'keywords':
+    case 'price':
+    case 'diet':
+      userData[key] = value;
+      break;
+    default:
+      console.log(`Invalid update key: ${key}`);
+      return false
   }
-  const newUsers = groupDoc.users.concat(user.uid);
+  console.log(groupDoc);
   try {
-    updateDoc(groupDocRef, {
-      'users': newUsers,
-    });
+    updateDoc(groupDocRef, groupDoc);
     return true;
-  } catch(e) {
+  } catch (e) {
     console.log("Failed to join group, see below reason:");
     console.error(e);
     return false;
   }
-  
 }
 
-export { db, analytics, joinGroup, groupExists,  getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+async function updateGroupHost(code, key, value) {
+  console.log(value);
+  if (!(await isHost(code, getAuth().currentUser))) {
+    console.error("Not the group's host!");
+    return false;
+  }
+
+  if (supportedMemberGroupKeys.includes(key)) {
+    return updateGroupMember(code, key, value);
+  }
+  
+  const groupDocRef = doc(db, 'groups', code);
+  const groupDoc = (await getDoc(groupDocRef)).data();
+
+  switch(key) {
+    case 'latlong':
+    case 'time':
+      groupDoc[key] = value;
+      break;
+    default:
+      console.error(`Invalid update key: ${key}`);
+      return false;
+  }
+  console.log(key);
+  console.log(groupDoc);
+
+  try {
+    await updateDoc(groupDocRef, groupDoc);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+async function isHost(code, user) {
+  const groupSnap = await getDoc(doc(db, 'groups', code));
+  return groupSnap.data().host === user.uid;
+}
+
+export { db, analytics, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }

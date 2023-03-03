@@ -1,11 +1,15 @@
 import React, {useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import TimePicker from 'react-time-picker';
+import { updateGroupHost } from '../firestore';
 
 
+function timeToInt(timeString) {
+    return parseInt(timeString.replace(':', ''));
+}
 
 const TimeGrab = () => {
   
@@ -20,9 +24,11 @@ const TimeGrab = () => {
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
-            setError("")
+            setError("");
             setCookie('time', value, { path: '/' });
-            
+            if(cookies['host'] === 'true') {
+                updateGroupHost(cookies['groupCode'], 'time', timeToInt(value));
+            }
             navigate("/priceCheck");
         } catch (e) {
             // else set an error
@@ -30,6 +36,12 @@ const TimeGrab = () => {
         }
     }
     
+    if((cookies['groupCode'] !== 0) && cookies['host'] !== 'true') {
+        return (
+            <Navigate to='/dietaryRestrictions' />
+        );
+    }
+
     return(
         <Container
             className="d-flex align-items-center justify-content-center"

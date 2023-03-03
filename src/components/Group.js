@@ -16,15 +16,12 @@ const Member = () => {
     e.preventDefault(); // don't refresh the page
     setError('');
     const code = e.target.querySelector('[name=code]').value;
-    console.log('typeof(code)');
-    console.log(typeof (code));
-    console.log(code);
     // errors are set inside of validateForm(e);
     if (validateForm(e)) {
       groupExists(code).then((val) => {
         if (val) {
           // Group exists, join it.
-          setCookie('groupcode', groupCodeRef.current.value, { path: '/' });
+          setCookie('groupCode', groupCodeRef.current.value, { path: '/' });
           joinGroup(code, getAuth().currentUser);
           navigate("/dietaryRestrictions");
         } else {
@@ -109,6 +106,7 @@ const Host = ({ setGlobalState }) => {
   }, []);
 
   async function handleSubmit(e) {
+    console.log(cookies);
     e.preventDefault(); // don't refresh the page
     setError('');
     const code = e.target.querySelector('[name=code]').value;
@@ -124,12 +122,7 @@ const Host = ({ setGlobalState }) => {
             if (group === null) {
               setError('Group not created, please try again later.');
             } else {
-              // setGlobalState({ group: group, host: true });
-              // setGroup(group);
-              // setHost(true);
-              setCookie('groupcode', groupCodeRef.current, { path: '/' });
-              // .value is undefined, only .current exists and its value is what we need.
-              // setCookie('groupcode', groupCodeRef.current.value, { path: '/' });
+              setCookie('groupCode', code, { path: '/' });
               navigate("/location");
             }
           });
@@ -184,7 +177,6 @@ const Host = ({ setGlobalState }) => {
 }
 
 const Group = ({ isHost, setGlobalState }) => {
-  console.log(isHost);
   const toRender = isHost ? (<Host setGlobalState={setGlobalState} />) : (<Member setGlobalState={setGlobalState} />);
   // Create group when visiting the page, set to active.
   // Delete inactive groups regularly.

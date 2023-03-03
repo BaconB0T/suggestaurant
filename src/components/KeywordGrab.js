@@ -3,7 +3,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { getAccount, validateUser } from '../firestore'
+import { getAccount, updateGroupMember, validateUser } from '../firestore'
 
 const KeywordGrab = () => {
     const [cookies, setCookie] = useCookies(['user']);
@@ -18,40 +18,42 @@ const KeywordGrab = () => {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
-
-
-
             const jsonData = {
                 keywords: keywordRef.current.value,
                 time: cookies["time"],
                 price: cookies["price"],
                 diet: cookies["diet"],
-                latlong: cookies["latlong"],
-                groupcode: cookies["groupcode"],
+                latlong: cookies["latlong"] || null,
+                groupCode: cookies["groupCode"],
                 host: cookies["host"]
             }
+
+            updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
             // object for storing and using data
             // Using useEffect for single rendering
             // Using fetch to fetch the api from
             // flask server it will be redirected to proxy
-            
-            if (cookies["groupcode"] == 0)
+            let url = '';
+            if (cookies["groupCode"] == 0)
             {
+                url="http://localhost:5000/data"
                 setURL("http://localhost:5000/data")
             }
             else
             {
                 if(cookies["host"] == 0)
                 {
+                    url="http://localhost:5000/groupMode"
                     setURL("http://localhost:5000/groupMode")
                 }
                 else
                 {
+                    url="http://localhost:5000/groupMode"
                     setURL("http://localhost:5000/groupMode")
                 }
             }
 
-            fetch(urlString, {
+            fetch(urlString || url, {
                 method:"POST",
                 cache: "no-cache",
                 headers:{
@@ -63,7 +65,7 @@ const KeywordGrab = () => {
                     )
                 }
             ).then(response => {
-                return response.json()
+                return response.json();
             })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
@@ -71,7 +73,7 @@ const KeywordGrab = () => {
                 {
                     navigate("/hostRoom")
                 }
-                if (cookies["groupcode"] != 0)
+                if (cookies["groupCode"] != 0)
                 {
                     navigate("/waitingRoom")
                 }

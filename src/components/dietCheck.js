@@ -3,6 +3,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { updateGroupHost, updateGroupMember } from '../firestore';
 
 
 const DietCheck = () => {
@@ -11,31 +12,31 @@ const DietCheck = () => {
     const [error, setError] = useState("")
     const [price, setPrice] = useState("")
     const [value, onChange] = useState('10:00');
-    const veganRef = useRef()
-    const halalRef = useRef()
-    const dairyRef = useRef()
-    const glutenRef = useRef()
-    const soyRef = useRef()
-    const kosherRef = useRef()
-    const veggieRef = useRef()
-
+    const veganRef  = useRef();
+    const halalRef  = useRef();
+    const dairyRef  = useRef();
+    const glutenRef = useRef();
+    const soyRef    = useRef();
+    const kosherRef = useRef();
+    const veggieRef = useRef();
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
+
         try {
             setError("")
-            console.log("check1")
             const dietData = {
-                halal: (halalRef.current.value == "on") ? "" : "halal",
-                vegan: (veganRef.current.value == "on") ? "" : "vegan",
-                dairy: (dairyRef.current.value == "on") ? "" : "dairy",
-                gluten: (glutenRef.current.value == "on") ? "" : "gluten",
-                soy: (soyRef.current.value == "on") ? "" : "soy",
-                kosher: (kosherRef.current.value == "on") ? "" : "kosher",
-                veggie: (veggieRef.current.value == "on") ? "" : "veggie"
+                'Dairy-free':  !dairyRef.current.checked ? "" : "dairy",
+                'Gluten-free': !glutenRef.current.checked? "" : "gluten",
+                'Halal':       !halalRef.current.checked ? "" : "halal",
+                'Kosher':      !kosherRef.current.checked? "" : "kosher",
+                'Soy-free':    !soyRef.current.checked   ? "" : "soy",
+                'Vegan':       !veganRef.current.checked ? "" : "vegan",
+                'Vegetarian':  !veggieRef.current.checked? "" : "veggie"
             }
             setCookie('diet', dietData, { path: '/' });
-            console.log("check2")
+            // No difference between host and member.
+            updateGroupMember(cookies['groupCode'], 'diet', dietData);
             navigate("/timeGrab");
         } catch (e) {
             // else set an error
