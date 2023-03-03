@@ -6,7 +6,7 @@ import { getAccount, signInAnon } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import Account from './components/Accounts';
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Login from './components/Login'
 import History from './components/History';
 import Search from './components/Search';
@@ -31,8 +31,15 @@ import HomePage from './components/HomePage';
 import ExpandRadius from './components/ExpandRadiusPage';
 import Group from './components/Group';
 import { getAuth } from 'firebase/auth';
- 
+import { useState, useMemo } from 'react';
+
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
+
+function useQuery() {
+  const { search } = useLocation();
+
+  return useMemo(() => new URLSearchParams(search), [search]);
+}
 
 function App() {
   if(getAuth().currentUser === null) {
@@ -41,11 +48,18 @@ function App() {
 
   const [cookies, setCookie] = useCookies(['user'])
   let userWithHistory = getAccount("username", "admin");
-  const restaurant = {name: "Fake Restaurant!", location: {streetAddress: "4903 State Rd 54", state: "FL", city: "New Port Richey", postalCode: '16127', latitude: 28.2172884, longitude: -82.7333444}};
+  const [state, setState] = useState({});
+  // const restaurant = {name: "Fake Restaurant!", location: {streetAddress: "4903 State Rd 54", state: "FL", city: "New Port Richey", postalCode: '16127', latitude: 28.2172884, longitude: -82.7333444}};
+  
+  // To get query parameters, use the line below and use the parameters name instead of paramName
+  // query.get('paramName');
+  let query = useQuery();
+
   return (
     <div>
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} indexNum = {0}/>} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} indexNum = {0}/>} />
+        <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} state={state}/>}/>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={<Account />} />
@@ -54,7 +68,6 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />}/>
         <Route path="/historySearch" element={<HistorySearch />}/>
-        <Route path="/recommendation/map" element={<RecommendationMap res={restaurant}/>}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab/>}/>
         <Route path="/priceCheck"element={<PriceGrab/>}/>
