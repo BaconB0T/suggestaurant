@@ -31,7 +31,7 @@ import HomePage from './components/HomePage';
 import ExpandRadius from './components/ExpandRadiusPage';
 import Group from './components/Group';
 import { getAuth } from 'firebase/auth';
-
+ 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
 
 function App() {
