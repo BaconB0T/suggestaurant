@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAccounts, getHistory, getAllAccounts, getRestaurantBy, getAccount, getRestaurant, signInAnon } from './firestore';
+import { getAccount, signInAnon } from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -30,7 +30,6 @@ import Cuisine from './components/PresetCuisines';
 import HomePage from './components/HomePage';
 import ExpandRadius from './components/ExpandRadiusPage';
 import Group from './components/Group';
-import GetCodePage from './components/getCodePage';
 import { getAuth } from 'firebase/auth';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
