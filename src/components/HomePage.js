@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 const HomePage = () => {
-  
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
@@ -16,6 +15,7 @@ const HomePage = () => {
     async function handleClickQuiz() {
         try {
             setCookie('groupCode', 0, { path: '/' });
+            setCookie('host', false, { path: '/' });
             navigate("/location");
         } catch (e) {
             // else set an error
@@ -26,7 +26,6 @@ const HomePage = () => {
     async function handleClickQuiz2() {
         try {
             setCookie('host', true, { path: '/' });
-            console.log(cookies);
             navigate("/group/host");
         } catch (e) {
             // else set an error

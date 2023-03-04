@@ -35,7 +35,9 @@ const PriceGrab = () => {
             setError("")
 
             setCookie('price', price + 1, { path: '/' });
-            updateGroupMember(cookies['groupCode'], 'price', price+1);
+            if(cookies['groupCode'] != 0) {
+                updateGroupMember(cookies['groupCode'], 'price', price+1);
+            }
             navigate("/keywordGrab");
         } catch (e) {
             // else set an error

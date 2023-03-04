@@ -36,7 +36,7 @@ const TimeGrab = () => {
         }
     }
     
-    if((cookies['groupCode'] !== 0) && cookies['host'] !== 'true') {
+    if((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
         return (
             <Navigate to='/dietaryRestrictions' />
         );

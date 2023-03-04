@@ -17,7 +17,7 @@ const KeywordGrab = () => {
         try {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
-
+            
             const jsonData = {
                 keywords: keywordRef.current.value,
                 time: cookies["time"],
@@ -28,7 +28,6 @@ const KeywordGrab = () => {
                 host: cookies["host"]
             }
 
-            updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
             // object for storing and using data
             // Using useEffect for single rendering
             // Using fetch to fetch the api from
@@ -36,6 +35,7 @@ const KeywordGrab = () => {
             let url = '';
             if (cookies["groupCode"] == 0)
             {
+                updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
                 url="http://localhost:5000/data"
                 setURL("http://localhost:5000/data")
             }
@@ -69,7 +69,7 @@ const KeywordGrab = () => {
             })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
-                if (cookies["host"] != 0)
+                if (cookies['groupCode'] != 0 && cookies["host"] != 0)
                 {
                     navigate("/hostRoom")
                 }

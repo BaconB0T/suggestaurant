@@ -43,7 +43,7 @@ const DistanceGrab = () => {
             }
 
             setCookie('latlong', latlong, { path: '/' });
-            if(cookies['host'] === 'true') {
+            if(cookies['groupCode'] != 0 && cookies['host'] === 'true') {
                 updateGroupHost(cookies['groupCode'], 'latlong', latlong);
             }
 
@@ -56,7 +56,7 @@ const DistanceGrab = () => {
         }
     }
 
-    if((cookies['groupCode'] !== 0) && cookies['host'] !== 'true') {
+    if((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
         return (
             <Navigate to='/dietaryRestrictions' />
         );

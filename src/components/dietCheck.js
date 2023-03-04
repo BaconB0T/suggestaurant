@@ -36,7 +36,9 @@ const DietCheck = () => {
             }
             setCookie('diet', dietData, { path: '/' });
             // No difference between host and member.
-            updateGroupMember(cookies['groupCode'], 'diet', dietData);
+            if(cookies['groupCode'] != 0) {
+                updateGroupMember(cookies['groupCode'], 'diet', dietData);
+            }
             navigate("/timeGrab");
         } catch (e) {
             // else set an error
