@@ -1,9 +1,10 @@
 import React, { useRef, useState, Component  } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import Geocode from "react-geocode";
 import { useGeolocated } from "react-geolocated";
+import { updateGroupHost } from '../firestore';
 
 const DistanceGrab = () => {
     const [cookies, setCookie] = useCookies(['user']);
@@ -24,7 +25,6 @@ const DistanceGrab = () => {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-            console.log("check1")
 
             // // Get latitude & longitude from address.
             // Geocode.fromAddress("Eiffel Tower").then(
@@ -41,17 +41,25 @@ const DistanceGrab = () => {
                 longitude: longRef.current.value,
                 distance: distRef.current.value
             }
-            console.log("check2")
+
             setCookie('latlong', latlong, { path: '/' });
-            console.log("check3")
+            if(cookies['groupCode'] != 0 && cookies['host'] === 'true') {
+                updateGroupHost(cookies['groupCode'], 'latlong', latlong);
+            }
+
 
             navigate("/dietaryRestrictions");
-            console.log("check4")
             
         } catch (e) {
             // else set an error
             setError(e.message)
         }
+    }
+
+    if((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
+        return (
+            <Navigate to='/dietaryRestrictions' />
+        );
     }
 
     return (

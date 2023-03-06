@@ -4,7 +4,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { getAccount, validateUser } from '../firestore'
+import { getAccount, updateGroupMember, validateUser } from '../firestore'
 import styles from '../styles/new.module.scss';
 
 
@@ -35,7 +35,9 @@ const PriceGrab = () => {
             setError("")
 
             setCookie('price', price + 1, { path: '/' });
-            
+            if(cookies['groupCode'] != 0) {
+                updateGroupMember(cookies['groupCode'], 'price', price+1);
+            }
             navigate("/keywordGrab");
         } catch (e) {
             // else set an error

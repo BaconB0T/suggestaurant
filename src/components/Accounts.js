@@ -33,7 +33,7 @@ const PeepeePoopoo = () => {
   const auth = getAuth();
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (!user.isAnonymous) {
         setUser(user);
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User

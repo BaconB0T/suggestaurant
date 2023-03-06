@@ -44,7 +44,7 @@ function History() {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (!user.isAnonymous) {
         setUser(user);
         getHistory(user.uid).then((usersHistory) => {
           setHistory(usersHistory);
