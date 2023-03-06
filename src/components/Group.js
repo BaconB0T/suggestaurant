@@ -70,7 +70,7 @@ const Member = () => {
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
-            <h2 className="text-center mb-4">Keywords</h2>
+            <h2 className="text-center mb-4">Join Group</h2>
             {error && <Alert variant={variant || "danger"}>{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
@@ -157,7 +157,7 @@ const Host = ({ setGlobalState }) => {
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
-            <h2 className="text-center mb-4">Keywords</h2>
+            <h2 className="text-center mb-4">Host Group</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
