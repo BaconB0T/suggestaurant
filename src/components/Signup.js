@@ -120,7 +120,7 @@ class Signup extends React.Component {
           style={{ minHeight: "100vh" }}>
         <div className="w-100" style={{ maxWidth: "400px" }}>
           {user && (
-            <Navigate to='/accounts' replace={true} />
+            <Navigate to='/account' replace={true} />
           )}
           <Card>
             <Card.Body>

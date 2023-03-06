@@ -1,13 +1,11 @@
 import {useEffect, useState} from "react";
-import {getHistory, rateRestaurant, getAllRestaurants} from "../firestore";
-import { useCookies } from 'react-cookie';
-import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { getHistory, rateRestaurant, getAllRestaurants} from "../firestore";
+import { Navigate } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 
 export default function SearchPrint(){
     const [restaurants, setRes] = useState([]);
-    const [cookies, setCookie, removeCookie] = useCookies(['id']);
     const [user, setUser] = useState([]);
 
     useEffect(() => {
@@ -18,19 +16,12 @@ export default function SearchPrint(){
         getPath();
     }, []);
 
-    
+
     const auth = getAuth();
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-        if (user) {
-            setUser(user);
-            // User is signed in, see docs for a list of available properties
-            // https://firebase.google.com/docs/reference/js/firebase.User
-        } else {
-            // User is signed out
-            setUser(null);
-        }
-        });
+      onAuthStateChanged(auth, (user) => {
+        setUser(user);
+      });
     });
 
     if(user === null) {
@@ -43,7 +34,7 @@ export default function SearchPrint(){
         <div>
             Restaurants
             {restaurants.map(restaurant => ( 
-                <div key = {restaurant.name}>
+                <div key = {restaurant.business_id}>
                     <p>Restaurant: {restaurant.name}</p>
                     <p>Stars: {restaurant.stars}</p>
                     {<div>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
 import { useCookies } from 'react-cookie';
+import { useNavigate } from "react-router-dom";
 
 
 class Recommendations extends React.Component {
@@ -11,14 +12,17 @@ class Recommendations extends React.Component {
         this.state = {
             restIds: props.recommendationIds,
             index: props.indexNum,
-            rest: (<Recommendation restId={props.recommendationIds[props.indexNum]}></Recommendation>)
+            rest: (<Recommendation setGlobalState={props.setState} restId={props.recommendationIds[props.indexNum]}></Recommendation>),
+            setGlobalState: props.setState,
         }
     }
 
     handleClick() {
+        console.log("entered handleClick()")
+        let newIndex = this.state.index + 1;
         this.setState(prevState => ({
-            index: this.state.index + 1,
-            rest: (<Recommendation restId={this.state.restIds[this.state.index]}></Recommendation>)
+            index: newIndex,
+            rest: (<Recommendation setGlobalState={this.state.setGlobalState} restId={this.state.restIds[newIndex]}></Recommendation>)
           }));
     }
 
@@ -76,28 +80,36 @@ const Stars = (props) => {
 const Recommendation = (props) => {
     const [textToCopy, setTextToCopy] = useState([]);
     const [restaurant, setRestaurant] = useState([]);
-    const [imageURL, setImg] = useState([]);
+    const [imageURL, setImg] = useState("");
     const [cookies, setCookie] = useCookies(['user']);
-    //const [location, setLocation] = useState([]);
-    //const [falseDietaryRestrictions, setFalseDietRestrict] = useState([]);
+    const navigate = useNavigate();
+    const {setGlobalState} = props;
+
     useEffect(() => {
         async function setRes() {
+            console.log("Entered setRes()")
             const rest = await getRestaurantById(String(props.restId));
             setRestaurant(rest);
-            setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
+            
+            if (rest.location != null) {
+                setTextToCopy(rest.location.streetAddress + ", " + rest.location.city + ", " + rest.location.state + " " + rest.location.postalCode);
+            }
+           
             let images = await getImageURLsForBusiness(String(props.restId));
             setImg(images[0]);
         }
-        setRes();
-    });
+         setRes();
+    }, [props.restId]);
 
-    const handleClick2 = (your_lat, your_lng) => {
-        window.open("https://maps.google.com?q="+your_lat+","+your_lng );
-    }
+    // const handleClick2 = (your_lat, your_lng) => {
+    //     window.open("https://maps.google.com?q="+ your_lat+","+your_lng );
+    // }
     const handleClick3 = () => {
-        window.open("http://localhost:3000/recommendation/map" );
+        setGlobalState({business_id: restaurant.business_id});
+        navigate(`/recommendations/map?business_id=${restaurant.business_id}`);
+        // window.open("http://localhost:3000/recommendations/map" );
     }
-
+    
     
     return (
         <div>
@@ -128,15 +140,14 @@ const Recommendation = (props) => {
             </table>
             <Categories categories={restaurant.categories} />
 
-            <button onClick={() => handleClick2(restaurant.location.latitude, restaurant.location.longitude)}>
+            {/* <button onClick={() => handleClick2(restaurant.location.latitude, restaurant.location.longitude)}>
                     Open Map
-            </button>
+            </button> */}
             <button onClick={() => handleClick3()}>
                     Go to Map Page
             </button>
         </div>
-
-    )
+    );
 
 }
 
