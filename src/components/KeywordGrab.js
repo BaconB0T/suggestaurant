@@ -41,14 +41,7 @@ const KeywordGrab = () => {
             }
             else
             {
-                if(cookies["host"] == 0)
-                {
-                    setURL("http://localhost:5000/groupMode")
-                }
-                else
-                {
-                    setURL("http://localhost:5000/groupMode")
-                }
+                setURL("http://localhost:5000/groupMode")
             }
 
             fetch(urlString, {
