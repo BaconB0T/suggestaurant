@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 const HomePage = () => {
-  
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
@@ -15,7 +14,29 @@ const HomePage = () => {
 
     async function handleClickQuiz() {
         try {
+            setCookie('groupCode', 0, { path: '/' });
+            setCookie('host', false, { path: '/' });
             navigate("/location");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickQuiz2() {
+        try {
+            setCookie('host', true, { path: '/' });
+            navigate("/group/host");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickQuiz3() {
+        try {
+            setCookie('host', false, { path: '/' });
+            navigate("/group/join");
         } catch (e) {
             // else set an error
             setError(e)
@@ -49,6 +70,16 @@ const HomePage = () => {
                             <br></br>
                             <Button onClick={() => handleClickLogin()}>
                                 {loginOrAccount}
+                            </Button>
+                            <br></br>
+                            <br></br>
+                            <Button onClick={() => handleClickQuiz2()}>
+                                Host Group Quiz
+                            </Button>
+                            <br></br>
+                            <br></br>
+                            <Button onClick={() => handleClickQuiz3()}>
+                                Join Group Quiz
                             </Button>
                         </Card.Body>
                     </Card>

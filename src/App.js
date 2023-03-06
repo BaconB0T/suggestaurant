@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAccounts, getHistory, getAllAccounts, getRestaurantBy, getAccount, getRestaurant } from './firestore';
+import { getAccount, signInAnon } from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -29,6 +29,8 @@ import Allergies from './components/Allergies';
 import Cuisine from './components/PresetCuisines';
 import HomePage from './components/HomePage';
 import ExpandRadius from './components/ExpandRadiusPage';
+import Group from './components/Group';
+import { getAuth } from 'firebase/auth';
 import { useState, useMemo } from 'react';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
@@ -40,6 +42,10 @@ function useQuery() {
 }
 
 function App() {
+  if(getAuth().currentUser === null) {
+    signInAnon();
+  }
+
   const [cookies, setCookie] = useCookies(['user'])
   let userWithHistory = getAccount("username", "admin");
   const [state, setState] = useState({});
@@ -72,6 +78,9 @@ function App() {
         <Route path="/account/allergies" element={<Allergies />}/>
         <Route path='/selectCuisine' element={<Cuisine />} />
         <Route path='/expandRadius' element={<ExpandRadius />} />
+        {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
+        <Route path='/group/join' element={<Group isHost={false}/>}/>
+        <Route path='/group/host' element={<Group isHost={true}/>}/>
       </Routes>
     </div>
   )

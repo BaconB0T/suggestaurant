@@ -12,7 +12,11 @@ function Preferences() {
     const auth = getAuth();
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
-            setUser(user);
+            if(!user.isAnonymous) {
+                setUser(user);
+            } else {
+                setUser(null);
+            }
         });    
     });
     const [FamilyFriendly, setFF] = useState(false);
