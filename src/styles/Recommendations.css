@@ -139,7 +139,7 @@
 }
 
 /* Small & smaller devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (max-width: 768px) {
+/* @media only screen and (max-width: 768px) {
   .recommendation--buttons {
     flex: 0 0 100px;
     flex-direction: row;
@@ -152,4 +152,4 @@
     max-width: 5rem;
     text-rendering: none;
   }
-}
+} */

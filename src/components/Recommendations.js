@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
+import { isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
 import '../styles/Recommendations.css';
 
@@ -38,12 +39,13 @@ class Recommendations extends React.Component {
 
   outOfFrame(dir, name, idx) {
     console.log(`${name} at ${idx} has left the screen`);
-    // delete? idk
+    // delete? idk, this works for now.
     document.getElementById(name).setAttribute('style', 'display: none;');
-
+    
     if(dir === 'right') {
-      document.getElementsByClassName('recommendation--cards')[0].appendChild(<div className='navigating'>Navigating</div>);
-      this.handleClick3();``
+      this.state.showingMap = true;
+      // document.getElementsByClassName('recommendation--cards')[0].appendChild(<div className='navigating'>Navigating</div>);
+      this.handleClick3(); 
     }    
     // state.currentIndexRef.current = state.index;
     
@@ -71,18 +73,23 @@ class Recommendations extends React.Component {
   // }
 
   handleClick3() {
-    this.state.setGlobalState({ business_id: this.state.restIds[this.state.index] });
-    window.location.href = `/recommendations/map?business_id=${this.state.restIds[this.state.index]}`;
-    // navigation.navigate(`/recommendations/map?business_id=${this.state.restIds[this.state.index]}`);
-    // window.open("http://localhost:3000/recommendations/map" );
+    // index is decremented by this point. re-increment it to match.
+    const idx = this.state.index+1;
+    this.state.setGlobalState({ business_id: this.state.restIds[idx] });
+    window.location.href = `/recommendations/map?business_id=${this.state.restIds[idx]}`;
   }
 
   render() {
-    // console.log(this.state);
+    const buttons = 
+      (<div className="recommendation--buttons">
+        <button className='reject' onClick={() => this.swipe('left')}>Reject Recommendation</button>
+        <button className='accept' onClick={() => this.swipe('right')}>Go to Map Page</button>
+      </div>);
+
     return (
       <div className="recommendations">
         <div className="recommendation--cards">
-          {this.state.restIds.map((id, index) => (
+          {!this.state.showingMap ? this.state.restIds.map((id, index) => (
             <Recommendation
               passRef={this.state.childRefs[index]}
               onSwipe={(dir) => this.swiped(dir, id, index)}
@@ -91,13 +98,9 @@ class Recommendations extends React.Component {
               key={id}
               id={id}
             />
-          ))}
+          )) : <div>Enjoy!</div>}
         </div>
-        {/* {this.state.rest} */}
-        <div className="recommendation--buttons">
-          <button className='reject' onClick={() => this.swipe('left')}>Reject Recommendation</button>
-          <button className='accept' onClick={() => this.swipe('right')}>Go to Map Page</button>
-        </div>
+        {!isMobile ? buttons : <></>}
       </div>
     );
   }
