@@ -1,16 +1,128 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+:root
+{
+  --main-color: rgb(15, 169, 1);
+  --secondary-color: rgb(102, 75, 160);
+  --green-secondary: rgb(129, 204, 122);
+}
+
+.image-control
+{
+  width: 200px;
+}
+
 .App {
   text-align: center;
+  /* background-image: url(./images/Orange-Swirl-Background.jpg);
+  background-size: cover;
+  background-position: center; */
+
+  background-color: var(--secondary-color);
+}
+
+.borders
+{
+  background-color: green;
+}
+
+.mobile-wrap
+{
+
+}
+
+.button-control
+{
+  background-color: var(--main-color) !important;
+  font-weight: bold;
+  font-family: Montserrat;
+  border-color: green !important;
+  border-radius: 50px;
+  color: white;
+}
+
+.button-control:hover
+{
+  background-color: rgb(55, 179, 55) !important;
+}
+
+.checkbox-control
+{
+  background-color: var(--main-color);
+  font-weight: bold;
+  font-family: Montserrat;
+  border-color: green;
+  padding: 10px;
+}
+
+.icon-control
+{
+  background-color: var(--main-color);
+  font-weight: bold;
+  font-family: Montserrat;
+  border-color: green;
+  padding: 7px;
+  border-radius: 50px;
+  font-size: 60px;
+}
+
+.login-or-account
+{
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.back-arrow
+{
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+.card-control
+{
+  background-color: white;
+}
+
+.hidden
+{
+  display: none;
+}
+
+.secondary-text
+{
+
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+  font-family: Montserrat;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+
+.form-input-control
+{
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.d-flex {
+  display: flex!important;
+  height: 100vh;
+}
+
+.center {
+  margin: 0 auto;
+  align-self: center;
 }
 
 .App-header {
@@ -22,6 +134,27 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+h2 {
+  font-weight: bold;
+  font-size: 45px;
+  color: var(--main-color);
+  text-shadow: -1px 0 green, 0 1px green, 1px 0 green, 0 -1px green;
+}
+
+.settings
+{
+  position: absolute;
+  top: 15px;
+  right: 85px;
+}
+
+h3 {
+  font-weight: bold;
+  font-size: 30px;
+  color: var(--main-color);
+  text-shadow: -1px 0 green, 0 1px green, 1px 0 green, 0 -1px green;
 }
 
 .App-link {

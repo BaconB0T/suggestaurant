@@ -193,31 +193,35 @@ def keywords():
 def google_maps_key():
 	return jsonify(key=GOOGLE_MAPS_KEY)
 
-@app.route('/groupMode', methods=['POST'])
-def setGroupData():
-	req = json.loads(request.data)
-	group_ref = db.collection(u"groups").document(req["groupCode"]).to_dict()
 
-	group_keywords = group_ref["keywords"] +  " " + req["keywords"]
+# This code was rendered irrelevant by handling group quiz data updates in react
+# @app.route('/groupMode', methods=['POST'])
+# def setGroupData():
+# 	req = json.loads(request.data)
+# 	group_ref = db.collection(u"groups").document(req["groupCode"])
 
-	group_price = group_ref["price"].append(req["price"])
+# 	group_get = group_ref.get().to_dict()
 
-	# Atomically add a new region to the 'keywords' array field.
-	group_ref.update({u'keywords': group_keywords})
-	group_ref.update({u'price'}, group_price)
-	group_ref.update({u'halal'}, req["halal"])
-	group_ref.update({u'vegan'}, req["vegan"])
-	group_ref.update({u'veggie'}, req["veggie"])
-	group_ref.update({u'gluten'}, req["gluten"])
-	group_ref.update({u'kosher'}, req["kosher"])
-	group_ref.update({u'soy'}, req["soy"])
-	group_ref.update({u'dairy'}, req["soy"])
+# 	group_keywords = group_get["keywords"] +  " " + req["keywords"]
 
-	if req["host"] == 1:
-		group_ref.update({u'latlong'}, req["latlong"])
-		group_ref.update({u'time'}, req["time"])
+# 	group_price = group_get["price"].append(req["price"])
 
-	return 0
+# 	# Atomically add a new region to the 'keywords' array field.
+# 	group_ref.update({u'keywords': group_keywords})
+# 	group_ref.update({u'price'}, group_price)
+# 	group_ref.update({u'halal'}, req["halal"])
+# 	group_ref.update({u'vegan'}, req["vegan"])
+# 	group_ref.update({u'veggie'}, req["veggie"])
+# 	group_ref.update({u'gluten'}, req["gluten"])
+# 	group_ref.update({u'kosher'}, req["kosher"])
+# 	group_ref.update({u'soy'}, req["soy"])
+# 	group_ref.update({u'dairy'}, req["soy"])
+
+# 	if req["host"] == 1:
+# 		group_ref.update({u'latlong'}, req["latlong"])
+# 		group_ref.update({u'time'}, req["time"])
+
+# 	return 0
 
 	
 # Running app
