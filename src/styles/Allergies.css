@@ -1,50 +1,34 @@
-/* #diet-selections {
+.title{
+    display: flex;
+    font-size: x-large;
+    justify-content: center;
+    /* align-items: center; */
+}
+
+.list-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.test{
+    position: relative;
+    margin: 10px;
+}
+
+.item-name{
     background: transparent;
-    position: flex;
     font-size:medium;
     color: black;
     padding: 14px 40px;
-    text-align: center;
-    margin:2%;
+    justify-content: center;
+    margin-top: 15px;
     border-radius: 8px;
     cursor: pointer;
-}
-
-#diet-selections:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-    transition: 0.3s;
-} */
-
-#selected {
-    background-color: lightblue;
-    position: flex;
-    font-size:medium;
-    color: black;
-    padding: 14px 40px;
-    text-align: center;
-    margin:2%;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-#selected:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
     transition: 0.3s;
 }
 
-#not-selected {
-    background-color: transparent;
-    position: flex;
-    font-size:medium;
-    color: black;
-    padding: 14px 40px;
-    text-align: center;
-    margin:2%;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-#not-selected:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+input:checked ~ .item-name {
+    background: lightblue;
     transition: 0.3s;
 }
