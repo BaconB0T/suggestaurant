@@ -1,0 +1,27 @@
+.list-cont {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tes{
+    position: relative;
+    margin: 10px;
+}
+
+.item-nam{
+    background: transparent;
+    font-size:small;
+    color: black;
+    padding: 9px 15px;
+    justify-content: center;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+input:checked ~ .item-nam {
+    background: lightblue;
+    transition: 0.3s;
+}
