@@ -53,24 +53,24 @@ function Preferences() {
 
 
     return(
-        <div>
-            <h1>Preferences</h1>
+        <div className = 'pref'>
+            <div className = 'Title'>Preferences</div>
             <div className = 'oneline'>
-                <h4>Include Family Friendly</h4>
+                <div className="test">Include Family Friendly</div>
                 <label className='switch'>
                     <input id = 'checkb' type = 'checkbox' checked = {FamilyFriendly} onClick = {handleFFChange}/>
                     <span className = 'slider' />
                 </label>
             </div>
             <div className = 'oneline'>
-                <h4>Include History</h4>
+            <div className="test">Include History</div>
                 <label className='switch'>
                     <input id = 'checkb' type = 'checkbox' checked = {includeHis} onClick = {handleIncHisChange}/>
                     <span className = 'slider' />
                 </label>
             </div>
             <div className = 'oneline'>
-                <h4>Include Fast Food</h4>
+                <div className="test">Include Fast Food</div>
                 <label className='switch'>
                     <input id = 'checkb' type = 'checkbox' checked = {FastFood} onClick = {handleFFoodChange}/>
                     <span className = 'slider' />
@@ -78,7 +78,7 @@ function Preferences() {
             </div>
 
             <div className = 'oneline'>
-                <h4>Minimum Rating</h4>
+            <div className="test">Minimum Rating</div>
                 <div className = 'star-rating'>
                     {[...Array(5)].map((star,index) => {
                         index += 1;
@@ -104,9 +104,9 @@ function Preferences() {
                 </div>
             </div>
 
-            <div>
-                <h4>Preselect Cuisines</h4>
-                <button><Link to='/selectCuisine'>Select Cuisine</Link></button>
+            <div className = 'oneline'>
+            <div className="test">Preselect Cuisines</div>
+                <div className="but"><button><Link to='/selectCuisine'>Select Cuisine</Link></button></div>
             </div>
 
 
