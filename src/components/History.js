@@ -4,33 +4,99 @@ import { useCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import '../styles/History.css';
 
 function HistoryElem(props) {
   const [restaurant, setRestaurant] = useState([]);
+  const [loc, setLocation] = useState([]);
   const [cookies, setCookie, removeCookie] = useCookies(['id']);
+
+  const [user, setUser] = useState([]);
+
+  const auth = getAuth();
+
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       setUser(user);
+  //       getHistory(user.uid).then((usersHistory) => {
+  //         setHistory(usersHistory);
+  //         console.log(usersHistory);
+  //         console.log(user.uid);
+  //       });
+  //       // User is signed in, see docs for a list of available properties
+  //       // https://firebase.google.com/docs/reference/js/firebase.User
+  //     } else {
+  //       // User is signed out
+  //       setUser(null);
+  //     }
+  //   });
+  // }, []);
   // get restaurant
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurant(props.history.restaurant);
       setRestaurant(rest);
+      setLocation(rest.location);
     }
     setRes();
+    
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+    });
   }, []);
 
 
   const handleClick = event => {
-    deleteHistoryItem(cookies.id, restaurant);
+    deleteHistoryItem(user.uid, restaurant);
     event.currentTarget.disabled = true;
     // console.log("Button Pressed");
   };
 
   return (
-    <li>
-      Name: {restaurant.name}<br></br>
-      Stars: {restaurant.stars}<br></br>
-      Your Rating: {props.history.rating}<br></br>
-      <button onClick={handleClick}>X</button>
-    </li>
+    <div>
+    <a class='button' className = 'rest-but' href={'#' + restaurant.name}>
+      <li className="res-element">
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+          <div className= 'spacing'/>{restaurant.name}
+          <div className= 'spacing'/>
+            <div id="test">
+              {[...Array(5)].map((star, index) => {
+                index +=1;
+                return (
+                  <div key = {index} className= {index <= (restaurant.stars) ? 'light-on' : 'light-off'}>
+                    <span className="st">&#9733;</span>
+                  </div>
+                )
+              })}
+            </div>
+          <div className= 'spacing' id={(props.history.rating == 1) ? 'liked' : 'disliked'}/> 
+          Your Rating: {(props.history.rating == 1) ? <i id='liked' class="fa">&#xf164;</i> : <i id='disliked' class="fa">&#xf165;</i>}
+          <div className= 'spacing'/> <button id = 'trash-button' onClick={handleClick}><i class="fa">&#xf1f8;</i></button>
+        
+      </li>
+    </a>
+
+
+    <div id={restaurant.name} class='overlay'>
+      <div class = 'popup'>
+        <a className = 'pop-up-title'>{restaurant.name}</a>
+        <a class="close" href='javascript:history.back()'>&times;</a>
+        <div class="content">
+          <div className = 'rest-address'>{loc.streetAddress + ', ' +  loc.city + ', ' + loc.state}</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
   );
 }
 
@@ -58,7 +124,7 @@ function History() {
         setUser(null);
       }
     });
-  });
+  }, []);
 
   // useEffect(() => {
   //   async function cried() {
