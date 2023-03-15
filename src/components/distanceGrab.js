@@ -123,13 +123,13 @@ const DistanceGrab = () => {
             const doc = getFilters(user.uid)
             const diet = doc.filters.dietaryRestrictions
             const dietData = {
-                'Dairy-free':  !diet.includes("dairy") ? "" : "dairy",
-                'Gluten-free': !diet.includes("gluten") ? "" : "gluten",
-                'Halal':       !diet.includes("halal") ? "" : "halal",
-                'Kosher':      !diet.includes("kosher") ? "" : "kosher",
-                'Soy-free':    !diet.includes("soy") ? "" : "soy",
-                'Vegan':       !diet.includes("vegan") ? "" : "vegan",
-                'Vegetarian':  !diet.includes("veggie") ? "" : "veggie"
+                'Dairy-free':  !diet.includes("Dairy-free") ? "" : "dairy",
+                'Gluten-free': !diet.includes("Gluten-free") ? "" : "gluten",
+                'Halal':       !diet.includes("Halal") ? "" : "halal",
+                'Kosher':      !diet.includes("Kosher") ? "" : "kosher",
+                'Soy-free':    !diet.includes("Soy-free") ? "" : "soy",
+                'Vegan':       !diet.includes("Vegan") ? "" : "vegan",
+                'Vegetarian':  !diet.includes("Vegetarian") ? "" : "veggie" 
             }
         }
 
