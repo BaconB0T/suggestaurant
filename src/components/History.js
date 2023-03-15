@@ -3,7 +3,7 @@ import { getHistory, rateRestaurant, getRestaurant, deleteHistoryItem } from "..
 import { useCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 function HistoryElem(props) {
   const [restaurant, setRestaurant] = useState([]);
@@ -34,31 +34,41 @@ function HistoryElem(props) {
   );
 }
 
-function History() {
+function History({user}) {
   const [cookies] = useCookies(['id']);
   const [history, setHistory] = useState([]);
 
-  const [user, setUser] = useState([]);
+  // const [user, setUser] = useState([]);
 
-  const auth = getAuth();
+  // const auth = getAuth();
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user.isAnonymous) {
-        setUser(user);
-        getHistory(user.uid).then((usersHistory) => {
-          setHistory(usersHistory);
-          console.log(usersHistory);
-          console.log(user.uid);
-        });
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-      } else {
-        // User is signed out
-        setUser(null);
-      }
-    });
+    if (user && !user.isAnonymous) {
+      getHistory(user.uid).then((usersHistory) => {
+        setHistory(usersHistory);
+        console.log(usersHistory);
+        console.log(user.uid);
+      });
+    }
   }, []);
+
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (!user.isAnonymous) {
+  //       setUser(user);
+  //       getHistory(user.uid).then((usersHistory) => {
+  //         setHistory(usersHistory);
+  //         console.log(usersHistory);
+  //         console.log(user.uid);
+  //       });
+  //       // User is signed in, see docs for a list of available properties
+  //       // https://firebase.google.com/docs/reference/js/firebase.User
+  //     } else {
+  //       // User is signed out
+  //       setUser(null);
+  //     }
+  //   });
+  // }, []);
 
   // useEffect(() => {
   //   async function cried() {
@@ -67,7 +77,8 @@ function History() {
   //   cried();
   // }, []);
 
-  if (user === null) {
+  // redirect on anonymous user
+  if (user === null || user.isAnonymous) {
     return (
       <Navigate to='/login' />
     );

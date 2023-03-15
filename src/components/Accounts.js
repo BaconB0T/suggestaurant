@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { signOutUser, deleteUser } from "../firestore";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Container, Card, Alert, Button, Form } from "react-bootstrap";
 
@@ -23,28 +23,31 @@ const DeleteAlert = (props) => {
   )
 }
 
-const PeepeePoopoo = () => {
+const PeepeePoopoo = ({ user }) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
-  const [user, setUser] = useState([]);
-  const [error, setError] = useState("")
+  // const [user, setUser] = useState([]);
+  const [error, setError] = useState("");
+  console.log("In Accounts.js user");
+  console.log(user);
+  // const auth = getAuth();
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     console.log('In onAuthStateChanged');
+  //     console.log(user);
+  //     if (!user.isAnonymous) {
+  //       setUser(user);
+  //       // User is signed in, see docs for a list of available properties
+  //       // https://firebase.google.com/docs/reference/js/firebase.User
+  //     } else {
+  //       // User is signed out
+  //       setUser(null);
+  //     }
+  //   });
+  // });
 
-  
-  const auth = getAuth();
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user.isAnonymous) {
-        setUser(user);
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-      } else {
-        // User is signed out
-        setUser(null);
-      }
-    });
-  });
-
-  if (user === null) {
+  // redirect on anonymous user
+  if (user === null || user.isAnonymous) {
     return (
       <Navigate to='/login' />
     );
