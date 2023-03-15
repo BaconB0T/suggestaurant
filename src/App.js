@@ -58,7 +58,7 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} indexNum = {0}/>} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} /* indexNum={0} */ />} />
         <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} state={state}/>}/>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
