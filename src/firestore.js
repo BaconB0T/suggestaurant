@@ -405,13 +405,13 @@ function defaultHistory() {
 function hasDietaryRestrictions(userID)
 {
   let docRef = db.collection("users").doc(userID).get();
-  const data = docRef.data;
+  const data = docRef.data();
   return data["dietaryRestrictions"].length === 0
 }
 
 function getGroupInfo(groupID) {
   let docRef = db.collection("groups").doc(groupID).get();
-  const data = docRef.data;
+  const data = docRef.data();
   const users = data['users']
   const keywords = ""
   const price = ""
