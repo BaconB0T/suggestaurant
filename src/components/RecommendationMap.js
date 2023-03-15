@@ -3,7 +3,7 @@ import validateJSON from '../security/web';
 import GoogleMapReact from 'google-map-react';
 // import Marker from 'google-map-react';
 import { Button } from 'react-bootstrap';
-import { getRestaurantById, setLastVisitedRestaurant } from '../firestore';
+import { getLastVisitedRestaurant, getRestaurantById, setLastVisitedRestaurant } from '../firestore';
 import { Navigate } from 'react-router-dom';
 import {getAuth} from "firebase/auth";
 
@@ -59,11 +59,13 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
     };
 
     function openInApp(restId, loc) {
-        setLastVisitedRestaurant(getAuth().currentUser.uid, restId)
         console.log("userID:")
         console.log(getAuth().currentUser)
         console.log("restID:")
         console.log(restId)
+        console.log("getting restaurant from firestore!!!")
+        console.log(getLastVisitedRestaurant(getAuth().currentUser.uid))
+        setLastVisitedRestaurant(getAuth().currentUser.uid, restId)
         window.open("https://www.google.com/maps/dir/?api=1&destination="+loc.latitude+","+loc.longitude);
     }
 
