@@ -103,7 +103,7 @@ const HomePage = () => {
                             <b>How was { lastVisitedRestaurant ? lastVisitedRestaurant.name : "YOU SHOULD NEVER SEE THIS" }?</b>
                             <br></br>
                             <br></br>
-                            <button onClick={addRestToHistory(1)}> 👍</button>  <button onClick={addRestToHistory(-1)}>👎</button>
+                            <button onClick={()=>addRestToHistory(1)}>👍</button>  <button onClick={()=>addRestToHistory(-1)}>👎</button>
 
                         </>}
                         handleClose={closePopup}
