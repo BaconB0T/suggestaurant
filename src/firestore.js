@@ -291,7 +291,6 @@ async function signInEmailPassword(email, password) {
   };
 }
 
-// idek if this works (or signInWithProviderRedirect).
 // May have to be called in the react component?
 function signInWithGoogleMobile() {
   signInWithPopup(auth, googleProvider)
@@ -823,5 +822,5 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, signInWithProviderRedirect, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
 
