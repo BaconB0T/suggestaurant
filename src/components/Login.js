@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { signInEmailPassword,getAccount } from '../firestore'
+import { signInEmailPassword, getAccount, signInWithGoogle } from '../firestore'
 
 const Login = () => {
     const navigate = useNavigate();
@@ -27,6 +27,22 @@ const Login = () => {
         });
     }
 
+    async function providerSignIn(provider) {
+        const supportedProviders = ['google'];
+        var result = '';
+        switch (provider) {
+            case 'google':
+                result = await signInWithGoogle();
+                break;
+            default:
+                console.error(`Invalid provider: ${provider}. Supported providers are: ${supportedProviders}`)
+        }
+        // console.log(result);
+        if(result) {
+            navigate('/account');
+        }
+    }
+
     return (
         <Container
             className="d-flex align-items-center justify-content-center"
@@ -49,6 +65,7 @@ const Login = () => {
                                 Login
                             </Button>
                         </Form>
+                      <button onClick={() => providerSignIn('google')}>Sign in with Google</button>
                     </Card.Body>
                 </Card>
                 <div className="w-100 text-center mt-2">
