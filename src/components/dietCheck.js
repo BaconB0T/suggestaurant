@@ -4,6 +4,9 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { updateGroupHost, updateGroupMember } from '../firestore';
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import { BsGearFill } from "react-icons/bs";
+
 
 
 const DietCheck = () => {
@@ -19,6 +22,34 @@ const DietCheck = () => {
     const soyRef    = useRef();
     const kosherRef = useRef();
     const veggieRef = useRef();
+    const [loginOrAccount, setLoginOrAccount] = useState("Login")
+
+    async function handleClickBack() {
+        try {
+            navigate("/location");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickSettings() {
+        try {
+            navigate("/");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickLogin() {
+        try {
+            navigate("/login");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
@@ -53,64 +84,67 @@ const DietCheck = () => {
             style={{ minHeight: "100vh" }}
         >
             <div className="w-100" style={{ maxWidth: "400px" }}>
+            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
                 <>
-                    <Card>
-                        <Card.Body>
-                            <Form onSubmit={handleSubmit}>
-                                <h2 className="text-center mb-4">Dietary Resctrictions</h2>
-                                {error && <Alert variant="danger">{error}</Alert>}
+                {/* Note:  Ask Christian about how he styled these in preferences. */}
+                        <Form onSubmit={handleSubmit}>
+                            <h3 className="text-center mb-4">Tell us your<br></br>dietary restrictions!</h3>
+                            {error && <Alert variant="danger">{error}</Alert>}
 
-                                <div className="mb-3">
-                                <Form.Check 
-                                    type="checkbox"
-                                    id={`veganBox`}
-                                    label={`Vegan`}
-                                    ref={veganRef}
-                                />
-                                <Form.Check 
-                                    type="checkbox"
-                                    id={`halalBox`}
-                                    label={`Halal`}
-                                    ref={halalRef}
-                                />
-                                <Form.Check 
-                                    type="checkbox"
-                                    id={`dairBox`}
-                                    label={`Dairy`}
-                                    ref={dairyRef}
-                                />
-                                <Form.Check 
-                                    type="checkbox"
-                                    id={`soyBox`}
-                                    label={`Soy`}
-                                    ref={soyRef}
-                                />
-                                <Form.Check 
-                                    type="checkbox"
-                                    id={`glutenBox`}
-                                    label={`Gluten`}
-                                    ref={glutenRef}
-                                />
-                                <Form.Check 
-                                    type="checkbox"
-                                    id={`veggieBox`}
-                                    label={`Vegetarian`}
-                                    ref={veggieRef}
-                                />
-                                <Form.Check 
-                                    type="checkbox"
-                                    id={`KosherBox`}
-                                    label={`Kosher`}
-                                    ref={kosherRef}
-                                />
-                                </div>
-
-                                <Button className="w-40 mt-10" type="submit">
-                                    Next
-                                </Button>
-                            </Form>
-                        </Card.Body>
-                    </Card>
+                            <Card className="card-control">
+                                <Card.Body>
+                                    {/* <div className="mb-3"> */}
+                                        <Form.Check 
+                                            type="checkbox"
+                                            id={`veganBox`}
+                                            label={`Vegan`}
+                                            ref={veganRef}
+                                        />
+                                        <Form.Check 
+                                            type="checkbox"
+                                            id={`halalBox`}
+                                            label={`Halal`}
+                                            ref={halalRef}
+                                        />
+                                        <Form.Check 
+                                            type="checkbox"
+                                            id={`dairyBox`}
+                                            label={`Dairy`}
+                                            ref={dairyRef}
+                                        />
+                                        <Form.Check 
+                                            type="checkbox"
+                                            id={`soyBox`}
+                                            label={`Soy`}
+                                            ref={soyRef}
+                                        />
+                                        <Form.Check 
+                                            type="checkbox"
+                                            id={`glutenBox`}
+                                            label={`Gluten`}
+                                            ref={glutenRef}
+                                        />
+                                        <Form.Check 
+                                            type="checkbox"
+                                            id={`veggieBox`}
+                                            label={`Vegetarian`}
+                                            ref={veggieRef}
+                                        />
+                                        <Form.Check 
+                                            type="checkbox"
+                                            id={`KosherBox`}
+                                            label={`Kosher`}
+                                            ref={kosherRef}
+                                        />
+                                    {/* </div> */}
+                                </Card.Body>
+                            </Card>         
+                            <br></br> 
+                            <Button className="w-75 mt-10 button-control" type="submit">
+                                Next
+                            </Button>
+                        </Form>
                 </>
             </div>
         </Container >

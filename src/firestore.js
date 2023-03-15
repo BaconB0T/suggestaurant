@@ -402,20 +402,57 @@ function defaultHistory() {
   });
 }
 
+function hasDietaryRestrictions(userID)
+{
+  let docRef = db.collection("users").doc(userID).get();
+  const data = docRef.data();
+  return data["dietaryRestrictions"].length === 0
+}
+
 function getGroupInfo(groupID) {
   let docRef = db.collection("groups").doc(groupID).get();
-  // const data = docRef.data;
-  // data.id = groupID;
-  // return data;
+  const data = docRef.data();
+  const users = data['users']
+  const keywords = ""
+  const price = ""
+  const diet = []
+  for (let i = 0; i < users.length; i++)
+  {
+    keywords = keywords +  " " + data["data"][users[i]]["keywords"]
+    price += users[i]["price"]
+    for(let [key, value] of data["data"][users[i]][diet])
+    {
+      if (!(value === ""))
+      {
+        diet.push(value)
+      }
+    }
+  }
+  const dietData = {
+    'Dairy-free':  !diet.includes("dairy") ? "" : "dairy",
+    'Gluten-free': !diet.includes("gluten") ? "" : "gluten",
+    'Halal':       !diet.includes("halal") ? "" : "halal",
+    'Kosher':      !diet.includes("kosher") ? "" : "kosher",
+    'Soy-free':    !diet.includes("soy") ? "" : "soy",
+    'Vegan':       !diet.includes("vegan") ? "" : "vegan",
+    'Vegetarian':  !diet.includes("veggie") ? "" : "veggie"
+}
+
+  price = price/users.length
+
+
+
   const jsonData = {
-    keywords: docRef.keywords,// 1 string
-    time: docRef.time,        // Same as db
-    price: docRef.price,      // list of prices (integers)
-    diet: docRef.diet,        // Same as db (all restrictions, 
-    //                            and values are strings)
+    keywords: keywords,       // 1 string
+    time: data['time'],       // Same as db
+    price: price,             // list of prices (integers)
+    diet: dietData,           // Same as db (all restrictions, 
+                              //  and values are strings)
     // {'halal': 'halal'} true
     // {'halal': ''} false
-    latlong: docRef.latlong,  // see what we did before {lat: x, long: x}
+    latlong: data['latlong'],  // see what we did before {lat: x, long: x}
+    groupCode: cookies["groupCode"],
+    host: cookies["host"]
   }
   return jsonData
 }
@@ -768,4 +805,4 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, getGroupInfo, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }

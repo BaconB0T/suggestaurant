@@ -55,7 +55,7 @@ function Allergies({ user }){
     }
     // const [sel, setSel] = useState('not-selected');
     return(
-        <div>
+        <div className="w-100" style={{ maxWidth: "400px" }}>
             <h1>Dietary Restrictions</h1>
             <ButtonGroup>
                 {dietRestList.map(alergy => {
@@ -64,7 +64,8 @@ function Allergies({ user }){
                         type = 'button'
                         key = {alergy}
                         id = {(usersDietRest.includes(alergy)) ? 'selected' : 'not-selected'}
-                        onClick = {() => {
+                        className="mobile-wrap"
+                        onClick = {(event) => {
                             let tempList = usersDietRest;
                             if (!(tempList.includes(alergy))){
                                 tempList.push(alergy);
@@ -73,11 +74,18 @@ function Allergies({ user }){
                                 tempList.splice(tempList.indexOf(alergy),1);
                             }
                             updateDietRestrictions(user.uid, tempList);
+                            // if (event.target.style.backgroundColor == "red")
+                            // {
+                            //     event.target.style.backgroundColor = "blue"
+                            // }
+                            // else
+                            // {
+                            //     event.target.style.backgroundColor = "red"
+                            // }
                             // setUserDietRest(tempList)
                             // console.log(usersDietRest)
                         }}
                         >{alergy}</button>
-
                     )
                 })}
             </ButtonGroup>

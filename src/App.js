@@ -32,8 +32,10 @@ import ExpandRadius from './components/ExpandRadiusPage';
 import Group from './components/Group';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useState, useMemo, useEffect } from 'react';
+import { BsGearFill } from "react-icons/bs";
 
-library.add(faMoon, faRocket, faStar, faStarHalf, faCopy);
+
+library.add(faMoon, faRocket, faStar, faStarHalf, faCopy, BsGearFill);
 
 function useQuery() {
   const { search } = useLocation();
@@ -66,7 +68,7 @@ function App() {
   if(user === null) return "Loading...";
 
   return (
-    <div>
+    <div className="App">
       <Routes>
         <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} /* indexNum={0} */ />} />
         <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} state={state}/>}/>
