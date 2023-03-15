@@ -7,8 +7,6 @@ import { updateGroupMember, hasDietaryRestrictions, getFilters } from '../firest
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
 
-
-
 const DietCheck = ({user}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();

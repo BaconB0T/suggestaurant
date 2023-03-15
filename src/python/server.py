@@ -146,23 +146,34 @@ def keywords():
 	print(len(id_list))
 
 	time = int(req["time"].replace(':', ''))
+	
+	dayList = []
 
-	id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= time]
-	id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= time]
+	for x in id_list:
+		if x["hours"] is not None:
+			if dt.strftime('%a') in x["hours"]:
+				dayList.append(x)
+
+	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["end"] <= time]
+	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["start"] >= time]
+
+	for x in dayList:
+		id_list.remove(x)
 
 	diet_list = []
 
 	for x in id_list:
 		if x["dietaryRestrictions"] is not None:
-			diet_list.append(x)
+			if x["dietaryRestrictions"]["true"] is not None:
+				diet_list.append(x)
 
-	diet_list = [x for x in diet_list if req["Halal"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req["Vegan"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req["Dairy-free"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req["Gluten-free"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req["Kosher"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req["Vegetarian"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req["Soy-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Halal"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Vegan"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Dairy-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Gluten-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Kosher"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Vegetarian"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Soy-free"] in x["dietaryRestrictions"]["true"]]
 	
 	# business_list = [doc["business_id"] for doc in id_list]
 
