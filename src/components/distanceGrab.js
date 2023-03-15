@@ -11,13 +11,12 @@ import { BsGearFill } from "react-icons/bs";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { filter } from 'lodash';
 
-const DistanceGrab = () => {
+const DistanceGrab = ({user}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const latRef = useRef()
     const longRef = useRef()
     const distRef = useRef()
-    const [user, setUser] = useState([]);
     const [error, setError] = useState("")
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
         useGeolocated({
@@ -26,25 +25,6 @@ const DistanceGrab = () => {
             },
             userDecisionTimeout: 5000,
         });
-
-    const [loginOrAccount, setLoginOrAccount] = useState("Login")
-    const auth = getAuth();
-    useEffect(() => {
-      onAuthStateChanged(auth, (user) => {
-        if (!user.isAnonymous) {
-          setUser(user);
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
-        } else {
-          // User is signed out
-          setUser(null);
-        }
-      });
-    });
-
-
-
-
 
     async function handleClickLogin() {
         try {
@@ -115,7 +95,7 @@ const DistanceGrab = () => {
         );
     }
 
-    if (!(user === null) && hasDietaryRestrictions(user.uid)) {
+    if (!(user.isAnonymous) && hasDietaryRestrictions(user.uid)) {
         async function goGoGroupModeDiet()
         {
             const doc = getFilters(user.uid)
