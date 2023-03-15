@@ -418,9 +418,9 @@ function getGroupInfo(groupID) {
   const diet = []
   for (let i = 0; i < users.length; i++)
   {
-    keywords = keywords +  " " + users[i]["keywords"]
+    keywords = keywords +  " " + data["data"][users[i]]["keywords"]
     price += users[i]["price"]
-    for(let [key, value] of users[i][diet])
+    for(let [key, value] of data["data"][users[i]][diet])
     {
       if (!(value === ""))
       {
