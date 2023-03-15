@@ -4,6 +4,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useRef, useState } from 'react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
+// TODO: Repurpose to general change password screen.
 const ChangePassword = () => {
     const navigate = useNavigate();
     const passRef = useRef();

@@ -1,24 +1,24 @@
 import {useState} from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { getCuisines, updateUserCuisine, getFilters} from '../firestore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
 
-function PreSetCuisines() {
+function PreSetCuisines({user}) {
   
-    const [user, setUser] = useState([]);
+    // const [user, setUser] = useState([]);
   
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (!user.isAnonymous) {
-        setUser(user);
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-      } else {
-        // User is signed out
-        setUser(null);
-      }
-    });
+    // const auth = getAuth();
+    // onAuthStateChanged(auth, (user) => {
+    //   if (!user.isAnonymous) {
+    //     setUser(user);
+    //     // User is signed in, see docs for a list of available properties
+    //     // https://firebase.google.com/docs/reference/js/firebase.User
+    //   } else {
+    //     // User is signed out
+    //     setUser(null);
+    //   }
+    // });
 
     // console.log(user);
 
@@ -27,7 +27,8 @@ function PreSetCuisines() {
     const [t, setT] = useState(false);
 
 
-    if(user === null) {
+    // redirect on anonymous user
+    if (user === null || user.isAnonymous) {
         return (
             <Navigate to='/login' />
         );

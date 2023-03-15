@@ -5,11 +5,13 @@
   --main-color: rgb(15, 169, 1);
   --secondary-color: rgb(102, 75, 160);
   --green-secondary: rgb(129, 204, 122);
+    overflow: hidden;
 }
 
 .image-control
 {
   width: 200px;
+
 }
 
 .App {
