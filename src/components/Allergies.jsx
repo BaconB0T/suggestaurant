@@ -2,28 +2,36 @@ import {useState} from "react";
 import { ButtonGroup } from "react-bootstrap";
 import { getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 import "../styles/Allergies.css";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+import { Navigate } from "react-router-dom";
 
 
-function Allergies(){
+function Allergies({ user }){
 
-    const [user, setUser] = useState([]);
+    // const [user, setUser] = useState([]);
     const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-        if (!user.isAnonymous) {
-        setUser(user);
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        } else {
-        // User is signed out
-        setUser(null);
-        }
-    });
+    // onAuthStateChanged(auth, (user) => {
+    //     if (!user.isAnonymous) {
+    //         setUser(user);
+    //     // User is signed in, see docs for a list of available properties
+    //     // https://firebase.google.com/docs/reference/js/firebase.User
+    //     } else {
+    //     // User is signed out
+    //         setUser(null);
+    //     }
+    // });
 
     const[dietRestList, setRestList] = useState([]);
     const[usersDietRest, setUserDietRest] = useState([]);
     const[selected, setSelected] = useState("not-selected");
     const [t, setT] = useState(false);
+    
+    // redirect on anonymous user.
+    if (user === null || user.isAnonymous) {
+        return (
+            <Navigate to='/login' />
+        );
+    }
 
     if(!t && user && user.uid){
         Promise.resolve(getDietRest()).then(val =>{
@@ -47,7 +55,7 @@ function Allergies(){
     }
     // const [sel, setSel] = useState('not-selected');
     return(
-        <div>
+        <div className="w-100" style={{ maxWidth: "400px" }}>
             <h1>Dietary Restrictions</h1>
             <ButtonGroup>
                 {dietRestList.map(alergy => {
@@ -56,7 +64,8 @@ function Allergies(){
                         type = 'button'
                         key = {alergy}
                         id = {(usersDietRest.includes(alergy)) ? 'selected' : 'not-selected'}
-                        onClick = {() => {
+                        className="mobile-wrap"
+                        onClick = {(event) => {
                             let tempList = usersDietRest;
                             if (!(tempList.includes(alergy))){
                                 tempList.push(alergy);
@@ -65,11 +74,18 @@ function Allergies(){
                                 tempList.splice(tempList.indexOf(alergy),1);
                             }
                             updateDietRestrictions(user.uid, tempList);
+                            // if (event.target.style.backgroundColor == "red")
+                            // {
+                            //     event.target.style.backgroundColor = "blue"
+                            // }
+                            // else
+                            // {
+                            //     event.target.style.backgroundColor = "red"
+                            // }
                             // setUserDietRest(tempList)
                             // console.log(usersDietRest)
                         }}
                         >{alergy}</button>
-
                     )
                 })}
             </ButtonGroup>

@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useRef, useState } from 'react';
 import { createUserEmailPassword, getAccount } from "../firestore";
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+
 
 class Signup extends React.Component {
   constructor(props) {
@@ -26,6 +28,19 @@ class Signup extends React.Component {
       [name]: value
     });
   }
+
+  handleClickBack = async (event) => {
+    const navigate = useNavigate();
+    const [error, setError] = useState("");
+    event.preventDefault();
+    try {
+        navigate("/");
+    } catch (e) {
+        // else set an error
+        setError(e)
+    }
+}
+
 
   handleSubmit = async (event) => {
     event.preventDefault();
@@ -119,37 +134,35 @@ class Signup extends React.Component {
           className="d-flex align-items-center justify-content-center"
           style={{ minHeight: "100vh" }}>
         <div className="w-100" style={{ maxWidth: "400px" }}>
+        <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => this.state.handleClickBack()}/>
           {user && (
             <Navigate to='/account' replace={true} />
           )}
-          <Card>
-            <Card.Body>
               <h2 className="text-center mb-4">Create an Account</h2>
               {this.state.error && <Alert variant="danger">{this.state.error}</Alert>}
               <Form onSubmit={this.state.handleSubmit}>
-                <Form.Group id="username" className="mb-2">
-                  <Form.Label>Username</Form.Label>
-                  <Form.Control type="text" id="username" name="username" value={this.state.username} onChange={this.handleChange} required/>
-                </Form.Group>
-                <Form.Group id="email" className="mb-2">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" id="email" name="email" value={this.state.email} onChange={this.handleChange} required/>
-                </Form.Group>
-                <Form.Group id="password" className="mb-2">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" id="password" name="password" minLength="8" value={this.state.password} onChange={this.handleChange} required/>
-                </Form.Group>
-                <Form.Group id="confirmPassword" className="mb-2">
-                  <Form.Label>Confirm Password</Form.Label>
-                  <Form.Control type="password" id="confirmPassword" name="confirmPassword" minLength="8" value={this.state.confirmPassword} onChange={this.handleChange} required/>
-                </Form.Group>
-                <Button className="w-40 mt-10" type="submit">Submit</Button>
+                <Card>
+                  <Card.Body>
+                  <Form.Group id="username" className="mb-2">
+                    <Form.Control placeholder="Username" type="text" id="username" name="username" value={this.state.username} onChange={this.handleChange} required/>
+                  </Form.Group>
+                  <Form.Group id="email" className="mb-2">
+                    <Form.Control placeholder="Email" type="email" id="email" name="email" value={this.state.email} onChange={this.handleChange} required/>
+                  </Form.Group>
+                  <Form.Group id="password" className="mb-2">
+                    <Form.Control placeholder="Password" type="password" id="password" name="password" minLength="8" value={this.state.password} onChange={this.handleChange} required/>
+                  </Form.Group>
+                  <Form.Group id="confirmPassword" className="mb-2">
+                    <Form.Control placeholder="Confirm Password" type="password" id="confirmPassword" name="confirmPassword" minLength="8" value={this.state.confirmPassword} onChange={this.handleChange} required/>
+                  </Form.Group>
+                  <div className="w-100 text-center mt-2">
+                      Already have an account? <Link to="/login">Login</Link>
+                  </div>
+                  </Card.Body>
+                </Card>
+                <br></br>
+                <Button className="w-75 mt-10 button-control" type="submit">Submit</Button>
               </Form>
-            </Card.Body>
-          </Card>
-          <div className="w-100 text-center mt-2">
-              Already have an account? <Link to="/login">Login</Link>
-          </div>
         </div>
       </Container>
     );
