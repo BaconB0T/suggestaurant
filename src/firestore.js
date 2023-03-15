@@ -115,6 +115,7 @@ async function getDocument(docRef) {
   try {
     const docSnap = await getDoc(docRef);
     const doc = docSnap.data();
+    console.log(doc)
     doc.id = docSnap.id;
     return doc;
   } catch (e) {
@@ -402,20 +403,20 @@ function defaultHistory() {
   });
 }
 
-function hasDietaryRestrictions(userID)
+async function hasDietaryRestrictions(userID)
 {
-  let docRef = db.collection("users").doc(userID).get();
-  const data = docRef.data();
-  return data["dietaryRestrictions"].length === 0
+  let data = await getDocument(doc(db, 'users', String(userID)));
+  console.log(data)
+  console.log(data["filters"])
+  return data["filters"]["dietaryRestrictions"].length === 0
 }
 
 function getGroupInfo(groupID) {
-  let docRef = db.collection("groups").doc(groupID).get();
-  const data = docRef.data();
-  const users = data['users']
-  const keywords = ""
-  const price = ""
-  const diet = []
+  let data = getDocument(doc(db, 'groups', String(groupID)));
+  let users = data['users']
+  let keywords = ""
+  let price = ""
+  let diet = []
   for (let i = 0; i < users.length; i++)
   {
     keywords = keywords +  " " + data["data"][users[i]]["keywords"]

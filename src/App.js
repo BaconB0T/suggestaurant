@@ -85,8 +85,8 @@ function App() {
         <Route path="/keywordGrab"element={<KeywordGrab/>}/>
         <Route path="/priceCheck"element={<PriceGrab/>}/>
         <Route path="/timeGrab"element={<TimeGrab/>}/>
-        <Route path="/dietaryRestrictions"element={<DietCheck/>}/>
-        <Route path="/location"element={<DistanceGrab/>}/>
+        <Route path="/dietaryRestrictions"element={<DietCheck user={user}/>}/>
+        <Route path="/location"element={<DistanceGrab user={user}/>}/>
         <Route path="/account/filters" element={<Preferences user={user}/>}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user}/>} />
