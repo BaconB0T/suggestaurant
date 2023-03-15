@@ -100,13 +100,13 @@ CORS(app)
 def keywords():	
 	req = json.loads(request.data)
 
-	words = req["keywords"]
-
 	print(int(req["latlong"]["distance"]))
 	print(float(req["latlong"]["latitude"]))
 	print(int(req["price"]))
 
 	dt = datetime.now()
+
+	words = req["keywords"]
 
 	id_list = [x.to_dict() for x in collection]
 
@@ -136,7 +136,7 @@ def keywords():
 		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"]["RestaurantsPriceRange2"] is not None:
 			priced_list.append(x)
 	
-	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > int(req["price"])]
+	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > float(req["price"])]
 
 	print(len(id_list))
 
@@ -145,18 +145,24 @@ def keywords():
 
 	print(len(id_list))
 
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+	time = int(req["time"].replace(':', ''))
 
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= req["time"]]
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+	id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= time]
+	id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= time]
 
-	# id_list = [x for x in id_list if req["halal"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["vegan"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["dairy"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["gluten"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["kosher"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["veggie"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["soy"] in x["dietaryRestrictions"]["true"]]
+	diet_list = []
+
+	for x in id_list:
+		if x["dietaryRestrictions"] is not None:
+			diet_list.append(x)
+
+	diet_list = [x for x in diet_list if req["Halal"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req["Vegan"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req["Dairy-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req["Gluten-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req["Kosher"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req["Vegetarian"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req["Soy-free"] in x["dietaryRestrictions"]["true"]]
 	
 	# business_list = [doc["business_id"] for doc in id_list]
 

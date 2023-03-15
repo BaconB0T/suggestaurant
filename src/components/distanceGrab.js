@@ -8,6 +8,8 @@ import { updateGroupHost } from '../firestore';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import car from './../images/Transportation.png'; // Tell webpack this JS file uses this image
 import { BsGearFill } from "react-icons/bs";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { filter } from 'lodash';
 
 
 
@@ -17,6 +19,7 @@ const DistanceGrab = () => {
     const latRef = useRef()
     const longRef = useRef()
     const distRef = useRef()
+    const [user, setUser] = useState([]);
     const [error, setError] = useState("")
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
         useGeolocated({
@@ -27,6 +30,23 @@ const DistanceGrab = () => {
         });
 
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
+    const auth = getAuth();
+    useEffect(() => {
+      onAuthStateChanged(auth, (user) => {
+        if (!user.isAnonymous) {
+          setUser(user);
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+        } else {
+          // User is signed out
+          setUser(null);
+        }
+      });
+    });
+
+
+
+
 
     async function handleClickLogin() {
         try {
@@ -97,6 +117,26 @@ const DistanceGrab = () => {
         );
     }
 
+    if (!(user === null) && hasDietaryRestrictions(user.uid)) {
+        async function goGoGroupModeDiet()
+        {
+            const doc = getFilters(user.uid)
+            const diet = doc.filters.dietaryRestrictions
+            const dietData = {
+                'Dairy-free':  !diet.includes("Dairy-free") ? "" : "dairy",
+                'Gluten-free': !diet.includes("Gluten-free") ? "" : "gluten",
+                'Halal':       !diet.includes("Halal") ? "" : "halal",
+                'Kosher':      !diet.includes("Kosher") ? "" : "kosher",
+                'Soy-free':    !diet.includes("Soy-free") ? "" : "soy",
+                'Vegan':       !diet.includes("Vegan") ? "" : "vegan",
+                'Vegetarian':  !diet.includes("Vegetarian") ? "" : "veggie" 
+            }
+        }
+
+        return (
+          <Navigate to='/timeGrab' />
+        );
+      }
     return (
         <Container
             className="d-flex align-items-center justify-content-center"

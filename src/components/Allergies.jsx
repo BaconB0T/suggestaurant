@@ -66,14 +66,14 @@ function Allergies(){
                                 tempList.splice(tempList.indexOf(alergy),1);
                             }
                             updateDietRestrictions(user.uid, tempList);
-                            if (event.target.style.backgroundColor == "red")
-                            {
-                                event.target.style.backgroundColor = "blue"
-                            }
-                            else
-                            {
-                                event.target.style.backgroundColor = "red"
-                            }
+                            // if (event.target.style.backgroundColor == "red")
+                            // {
+                            //     event.target.style.backgroundColor = "blue"
+                            // }
+                            // else
+                            // {
+                            //     event.target.style.backgroundColor = "red"
+                            // }
                             // setUserDietRest(tempList)
                             // console.log(usersDietRest)
                         }}
