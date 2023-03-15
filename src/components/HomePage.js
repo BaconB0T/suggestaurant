@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
@@ -6,19 +6,43 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import logo from './../images/logo.png'; // Tell webpack this JS file uses this image
 import { BsGearFill } from "react-icons/bs";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { RiLoginBoxLine } from "react-icons/ri"
 
 
 
-const HomePage = () => {
+
+const HomePage = ({bob}) => {
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
 
+    const [user, setUser] = useState([]);
+    useEffect(() => {
+      if (bob.isAnonymous)
+      {
+        setLoginOrAccount(<RiLoginBoxLine className = "w-20 icon-control login-or-account" onClick={() => handleClickLogin()}/>)
+        setUser(null)
+      }
+      else
+      {
+        setLoginOrAccount(<FaRegUserCircle className = "w-20 icon-control login-or-account" onClick={() => handleClickLogin()}/>)
+      }
+    }, [user]);
+
+
     async function handleClickLogin() {
         try {
-            navigate("/login");
+            if (user == null)
+            {
+                navigate("/login");
+            }
+            else
+            {
+                navigate("/account")
+            }
         } catch (e) {
             // else set an error
             setError(e)
@@ -70,9 +94,7 @@ const HomePage = () => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            <FaRegUserCircle className = "w-20 icon-control login-or-account" onClick={() => handleClickLogin()}>
-                {loginOrAccount}
-            </FaRegUserCircle>
+            {loginOrAccount}
             <BsGearFill className = "w-20 icon-control settings" onClick={() => handleClickSettings()}/>
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px"}}>
                 <>
