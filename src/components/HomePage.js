@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import logo from './../images/logo.png'; // Tell webpack this JS file uses this image
 import { BsGearFill } from "react-icons/bs";
-
-
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { RiLoginBoxLine } from "react-icons/ri"
 
 const HomePage = () => {
     const [clicked, setClicked] = useState([false, false, false, false, false]);
