@@ -25,7 +25,22 @@ from datetime import datetime
 import nltk
 from nltk.corpus import stopwords
 load_dotenv()
+
 GOOGLE_MAPS_KEY=os.getenv("GOOGLE_MAPS_API_KEY")
+API_KEY=os.getenv("API_KEY")
+MESSAGING_SENDER_ID=os.getenv("MESSAGING_SENDER_ID")
+APP_ID=os.getenv("APP_ID")
+
+config = {
+  "apiKey": API_KEY,
+  "authDomain": "suggestaurant-873aa.firebaseapp.com",
+  "projectId": "suggestaurant-873aa",
+  "storageBucket": "suggestaurant-873aa.appspot.com",
+  "messagingSenderId": MESSAGING_SENDER_ID,
+  "appId": APP_ID,
+  "measurementId": "G-XGH587V93D",
+  "serviceAccount": "./suggestaurant-873aa-d6566e2cfc10.json"
+}
 
 nltk.download('stopwords')
 stopwords = stopwords.words('english')
@@ -47,17 +62,6 @@ def text_process(mess):
     
     # Now just remove any stopwords
     return " ".join([word for word in nopunc.split() if word.lower() not in stop])
-
-config = {
-  "apiKey": "AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I",
-  "authDomain": "suggestaurant-873aa.firebaseapp.com",
-  "projectId": "suggestaurant-873aa",
-  "storageBucket": "suggestaurant-873aa.appspot.com",
-  "messagingSenderId": "1095104791586",
-  "appId": "1:1095104791586:web:cc8a3de7a061762c84f67b",
-  "measurementId": "G-XGH587V93D",
-  "serviceAccount": "./suggestaurant-873aa-d6566e2cfc10.json"
-}
 
 cred_obj = firebase_admin.credentials.Certificate(config['serviceAccount'])
 default_app = firebase_admin.initialize_app(cred_obj, config)
@@ -96,13 +100,13 @@ CORS(app)
 def keywords():	
 	req = json.loads(request.data)
 
-	words = req["keywords"]
-
 	print(int(req["latlong"]["distance"]))
 	print(float(req["latlong"]["latitude"]))
 	print(int(req["price"]))
 
 	dt = datetime.now()
+
+	words = req["keywords"]
 
 	id_list = [x.to_dict() for x in collection]
 
@@ -132,7 +136,7 @@ def keywords():
 		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"]["RestaurantsPriceRange2"] is not None:
 			priced_list.append(x)
 	
-	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > int(req["price"])]
+	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > float(req["price"])]
 
 	print(len(id_list))
 
@@ -141,18 +145,35 @@ def keywords():
 
 	print(len(id_list))
 
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+	time = int(req["time"].replace(':', ''))
+	
+	dayList = []
 
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= req["time"]]
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+	for x in id_list:
+		if x["hours"] is not None:
+			if dt.strftime('%a') in x["hours"]:
+				dayList.append(x)
 
-	# id_list = [x for x in id_list if req["halal"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["vegan"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["dairy"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["gluten"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["kosher"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["veggie"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["soy"] in x["dietaryRestrictions"]["true"]]
+	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["end"] <= time]
+	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["start"] >= time]
+
+	for x in dayList:
+		id_list.remove(x)
+
+	diet_list = []
+
+	for x in id_list:
+		if x["dietaryRestrictions"] is not None:
+			if x["dietaryRestrictions"]["true"] is not None:
+				diet_list.append(x)
+
+	diet_list = [x for x in diet_list if req['diet']["Halal"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Vegan"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Dairy-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Gluten-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Kosher"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Vegetarian"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Soy-free"] in x["dietaryRestrictions"]["true"]]
 	
 	# business_list = [doc["business_id"] for doc in id_list]
 
@@ -184,10 +205,40 @@ def keywords():
 
 	return topRecommendations.index.values.tolist()
 
-	
+
 @app.route('/google-maps-key', methods=['GET'])
 def google_maps_key():
 	return jsonify(key=GOOGLE_MAPS_KEY)
+
+
+# This code was rendered irrelevant by handling group quiz data updates in react
+# @app.route('/groupMode', methods=['POST'])
+# def setGroupData():
+# 	req = json.loads(request.data)
+# 	group_ref = db.collection(u"groups").document(req["groupCode"])
+
+# 	group_get = group_ref.get().to_dict()
+
+# 	group_keywords = group_get["keywords"] +  " " + req["keywords"]
+
+# 	group_price = group_get["price"].append(req["price"])
+
+# 	# Atomically add a new region to the 'keywords' array field.
+# 	group_ref.update({u'keywords': group_keywords})
+# 	group_ref.update({u'price'}, group_price)
+# 	group_ref.update({u'halal'}, req["halal"])
+# 	group_ref.update({u'vegan'}, req["vegan"])
+# 	group_ref.update({u'veggie'}, req["veggie"])
+# 	group_ref.update({u'gluten'}, req["gluten"])
+# 	group_ref.update({u'kosher'}, req["kosher"])
+# 	group_ref.update({u'soy'}, req["soy"])
+# 	group_ref.update({u'dairy'}, req["soy"])
+
+# 	if req["host"] == 1:
+# 		group_ref.update({u'latlong'}, req["latlong"])
+# 		group_ref.update({u'time'}, req["time"])
+
+# 	return 0
 
 	
 # Running app

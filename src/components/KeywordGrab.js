@@ -3,32 +3,83 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { getAccount, validateUser } from '../firestore'
+import { getAccount, updateGroupMember, validateUser } from '../firestore'
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import { BsGearFill } from "react-icons/bs";
+import image from './../images/Restaurant.png'; // Tell webpack this JS file uses this image
+
 
 const KeywordGrab = () => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const keywordRef = useRef()
     const [error, setError] = useState("")
+    const [urlString, setURL] = useState("")
+    const [loginOrAccount, setLoginOrAccount] = useState("Login")
+
+    async function handleClickLogin() {
+        try {
+            navigate("/login");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickSettings() {
+        try {
+            navigate("/");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickBack() {
+        try {
+            navigate("/priceCheck");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
-
+            
             const jsonData = {
                 keywords: keywordRef.current.value,
                 time: cookies["time"],
                 price: cookies["price"],
                 diet: cookies["diet"],
-                latlong: cookies["latlong"]
+                latlong: cookies["latlong"] || null,
+                groupCode: cookies["groupCode"],
+                host: cookies["host"]
             }
+
             // object for storing and using data
             // Using useEffect for single rendering
             // Using fetch to fetch the api from
             // flask server it will be redirected to proxy
-            fetch("http://localhost:5000/data ", {
+            let url = '';
+            if (cookies["groupCode"] != 0)
+            {
+                updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
+            }
+            
+            if (cookies['groupCode'] != 0 && cookies["host"] != 0)
+            {
+                navigate("/hostRoom")
+            }
+            if (cookies["groupCode"] != 0)
+            {
+                setURL("http://localhost:5000/groupMode")
+            }
+
+            fetch("http://localhost:5000/data", {
                 method:"POST",
                 cache: "no-cache",
                 headers:{
@@ -40,7 +91,7 @@ const KeywordGrab = () => {
                     )
                 }
             ).then(response => {
-                return response.json()
+                return response.json();
             })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
@@ -64,24 +115,28 @@ const KeywordGrab = () => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            <div className="w-100" style={{ maxWidth: "400px" }}>
+            <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
+            <img src={image} className="image-control" alt="Logo" />
+            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
                 <>
-                    <Card>
-                        <Card.Body>
-                            <h2 className="text-center mb-4">Keywords</h2>
+                    {/* <Card className = "card-control">
+                        <Card.Body> */}
+                            <h3 className="text-center mb-4">Enter some keywords!</h3>
                             {error && <Alert variant="danger">{error}</Alert>}
-                            <Form onSubmit={handleSubmit}>
-                                <Form.Group id="keywords" className="mb-2">
-                                    <Form.Label>Keywords</Form.Label>
+                            <Form onSubmit={handleSubmit} className="w-75 center">
+                                <Form.Group id="keywords" className="mb-2" controlId="exampleForm.ControlTextarea1">
                                     <Form.Control ref={keywordRef} required
-                                        defaultValue={cookies["keywords"]}/>
+                                        defaultValue={cookies["keywords"]}
+                                        as="textarea" 
+                                        rows={3}/>
                                 </Form.Group>
-                                <Button className="w-40 mt-10" type="submit">
+                                <Button className="w-75 mt-10 button-control" type="submit">
                                     Go
                                 </Button>
                             </Form>
-                        </Card.Body>
-                    </Card>
+                        {/* </Card.Body>
+                    </Card> */}
                 </>
 
             </div>

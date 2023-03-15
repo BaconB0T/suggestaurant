@@ -117,15 +117,16 @@ function HistoryElem(props) {
   );
 }
 
-function History() {
+function History({user}) {
   const [cookies] = useCookies(['id']);
   const [history, setHistory] = useState([]);
 
-  const [user, setUser] = useState([]);
+  // const [user, setUser] = useState([]);
 
-  const auth = getAuth();
+  // const auth = getAuth();
 
   useEffect(() => {
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
@@ -142,7 +143,6 @@ function History() {
       }
     });
   }, []);
-
   // useEffect(() => {
   //   async function cried() {
 
@@ -150,7 +150,8 @@ function History() {
   //   cried();
   // }, []);
 
-  if (user === null) {
+  // redirect on anonymous user
+  if (user === null || user.isAnonymous) {
     return (
       <Navigate to='/login' />
     );
@@ -159,8 +160,8 @@ function History() {
   const historyComponents = [];
   for (const historyItem of history) {
     // if(historyItem.restaurant !== "placeholder") {
-    //   console.log(historyItem);
-    historyComponents.push(<HistoryElem key={historyItem.restaurant} history={historyItem} />);
+    // console.log(historyItem);
+    historyComponents.push(<HistoryElem key={historyItem.id} history={historyItem} />);
     // }
   }
 

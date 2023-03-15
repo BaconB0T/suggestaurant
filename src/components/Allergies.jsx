@@ -2,15 +2,22 @@ import {useState, useEffect} from "react";
 import { ButtonGroup } from "react-bootstrap";
 import { getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 import "../styles/Allergies.css";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+import { Navigate } from "react-router-dom";
 
 
-function Allergies(){
-
+function Allergies({ user }){
 
     const[dietRestList, setRestList] = useState([]);
     const[usersDietRest, setUserDietRest] = useState([]);
     const [t, setT] = useState(false);
+    
+    // redirect on anonymous user.
+    if (user === null || user.isAnonymous) {
+        return (
+            <Navigate to='/login' />
+        );
+    }
 
     const[checked, setChecked] = useState([]);
 

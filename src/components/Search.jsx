@@ -1,12 +1,12 @@
 import {useEffect, useState} from "react";
 import { getHistory, rateRestaurant, getAllRestaurants} from "../firestore";
 import { Navigate } from 'react-router-dom';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 
-export default function SearchPrint(){
+export default function SearchPrint({user}){
     const [restaurants, setRes] = useState([]);
-    const [user, setUser] = useState([]);
+    // const [user, setUser] = useState([]);
 
     useEffect(() => {
         async function getPath(){
@@ -17,14 +17,19 @@ export default function SearchPrint(){
     }, []);
 
 
-    const auth = getAuth();
-    useEffect(() => {
-      onAuthStateChanged(auth, (user) => {
-        setUser(user);
-      });
-    });
+    // const auth = getAuth();
+    // useEffect(() => {
+    //   onAuthStateChanged(auth, (user) => {
+    //     if(!user.isAnonymous) {
+    //         setUser(user);
+    //     } else {
+    //         setUser(null);
+    //     }
+    //   });
+    // });
 
-    if(user === null) {
+    // redirect on anonymous user.
+    if (user === null || user.isAnonymous) {
         return (
             <Navigate to='/login' />
         );

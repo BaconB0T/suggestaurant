@@ -1,19 +1,22 @@
 import {useState, useEffect} from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { getCuisines, updateUserCuisine, getFilters} from '../firestore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
 import "../styles/presetCuis.css";
 
-function PreSetCuisines() {
+function PreSetCuisines({user}) {
   
-    const [user, setUser] = useState([]);
+    // const [user, setUser] = useState([]);
   
+
     const auth = getAuth();
+
     const [listOfCuisines, setCuisineList] = useState([]);
     const [userCuisineList, setUserCuisine] = useState([]);
     const [checked, setChecked] = useState([]);
     const [t, setT] = useState(false);
+
 
     useEffect(() =>{
         onAuthStateChanged(auth, (user) => {

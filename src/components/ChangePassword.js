@@ -4,6 +4,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useRef, useState } from 'react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
+// TODO: Repurpose to general change password screen.
 const ChangePassword = () => {
     const navigate = useNavigate();
     const passRef = useRef();
@@ -12,7 +13,7 @@ const ChangePassword = () => {
     const [user, setUser] = useState([]);
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
-        if (user) {
+        if (!user.isAnonymous) {
         setUser(user);
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User

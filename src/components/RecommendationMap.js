@@ -3,12 +3,13 @@ import validateJSON from '../security/web';
 import GoogleMapReact from 'google-map-react';
 // import Marker from 'google-map-react';
 import { Button } from 'react-bootstrap';
-import clipboardy from 'clipboardy';
+import { getRestaurantById } from '../firestore';
+import { Navigate } from 'react-router-dom';
 
 const ShareIcon = ({provider}) => {
     return (
         <>
-            <span style={{display: 'inline'}}>{provider}</span>
+            <span>{provider}</span>
             <Button onClick={() => alert(`Share with ${provider}`)}>
                 <img src='https://placeholder.com/50x50'/>
             </Button>
@@ -16,28 +17,28 @@ const ShareIcon = ({provider}) => {
     );
 }
 
-const RecommendationMap = ({ res }) => {
+const RecommendationMap = ({state: globalState, business_id: id}) => {
     const zoomLevel = 15;
-    const loc = res.location;
+    // console.log(globalState);
+    const business_id = globalState.business_id || id;
     const [apiKey, setApiKey] = useState('');
-    const location = {
-        address: `${loc.streetAddress}, ${loc.city}, ${loc.state}`,
-        lat: loc.latitude,
-        lng: loc.longitude,
-        label: "Hello!"
-    }
-
+    const [res, setRes] = useState('');
     const supportedProviders = ['Twitter', 'Email', 'Telegram', 'WhatsApp', 'Facebook'];
 
     useEffect(() => {
-        const getApiKey = () => {
-            fetch('http://127.0.0.1:5000/google-maps-key')
-                .then(validateJSON)
-                .then((json) => {
-                    setApiKey(json.key);
+        // get Maps API key
+        fetch('http://127.0.0.1:5000/google-maps-key')
+            .then(validateJSON)
+            .then((json) => {
+                setApiKey(json.key);
+            });
+        if(business_id !== undefined) {
+            getRestaurantById(business_id)
+                .then((doc) => {
+                    setRes(doc);
+                    console.log(doc);
                 });
         }
-        getApiKey();
     }, []);
 
     const handleApiLoaded = (map, maps, places) => {
@@ -56,7 +57,7 @@ const RecommendationMap = ({ res }) => {
         });
     };
 
-    function openInApp() {
+    function openInApp(loc) {
         window.open("https://www.google.com/maps/dir/?api=1&destination="+loc.latitude+","+loc.longitude);
     }
 
@@ -64,49 +65,67 @@ const RecommendationMap = ({ res }) => {
         return supportedProviders.map((provider) => <ShareIcon key={provider} provider={provider}></ShareIcon>);
     }
 
-    function clipboardAddress() {
+    function clipboardAddress(loc) {
         const addr = `${loc.streetAddress} ${loc.city}, ${loc.state} ${loc.postalCode}`;
-        clipboardy.write(addr).then(() => {
+        navigator.clipboard.writeText(addr).then(() => {
             console.log(`Copied addres to clipboard`);
         });
     }
+    console.log('res');
+    console.log(res);
+    if(apiKey === '' || apiKey === null || res === '') {
+        // restaurant has not been fetched yet.
+        console.log('loading')
+        return (
+            <>
+                <p className='loading-animation'>Loading...</p>
+            </>
+        );
+        // apiKey !== '' && apiKey !== null &&
+    } else if(res !== null) {
+        const googleLocation = {
+            address: `${res.location.streetAddress}, ${res.location.city}, ${res.location.state}`,
+            lat: res.location.latitude,
+            lng: res.location.longitude,
+            // label: "Hello!"
+        };
+        const loc = res.location;
 
-    // api key AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I
-    if(apiKey !== '' && apiKey !== null) {
         return (
             <>
                 {/* TODO: Disable drag/recenter */}
                 <div className="google-map" style={{height:'30vh',width:'80%'}}>
                     <GoogleMapReact
                         bootstrapURLKeys={{ key: apiKey }}
-                        center={location}
+                        center={googleLocation}
                         zoom={zoomLevel}
                         yesIWantToUseGoogleMapApiInternals
-                        onGoogleApiLoaded={({map, maps}) => handleApiLoaded(map, maps, [location])}
+                        onGoogleApiLoaded={({map, maps}) => handleApiLoaded(map, maps, [googleLocation])}
                     >
                     </GoogleMapReact>
-                    <h1>{res.name}</h1>
-                    <div>{loc.streetAddress}</div>
-                    <div style={{display: 'inline'}}>{loc.city}, {loc.state} {loc.postalCode}</div>
-                    <Button onClick={clipboardAddress}>Copy Address</Button>
-                    <Button style={{display: 'block'}} onClick={openInApp}>Take me there!</Button>
-                    <div>Share with your friends by clicking the icons below!</div>
-                    <div id='share-icons'>
-                        <ul id='icons-list'>
-                            {shareIcons()}
-                        </ul>
-                    </div>
+                </div>
+
+                <h1>{res.name}</h1>
+                <div>{loc.streetAddress}</div>
+                <div style={{display: 'inline'}}>{loc.city}, {loc.state} {loc.postalCode}</div>
+                <Button onClick={(loc) => {clipboardAddress(loc)}}>Copy Address</Button>
+                <Button style={{display: 'block'}} onClick={(loc) => {openInApp(loc)}}>Take me there!</Button>
+                <div>Share with your friends by clicking the icons below!</div>
+                <div id='share-icons'>
+                    <ul id='icons-list'>
+                        {shareIcons()}
+                    </ul>
                 </div>
             </>
         );
     } else {
         return (
             <>
-                <p className='loading-animation'>Loading...</p>
+                <Navigate to='/recommendations'/>
+                <p>TODO: Finish. Restaurant doesn't exist.</p>
             </>
         );
     }
-
 }
 
 export default RecommendationMap;

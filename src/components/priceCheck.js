@@ -4,8 +4,11 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { getAccount, validateUser } from '../firestore'
+import { getAccount, updateGroupMember, validateUser } from '../firestore'
 import styles from '../styles/new.module.scss';
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import { BsGearFill } from "react-icons/bs";
+import money from './../images/money.png'; // Tell webpack this JS file uses this image
 
 
 const PriceGrab = () => {
@@ -15,6 +18,34 @@ const PriceGrab = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const [price, setPrice] = useState(5)
+    const [loginOrAccount, setLoginOrAccount] = useState("Login")
+
+    async function handleClickBack() {
+        try {
+            navigate("/timeGrab");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickSettings() {
+        try {
+            navigate("/");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickLogin() {
+        try {
+            navigate("/login");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
 
 
     const handleStarClick = (e, index) => {
@@ -35,7 +66,9 @@ const PriceGrab = () => {
             setError("")
 
             setCookie('price', price + 1, { path: '/' });
-            
+            if(cookies['groupCode'] != 0) {
+                updateGroupMember(cookies['groupCode'], 'price', price+1);
+            }
             navigate("/keywordGrab");
         } catch (e) {
             // else set an error
@@ -48,12 +81,19 @@ const PriceGrab = () => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            <div className="w-100" style={{ maxWidth: "400px" }}>
+            <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
+            {/* <Card className="card-control w-75 center">
+                <Card.Body> */}
+                    <img src={money} className="image-control" alt="Logo" />
+                {/* </Card.Body>
+            </Card> */}
+            <br></br><br></br>
+            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
                 <>
-                    <Card>
-                        <Card.Body>
                             <div className={styles.rating}>
-                                <p>Price</p>
+                                <h3>Select a price point!</h3>
+                                <br></br>
                                 <div>
                                     <FaDollarSign
                                         onClick={(e) => handleStarClick(e, 0)}
@@ -79,12 +119,10 @@ const PriceGrab = () => {
                             </div> 
                             <br></br>
                             <Form onSubmit={handleSubmit}>
-                                <Button className="w-40 mt-10" type="submit">
+                                <Button className="w-50 mt-10 button-control" type="submit">
                                     Next
                                 </Button>
                             </Form>
-                        </Card.Body>
-                    </Card>
                 </>
             </div>
         </Container >
