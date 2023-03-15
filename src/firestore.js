@@ -403,10 +403,11 @@ function defaultHistory() {
   });
 }
 
-function hasDietaryRestrictions(userID)
+async function hasDietaryRestrictions(userID)
 {
-  let data = getDocument(doc(db, 'users', String(userID)));
+  let data = await getDocument(doc(db, 'users', String(userID)));
   console.log(data)
+  console.log(data["filters"])
   return data["filters"]["dietaryRestrictions"].length === 0
 }
 

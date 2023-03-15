@@ -95,26 +95,6 @@ const DistanceGrab = ({user}) => {
         );
     }
 
-    if (!(user.isAnonymous) && hasDietaryRestrictions(user.uid)) {
-        async function goGoGroupModeDiet()
-        {
-            const doc = getFilters(user.uid)
-            const diet = doc.filters.dietaryRestrictions
-            const dietData = {
-                'Dairy-free':  !diet.includes("Dairy-free") ? "" : "dairy",
-                'Gluten-free': !diet.includes("Gluten-free") ? "" : "gluten",
-                'Halal':       !diet.includes("Halal") ? "" : "halal",
-                'Kosher':      !diet.includes("Kosher") ? "" : "kosher",
-                'Soy-free':    !diet.includes("Soy-free") ? "" : "soy",
-                'Vegan':       !diet.includes("Vegan") ? "" : "vegan",
-                'Vegetarian':  !diet.includes("Vegetarian") ? "" : "veggie" 
-            }
-        }
-
-        return (
-          <Navigate to='/timeGrab' />
-        );
-      }
     return (
         <Container
             className="d-flex align-items-center justify-content-center"

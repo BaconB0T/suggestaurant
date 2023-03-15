@@ -1,20 +1,19 @@
-import React, {useRef, useState } from 'react';
+import React, {useRef, useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { updateGroupHost, updateGroupMember } from '../firestore';
+import { updateGroupMember, hasDietaryRestrictions, getFilters } from '../firestore';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
 
 
 
-const DietCheck = () => {
+const DietCheck = ({user}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
-    const [price, setPrice] = useState("")
-    const [value, onChange] = useState('10:00');
+    const [check, setCheck] = useState(false)
     const veganRef  = useRef();
     const halalRef  = useRef();
     const dairyRef  = useRef();
@@ -78,6 +77,43 @@ const DietCheck = () => {
         }
     }
     
+    useEffect(() => {
+        async function beegFunction()
+        {
+            if (!(user.isAnonymous) && hasDietaryRestrictions(user.uid)) {
+                async function goGoGroupModeDiet()
+                {
+                    const doc = getFilters(user.uid)
+                    const diet = doc.filters.dietaryRestrictions
+                    const dietData = {
+                        'Dairy-free':  !diet.includes("Dairy-free") ? "" : "dairy",
+                        'Gluten-free': !diet.includes("Gluten-free") ? "" : "gluten",
+                        'Halal':       !diet.includes("Halal") ? "" : "halal",
+                        'Kosher':      !diet.includes("Kosher") ? "" : "kosher",
+                        'Soy-free':    !diet.includes("Soy-free") ? "" : "soy",
+                        'Vegan':       !diet.includes("Vegan") ? "" : "vegan",
+                        'Vegetarian':  !diet.includes("Vegetarian") ? "" : "veggie" 
+                    }
+                    setCookie('diet', dietData, { path: '/' });
+                    if(cookies['groupCode'] != 0) {
+                        updateGroupMember(cookies['groupCode'], 'diet', dietData);
+                    }
+                }
+                goGoGroupModeDiet()
+                setCheck(true)
+              }
+        }
+        beegFunction()
+    }, [user])
+
+
+    if(check)
+    {
+        return (
+            <Navigate to='/timeGrab' />
+          );
+    }
+
     return(
         <Container
             className="d-flex align-items-center justify-content-center"
