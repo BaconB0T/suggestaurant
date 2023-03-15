@@ -30,7 +30,7 @@ const HomePage = ({bob}) => {
       {
         setLoginOrAccount(<FaRegUserCircle className = "w-20 icon-control login-or-account" onClick={() => handleClickLogin()}/>)
       }
-    }, [user]);
+    }, [bob]);
 
 
     async function handleClickLogin() {
