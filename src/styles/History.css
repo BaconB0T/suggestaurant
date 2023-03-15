@@ -1,14 +1,23 @@
+.button-test{
+  display: grid;
+  
+}
+
+#trash-button,.rest-but  {
+  grid-column: 1;
+  grid-row: 1;
+}
+
 .rest-but{
     color: black;
     text-decoration: none;
+    transition: 0.5s;
 }
 
 .rest-but:hover{
-    transform: translateY(-7px);
+    transition: 0.5s;
     color: black;
-    /* background-color: #2EE59D;
-    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4); */
-    
+    box-shadow: gray;
 }
 
 .res-element{
@@ -34,7 +43,6 @@
     padding-top: 5px;
     padding-left: 3px;
     color: blue;
-    /* text-shadow: blue; */
 }
 
 #disliked{
@@ -55,8 +63,15 @@
 }
 
 #trash-button{
+    place-self: center end;
+    padding-top: 7px;
     background-color: transparent;
     border: none;
+    margin-right: 10%;
+}
+
+#trash-button:hover{
+  color: lightcoral;
 }
 
 .overlay {
@@ -97,7 +112,7 @@
     color: #333;
   }
   .popup .close:hover {
-    color: #06D85F;
+    color: lightcoral;
   }
   .popup .content {
     max-height: 30%;

@@ -62,36 +62,53 @@ function HistoryElem(props) {
 
   return (
     <div>
-    <a class='button' className = 'rest-but' href={'#' + restaurant.name}>
-      <li className="res-element">
-        
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-          <div className= 'spacing'/>{restaurant.name}
-          <div className= 'spacing'/>
-            <div id="test">
-              {[...Array(5)].map((star, index) => {
-                index +=1;
-                return (
-                  <div key = {index} className= {index <= (restaurant.stars) ? 'light-on' : 'light-off'}>
-                    <span className="st">&#9733;</span>
-                  </div>
-                )
-              })}
-            </div>
-          <div className= 'spacing' id={(props.history.rating == 1) ? 'liked' : 'disliked'}/> 
-          Your Rating: {(props.history.rating == 1) ? <i id='liked' class="fa">&#xf164;</i> : <i id='disliked' class="fa">&#xf165;</i>}
-          <div className= 'spacing'/> <button id = 'trash-button' onClick={handleClick}><i class="fa">&#xf1f8;</i></button>
-        
-      </li>
-    </a>
+      <head>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"/>
+      </head>
+      <div className='button-test'>
+        <a class='button' className = 'rest-but' href={'#' + restaurant.name}>
+          <li className="res-element">
+            
+              <div className= 'spacing'/>{restaurant.name}
+              <div className= 'spacing'/>
+                <div id="test">
+                  {[...Array(5)].map((star, index) => {
+                    index +=1;
+                    return (
+                      <div key = {index} className= {index <= (restaurant.stars) ? 'light-on' : 'light-off'}>
+                        <span className="st">&#9733;</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              <div className= 'spacing' id={(props.history.rating === 1) ? 'liked' : 'disliked'}/> 
+              Your Rating: {(props.history.rating === 1) ? <i id='liked' class="fas fa-sm">&#xf164;</i> : <i id='disliked' class="fas fa-sm">&#xf165;</i>}
+              {/* <div className= 'spacing'/> <button id = 'trash-button' onClick={handleClick}><i class="far">&#xf2ed;</i></button> */}
+            
+          </li>
+        </a>
+        <div className= 'spacing'/> <button id = 'trash-button' onClick={handleClick}><i class="far">&#xf2ed;</i></button>
+            
+      </div>
 
-
+    {/* Restaurant Popup Card Information  */}
     <div id={restaurant.name} class='overlay'>
       <div class = 'popup'>
         <a className = 'pop-up-title'>{restaurant.name}</a>
         <a class="close" href='javascript:history.back()'>&times;</a>
         <div class="content">
           <div className = 'rest-address'>{loc.streetAddress + ', ' +  loc.city + ', ' + loc.state}</div>
+          <div className = 'rest-address'>Your Rating: {(props.history.rating === 1) ? <i id='liked' class="fa">&#xf164;</i> : <i id='disliked' class="fa">&#xf165;</i>}</div>
+          <div id="test">
+            {[...Array(5)].map((star, index) => {
+              index +=1;
+              return (
+                <div key = {index} className= {index <= (restaurant.stars) ? 'light-on' : 'light-off'}>
+                  <span className="st">&#9733;</span>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
 
