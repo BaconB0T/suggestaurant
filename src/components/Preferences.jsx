@@ -4,21 +4,22 @@ import {Link, Navigate} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import {getDoc, doc} from "firebase/firestore";
 import "./preferences.css"
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-function Preferences() {  
-    const [user, setUser] = useState([]);
+function Preferences({user}) {  
+    // const [user, setUser] = useState([]);
 
-    const auth = getAuth();
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if(!user.isAnonymous) {
-                setUser(user);
-            } else {
-                setUser(null);
-            }
-        });    
-    });
+    // const auth = getAuth();
+    // useEffect(() => {
+    //     onAuthStateChanged(auth, (user) => {
+    //         if(!user.isAnonymous) {
+    //             setUser(user);
+    //         } else {
+    //             setUser(null);
+    //         }
+    //     });    
+    // });
+    
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
     const [minRating, setMR] = useState(0);
@@ -26,6 +27,12 @@ function Preferences() {
     const [FastFood, setff] = useState(false);
     const [t,setT] = useState(false);
     
+    // redirect on anonymous user.
+    if (user === null || user.isAnonymous) {
+        return (
+            <Navigate to='/login' />
+        );
+    }
     
     if(!t && user && user.uid){
         console.log(user);
