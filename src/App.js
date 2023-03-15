@@ -72,7 +72,7 @@ function App() {
       <Routes>
         <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} /* indexNum={0} */ />} />
         <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} state={state}/>}/>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomePage bob={user} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={<Account user={user}/>} />
         <Route path="/change-password" element={<ChangePassword />} />

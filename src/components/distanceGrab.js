@@ -1,17 +1,15 @@
-import React, { useRef, useState, Component  } from 'react';
+import React, { useRef, useState, Component, useEffect  } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { Navigate, useNavigate } from 'react-router-dom'
 import Geocode from "react-geocode";
 import { useGeolocated } from "react-geolocated";
-import { updateGroupHost } from '../firestore';
+import { updateGroupHost, hasDietaryRestrictions, getFilters } from '../firestore';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import car from './../images/Transportation.png'; // Tell webpack this JS file uses this image
 import { BsGearFill } from "react-icons/bs";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { filter } from 'lodash';
-
-
 
 const DistanceGrab = () => {
     const [cookies, setCookie] = useCookies(['user']);
