@@ -402,6 +402,13 @@ function defaultHistory() {
   });
 }
 
+function hasDietaryRestrictions(userID)
+{
+  let docRef = db.collection("users").doc(userID).get();
+  const data = docRef.data;
+  return data["dietaryRestrictions"].length === 0
+}
+
 function getGroupInfo(groupID) {
   let docRef = db.collection("groups").doc(groupID).get();
   const data = docRef.data;
@@ -798,4 +805,4 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, getGroupInfo, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
