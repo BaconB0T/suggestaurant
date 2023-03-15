@@ -12,7 +12,7 @@ import { RiLoginBoxLine } from "react-icons/ri"
 
 
 
-const HomePage = () => {
+const HomePage = ({bob}) => {
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
@@ -20,21 +20,11 @@ const HomePage = () => {
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
 
     const [user, setUser] = useState([]);
-    const auth = getAuth();
     useEffect(() => {
-      onAuthStateChanged(auth, (user) => {
-        if (!user.isAnonymous) {
-          setUser(user);
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
-        } else {
-          // User is signed out
-          setUser(null);
-        }
-      });
-      if (user == null)
+      if (bob.isAnonymous)
       {
         setLoginOrAccount(<RiLoginBoxLine className = "w-20 icon-control login-or-account" onClick={() => handleClickLogin()}/>)
+        setUser(null)
       }
       else
       {
