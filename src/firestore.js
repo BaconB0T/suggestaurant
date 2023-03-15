@@ -436,11 +436,9 @@ function getGroupInfo(groupID) {
     'Soy-free':    !diet.includes("soy") ? "" : "soy",
     'Vegan':       !diet.includes("vegan") ? "" : "vegan",
     'Vegetarian':  !diet.includes("veggie") ? "" : "veggie"
-}
+  }
 
   price = price/users.length
-
-
 
   const jsonData = {
     keywords: keywords,       // 1 string
@@ -451,8 +449,9 @@ function getGroupInfo(groupID) {
     // {'halal': 'halal'} true
     // {'halal': ''} false
     latlong: data['latlong'],  // see what we did before {lat: x, long: x}
-    groupCode: cookies["groupCode"],
-    host: cookies["host"]
+    groupCode: groupID,
+    // boolean value
+    host: (data['host'] === getAuth().currentUser.uid),
   }
   return jsonData
 }
@@ -805,4 +804,4 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, hasDietaryRestrictions, getGroupInfo, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
