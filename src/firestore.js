@@ -19,7 +19,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-const supportedMemberGroupKeys = ['diet', 'keywords', 'price', 'users'];
+const supportedMemberGroupKeys = ['diet', 'keywords', 'price', 'users', 'suggestions'];
 const supportedHostGroupKeys = supportedMemberGroupKeys.concat('latlong', 'time');
 
 // localize OAuth flow to user's preferred language.
@@ -80,7 +80,7 @@ async function getAllRestaurants() {
 async function getRestaurantById(id) {
   id = String(id)
   const docRef = doc(db, 'restaurants', id);
-  return getRestaurant(docRef);
+  return getDocument(docRef);
 }
 
 /**
@@ -115,7 +115,6 @@ async function getDocument(docRef) {
   try {
     const docSnap = await getDoc(docRef);
     const doc = docSnap.data();
-    console.log(doc)
     doc.id = docSnap.id;
     return doc;
   } catch (e) {
@@ -406,9 +405,7 @@ function defaultHistory() {
 async function hasDietaryRestrictions(userID)
 {
   let data = await getDocument(doc(db, 'users', String(userID)));
-  console.log(data)
-  console.log(data["filters"])
-  return data["filters"]["dietaryRestrictions"].length === 0
+  return data["filters"]["dietaryRestrictions"].length !== 0;
 }
 
 function getGroupInfo(groupID) {
@@ -746,15 +743,24 @@ async function updateGroupMember(code, key, value) {
       groupDoc['data'][user.uid] = defaultGroupUserData(user);
       break;
     case 'keywords':
+      userData[key] = value;
+      groupDoc['numUsersReady'] += 1;
+      break;
     case 'price':
     case 'diet':
       userData[key] = value;
+      break;
+    case 'suggestions':
+      const [acceptedRestaurantId, accepted] = value;
+      console.log(accepted);
+      const vk = accepted ? 'numAccepted' : 'numRejected';
+      console.log(vk);
+      groupDoc[key][acceptedRestaurantId][vk] += 1;
       break;
     default:
       console.log(`Invalid update key: ${key}`);
       return false
   }
-  console.log(groupDoc);
   try {
     updateDoc(groupDocRef, groupDoc);
     return true;
@@ -766,7 +772,6 @@ async function updateGroupMember(code, key, value) {
 }
 
 async function updateGroupHost(code, key, value) {
-  console.log(value);
   if (!(await isHost(code, getAuth().currentUser))) {
     console.error("Not the group's host!");
     return false;
@@ -788,8 +793,6 @@ async function updateGroupHost(code, key, value) {
       console.error(`Invalid update key: ${key}`);
       return false;
   }
-  console.log(key);
-  console.log(groupDoc);
 
   try {
     await updateDoc(groupDocRef, groupDoc);
