@@ -743,6 +743,9 @@ async function updateGroupMember(code, key, value) {
       groupDoc['data'][user.uid] = defaultGroupUserData(user);
       break;
     case 'keywords':
+      userData[key] = value;
+      groupDoc['numUsersReady'] += 1;
+      break;
     case 'price':
     case 'diet':
       userData[key] = value;
