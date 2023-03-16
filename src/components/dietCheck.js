@@ -81,7 +81,7 @@ const DietCheck = ({user}) => {
             if (!(user.isAnonymous) && hasDietaryRestrictions(user.uid)) {
                 async function goGoGroupModeDiet()
                 {
-                    const doc = getFilters(user.uid)
+                    const doc = await getFilters(user.uid)
                     const diet = doc.filters.dietaryRestrictions
                     const dietData = {
                         'Dairy-free':  !diet.includes("Dairy-free") ? "" : "dairy",

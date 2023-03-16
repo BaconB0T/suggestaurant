@@ -72,7 +72,9 @@ const KeywordGrab = () => {
             
             if (cookies['groupCode'] != 0 && cookies["host"] != 0)
             {
-                navigate("/hostRoom")
+                navigate("/group/waiting")
+                return
+                console.log("AFTER GROUP/WAITING NAV")
             }
             if (cookies["groupCode"] != 0)
             {

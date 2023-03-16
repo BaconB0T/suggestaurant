@@ -411,8 +411,8 @@ async function hasDietaryRestrictions(userID)
   return data["filters"]["dietaryRestrictions"].length === 0
 }
 
-function getGroupInfo(groupID) {
-  let data = getDocument(doc(db, 'groups', String(groupID)));
+async function getGroupInfo(groupID) {
+  let data = await getDocument(doc(db, 'groups', String(groupID)));
   let users = data['users']
   let keywords = ""
   let price = ""
@@ -421,11 +421,11 @@ function getGroupInfo(groupID) {
   {
     keywords = keywords +  " " + data["data"][users[i]]["keywords"]
     price += users[i]["price"]
-    for(let [key, value] of data["data"][users[i]][diet])
+    for(const k of Object.keys(data["data"][users[i]]["diet"])) //BUG HERE
     {
-      if (!(value === ""))
+      if (!( data["data"][users[i]]["diet"][k] === ""))
       {
-        diet.push(value)
+        diet.push(data["data"][users[i]]["diet"][k])
       }
     }
   }
