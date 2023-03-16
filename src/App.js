@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 // Import the functions you need from the SDKs you need
-import { getAccount, signInAnon } from './firestore';
+import { getAccount, getRestaurantById, signInAnon } from './firestore';
 // import { rateRestaurant } from './firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -48,6 +48,7 @@ function App() {
   let userWithHistory = getAccount("username", "admin");
   const [state, setState] = useState({});
   const [user, setUser] = useState(null);
+  const testRestauarantId = '---kPU91CF4Lq2-WlRu9Lw';
 
   useEffect(() => {
     onAuthStateChanged(getAuth(), (userObj) => {
@@ -57,9 +58,10 @@ function App() {
         setUser(userObj);
       }
     });
+    // For testing recommendations:
+    setCookie({host: false, groupCode: 123456})
   }, [user]);
   // const restaurant = {name: "Fake Restaurant!", location: {streetAddress: "4903 State Rd 54", state: "FL", city: "New Port Richey", postalCode: '16127', latitude: 28.2172884, longitude: -82.7333444}};
-  
   // To get query parameters, use the line below and use the parameters name instead of paramName
   // query.get('paramName');
   let query = useQuery();
@@ -70,7 +72,8 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} /* indexNum={0} */ />} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} />} />
+        {/* <Route path="/recommendations" element={<Recommendations recommendationIds={[testRestauarantId]} setState={setState} />} /> */}
         <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} state={state}/>}/>
         <Route path="/" element={<HomePage bob={user} />} />
         <Route path="/login" element={<Login />} />

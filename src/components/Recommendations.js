@@ -1,8 +1,8 @@
-import { getRestaurantById, getImageURLsForBusiness } from "../firestore";
+import { getRestaurantById, getImageURLsForBusiness, updateGroupMember } from "../firestore";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
-import { useCookies } from 'react-cookie';
+import { withCookies, useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
 import { isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
@@ -15,11 +15,11 @@ class Recommendations extends React.Component {
     this.state = {
       restIds: restIds,
       index: props.indexNum || restIds.length-1,
-      // rest: (<Recommendation nextRest={() => {this.setState({index: this.state.index+1, rest: (<Recommendation setGlobalState={this.state.setGlobalState} restId={this.state.restIds[this.state.index+1]}></Recommendation>)
-      //       })}} setGlobalState={props.setState} restId={props.recommendationIds[props.indexNum]}></Recommendation>),
       setGlobalState: props.setState,
       childRefs: restIds.map((i) => React.createRef()),
       currentIndexRef: React.createRef(props.indexNum),
+      host: props.allCookies['host'],
+      groupCode: props.allCookies['groupCode'],
     }
   }
 
@@ -43,17 +43,20 @@ class Recommendations extends React.Component {
     document.getElementById(name).setAttribute('style', 'display: none;');
     
     if(dir === 'right') {
+      console.log(this.state.groupCode);
+      // accepting suggestion.
+      if(this.state.groupCode == 0) {
+        // Not in a group.
+        this.handleClick3();
+      } else {
+        this.handleGroupAction(true).then(() => {
+          this.handleClick3(this.state);
+        });
+      }
       this.state.showingMap = true;
-      // document.getElementsByClassName('recommendation--cards')[0].appendChild(<div className='navigating'>Navigating</div>);
-      this.handleClick3(); 
-    }    
-    // state.currentIndexRef.current = state.index;
-    
-    // console.log(dir);
-    // if(dir === 'right') this.handleClick3();
-
-    // this.updateIndex(this.state.index+1);
-    // currentIndexRef.current < idx && childRefs[idx].current.restoreCard();
+    } else if(this.state.groupCode != 0) {
+      this.handleGroupAction(false);
+    }
   }
 
   async swipe(dir) {
@@ -61,22 +64,23 @@ class Recommendations extends React.Component {
       await this.state.childRefs[this.state.index].current.swipe(dir) // Swipe the card!
     }
   }
-
-  // handleClick() {
-  //   console.log("entered handleClick()");
-  //   let newIndex = this.state.index + 1;
-    // this.outOfFrame();
-    // this.setState(prevState => ({
-    //   index: newIndex,
-    //   rest: (<Recommendation setGlobalState={this.state.setGlobalState} restId={this.state.restIds[newIndex]}></Recommendation>)
-    // }));
-  // }
-
-  handleClick3() {
-    // index is decremented by this point. re-increment it to match.
+  
+  async handleGroupAction(accepted) {
+    // When a member of a group accepts the suggestion
     const idx = this.state.index+1;
-    this.state.setGlobalState({ business_id: this.state.restIds[idx] });
-    window.location.href = `/recommendations/map?business_id=${this.state.restIds[idx]}`;
+    const acceptedRestaurantId = this.state.restIds[idx];
+    return await updateGroupMember(this.state.groupCode, 'suggestions', [acceptedRestaurantId, accepted]);
+  }
+  
+  handleClick3(obj) {
+    const idx = obj.index+1;
+    obj.setGlobalState({ business_id: obj.restIds[idx] });
+    window.location.href = `/recommendations/map?business_id=${obj.restIds[idx]}`;
+  }
+
+  // to change less code.
+  handleClick3() {
+    this.handleClick3(this.state);
   }
 
   render() {
@@ -88,8 +92,9 @@ class Recommendations extends React.Component {
 
     return (
       <div className="recommendations">
-        <div className="recommendation--cards">
-          {!this.state.showingMap ? this.state.restIds.map((id, index) => (
+        <div id='enjoy' style={{display: this.state.showingMap ? 'auto' : 'none'}}>Enjoy!</div>
+        <div className="recommendation--cards" style={{display: this.state.showingMap ? 'none' : 'auto'}}>
+          {this.state.restIds.map((id, index) => (
             <Recommendation
               passRef={this.state.childRefs[index]}
               onSwipe={(dir) => this.swiped(dir, id, index)}
@@ -98,7 +103,7 @@ class Recommendations extends React.Component {
               key={id}
               id={id}
             />
-          )) : <div>Enjoy!</div>}
+          ))}
         </div>
         {!isMobile ? buttons : <></>}
       </div>
@@ -216,4 +221,4 @@ const Recommendation = (props) => {
 
 }
 
-export default Recommendations
+export default withCookies(Recommendations);
