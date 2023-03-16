@@ -40,8 +40,7 @@ function HistoryElem(props) {
       <div className='button-test'>
         <a class='button' className = 'rest-but' href={'#' + restaurant.name}>
           <li className="res-element">
-            
-              <div className= 'spacing'/>{restaurant.name}
+              <div id = 'rest-title' >{restaurant.name}</div>
               <div className= 'spacing'/>
                 <div id="test">
                   {[...Array(5)].map((star, index) => {

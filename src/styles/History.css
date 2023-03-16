@@ -1,7 +1,17 @@
+#history-list{
+  padding-left:0;
+}
+
 .button-test{
-  display: grid;
+  display: flex;
   width: 100%;
-  
+  background: white;
+  flex-direction: row;
+  border: solid;
+  border-width: thin;
+  border-radius: 5px;
+  justify-content: flex-end;
+
 }
 
 #trash-button,.rest-but  {
@@ -23,9 +33,7 @@
 
 .res-element{
     display: flex;
-    border: solid;
-    border-width: thin;
-    border-radius: 5px;
+    list-style-type: none;
     /* margin-top: 10px;
     margin-left: 7%;
     margin-right: 10%; */
@@ -37,6 +45,11 @@
 .res-element:hover{
     background-color: lightgrey;
     transition: 0.3s
+}
+
+#rest-title{
+  width: 80%;
+  background: transparent;
 }
 .spacing{
     font-size: medium;
