@@ -1,6 +1,17 @@
+#history-list{
+  padding-left:0;
+}
+
 .button-test{
-  display: grid;
-  
+  display: flex;
+  width: 100%;
+  background: white;
+  flex-direction: row;
+  border: solid;
+  border-width: thin;
+  border-radius: 5px;
+  justify-content: flex-end;
+
 }
 
 #trash-button,.rest-but  {
@@ -22,18 +33,23 @@
 
 .res-element{
     display: flex;
-    border: solid;
-    border-width: thin;
-    border-radius: 5px;
-    margin-top: 10px;
+    list-style-type: none;
+    /* margin-top: 10px;
     margin-left: 7%;
-    margin-right: 10%;
-    background-color: white;
+    margin-right: 10%; */
+    /* justify-content: center right; */
+    align-items: center ;
+    /* background-color: white; */
 }
 
 .res-element:hover{
     background-color: lightgrey;
     transition: 0.3s
+}
+
+#rest-title{
+  width: 80%;
+  background: transparent;
 }
 .spacing{
     font-size: medium;
@@ -41,7 +57,9 @@
 }
 
 #liked{
-    padding-top: 5px;
+    justify-content: center;
+    align-items: center;
+    /* padding-top: 5px; */
     padding-left: 3px;
     color: blue;
 }
@@ -65,10 +83,10 @@
 
 #trash-button{
     place-self: center end;
-    padding-top: 7px;
+    /* padding-top: 7px; */
     background-color: transparent;
     border: none;
-    margin-right: 10%;
+    /* margin-right: 10%; */
 }
 
 #trash-button:hover{
@@ -126,7 +144,7 @@
     font-size: medium;
   }
 
-  .rest-address{
+  .rest-content{
     font-size: small;
   }
   
