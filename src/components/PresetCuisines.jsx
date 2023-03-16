@@ -7,11 +7,6 @@ import "../styles/presetCuis.css";
 
 function PreSetCuisines({user}) {
   
-    // const [user, setUser] = useState([]);
-  
-
-    const auth = getAuth();
-
     const [listOfCuisines, setCuisineList] = useState([]);
     const [userCuisineList, setUserCuisine] = useState([]);
     const [checked, setChecked] = useState([]);
@@ -19,20 +14,14 @@ function PreSetCuisines({user}) {
 
 
     useEffect(() =>{
-        onAuthStateChanged(auth, (user) => {
-        if (user) {
-            setUser(user);
+        if (!user.isAnonymous) {
             Promise.resolve(getFilters(user.uid)).then(val =>{
                 setUserCuisine(val.filters.excludedCuisines);
                 setChecked(val.filters.excludedCuisines);
             })
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/firebase.User
-        } else {
-            // User is signed out
-            setUser(null);
         }
-        });
     }, []);
 
     // console.log(user);
@@ -86,7 +75,8 @@ function PreSetCuisines({user}) {
 
     return(
         <div>
-            <h1>Select Some Cuisines</h1>
+            <br></br>
+            <h3>Select Some Cuisines</h3>
             {/* <ButtonGroup style={{flexWrap: "wrap"}}>
                 {listOfCuisines.map(cuisine =>{
                     return(

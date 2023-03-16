@@ -4,6 +4,7 @@ import { getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 import "../styles/Allergies.css";
 import { getAuth } from 'firebase/auth';
 import { Navigate } from "react-router-dom";
+import { Container, Card } from "react-bootstrap"
 
 
 function Allergies({ user }){
@@ -11,6 +12,22 @@ function Allergies({ user }){
     const[dietRestList, setRestList] = useState([]);
     const[usersDietRest, setUserDietRest] = useState([]);
     const [t, setT] = useState(false);
+    const[checked, setChecked] = useState([]);
+
+    useEffect(() =>{
+        if (!(user.isAnonymous)) {
+            Promise.resolve(getDietRest()).then(val =>{
+                setRestList(val.names[4].values);
+                
+            });
+            Promise.resolve(getFilters(user.uid)).then(val =>{
+                setUserDietRest(val.filters.dietaryRestrictions);
+                setChecked(val.filters.dietaryRestrictions);
+            });
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+        }
+    }, []);
     
     // redirect on anonymous user.
     if (user === null || user.isAnonymous) {
@@ -18,33 +35,6 @@ function Allergies({ user }){
             <Navigate to='/login' />
         );
     }
-
-    const[checked, setChecked] = useState([]);
-
-    const [user, setUser] = useState([]);
-    const auth = getAuth();
-
-
-    useEffect(() =>{
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setUser(user);
-                Promise.resolve(getDietRest()).then(val =>{
-                    setRestList(val.names[4].values);
-                    
-                });
-                Promise.resolve(getFilters(user.uid)).then(val =>{
-                    setUserDietRest(val.filters.dietaryRestrictions);
-                    setChecked(val.filters.dietaryRestrictions);
-                });
-                // User is signed in, see docs for a list of available properties
-                // https://firebase.google.com/docs/reference/js/firebase.User
-            } else {
-            // User is signed out
-            setUser(null);
-            }
-        });
-    }, []);
 
     const handleCheck = (event) => {
         var updatedList = [...checked];
@@ -58,24 +48,32 @@ function Allergies({ user }){
     };
 
     return(
-        <div className = "checkList">
-            <div className="title"> Allergies </div>
-            <div className="list-container">
-                {dietRestList.map((item, index) => (
-                    <div key={index} className = 'test'>
-                        <input className={checked.includes(item) ? 'selected' : 'notselected'} 
-                        id = {'list-item' + index}
-                        value={item} 
-                        type="checkbox" 
-                        checked= {checked.includes(item)} 
-                        onClick={handleCheck}
-                        hidden/>
-                        <label className="item-name" for={'list-item'+ index}>{item}</label>
+       <Container
+            className="d-flex align-items-center justify-content-center overflow-auto"
+            style={{ minHeight: "100vh" }}
+        >
+         <div className = "checkList">
+            <h2> Allergies </h2>
+            <Card className="card-control">
+                <Card.Body>
+                    <div className="list-container">
+                        {dietRestList.map((item, index) => (
+                            <div key={index} className = 'test'>
+                                <input className={checked.includes(item) ? 'selected' : 'notselected'} 
+                                id = {'list-item' + index}
+                                value={item} 
+                                type="checkbox" 
+                                checked= {checked.includes(item)} 
+                                onClick={handleCheck}
+                                hidden/>
+                                <label className="item-name" for={'list-item'+ index}>{item}</label>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-
+                </Card.Body>
+            </Card>         
         </div>
+       </Container>
     );
 }
 

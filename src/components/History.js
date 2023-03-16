@@ -5,34 +5,13 @@ import { Link } from 'react-router-dom';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import '../styles/History.css';
+import { Container  } from "react-bootstrap";
 
 function HistoryElem(props) {
   const [restaurant, setRestaurant] = useState([]);
   const [loc, setLocation] = useState([]);
   const [cookies, setCookie, removeCookie] = useCookies(['id']);
 
-  const [user, setUser] = useState([]);
-
-  const auth = getAuth();
-
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       setUser(user);
-  //       getHistory(user.uid).then((usersHistory) => {
-  //         setHistory(usersHistory);
-  //         console.log(usersHistory);
-  //         console.log(user.uid);
-  //       });
-  //       // User is signed in, see docs for a list of available properties
-  //       // https://firebase.google.com/docs/reference/js/firebase.User
-  //     } else {
-  //       // User is signed out
-  //       setUser(null);
-  //     }
-  //   });
-  // }, []);
-  // get restaurant
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurant(props.history.restaurant);
@@ -40,27 +19,20 @@ function HistoryElem(props) {
       setLocation(rest.location);
     }
     setRes();
-    
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-      } else {
-        // User is signed out
-        setUser(null);
-      }
-    });
   }, []);
 
 
   const handleClick = event => {
-    deleteHistoryItem(user.uid, restaurant);
+    deleteHistoryItem(props.user.uid, restaurant);
     event.currentTarget.disabled = true;
     // console.log("Button Pressed");
   };
 
   return (
+    <Container
+    className="d-flex align-items-center justify-content-center overflow-auto"
+    style={{ minHeight: "100vh" }}
+    >
     <div>
       <head>
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"/>
@@ -114,6 +86,7 @@ function HistoryElem(props) {
 
     </div>
   </div>
+  </Container>
   );
 }
 
@@ -126,22 +99,15 @@ function History({user}) {
   // const auth = getAuth();
 
   useEffect(() => {
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        getHistory(user.uid).then((usersHistory) => {
-          setHistory(usersHistory);
-          console.log(usersHistory);
-          console.log(user.uid);
-        });
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-      } else {
-        // User is signed out
-        setUser(null);
-      }
-    });
+    if (!user.isAnonymous) {
+      getHistory(user.uid).then((usersHistory) => {
+        setHistory(usersHistory);
+        console.log(usersHistory);
+        console.log(user.uid);
+      });
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+    }
   }, []);
   // useEffect(() => {
   //   async function cried() {
@@ -161,7 +127,7 @@ function History({user}) {
   for (const historyItem of history) {
     // if(historyItem.restaurant !== "placeholder") {
     // console.log(historyItem);
-    historyComponents.push(<HistoryElem key={historyItem.id} history={historyItem} />);
+    historyComponents.push(<HistoryElem user = {user} key={historyItem.id} history={historyItem} />);
     // }
   }
 
