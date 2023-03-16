@@ -37,9 +37,9 @@
     /* margin-top: 10px;
     margin-left: 7%;
     margin-right: 10%; */
-    justify-content: center right;
+    /* justify-content: center right; */
     align-items: center ;
-    background-color: white;
+    /* background-color: white; */
 }
 
 .res-element:hover{

@@ -53,7 +53,8 @@ function HistoryElem(props) {
                   })}
                 </div>
               <div className= 'spacing' id={(props.history.rating === 1) ? 'liked' : 'disliked'}/> 
-              Your Rating: {(props.history.rating === 1) ? <i id='liked' class="fas fa-sm">&#xf164;</i> : <i id='disliked' class="fas fa-sm">&#xf165;</i>}
+              <div>Your Rating:</div>
+              {(props.history.rating === 1) ? <i id='liked' class="fas fa-sm">&#xf164;</i> : <i id='disliked' class="fas fa-sm">&#xf165;</i>}
               {/* <div className= 'spacing'/> <button id = 'trash-button' onClick={handleClick}><i class="far">&#xf2ed;</i></button> */}
             
           </li>
