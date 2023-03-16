@@ -29,10 +29,10 @@ function HistoryElem(props) {
   };
 
   return (
-    <Container
-    className="d-flex align-items-center justify-content-center overflow-auto"
-    style={{ minHeight: "100vh" }}
-    >
+    // <Container
+    // className="d-flex align-items-center justify-content-center overflow-auto"
+    // style={{ minHeight: "100vh" }}
+    // >
     <div>
       <head>
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"/>
@@ -68,10 +68,10 @@ function HistoryElem(props) {
       <div class = 'popup'>
         <a className = 'pop-up-title'>{restaurant.name}</a>
         <a class="close" href='javascript:history.back()'>&times;</a>
-        <div class="content">
-          <div className = 'rest-address'>{loc.streetAddress + ', ' +  loc.city + ', ' + loc.state}</div>
-          <div className = 'rest-address'>Your Rating: {(props.history.rating === 1) ? <i id='liked' class="fa">&#xf164;</i> : <i id='disliked' class="fa">&#xf165;</i>}</div>
-          <div id="test">
+        <div class="content" className = 'rest-content'>
+          <div >{loc.streetAddress + ', ' +  loc.city + ', ' + loc.state}</div>
+          <div >Your Rating: {(props.history.rating === 1) ? <i id='liked' class="fa">&#xf164;</i> : <i id='disliked' class="fa">&#xf165;</i>}</div>
+          <div id="test" style={{ justifyContent: 'center' }}>
             {[...Array(5)].map((star, index) => {
               index +=1;
               return (
@@ -85,8 +85,9 @@ function HistoryElem(props) {
       </div>
 
     </div>
+    
   </div>
-  </Container>
+  
   );
 }
 
@@ -132,14 +133,21 @@ function History({user}) {
   }
 
   return (
+    <Container
+    className="d-flex align-items-center justify-content-center overflow-auto"
+    style={{ minHeight: "100vh" }}
+    >
     <div>
-      <h1>History</h1>
+    
+      <h3>History</h3>
       <div>
         <h4>Add To History</h4>
         <button><Link to='/search'>Select Restaurants</Link></button>
       </div>
       <ol id="history-list">{historyComponents}</ol>
+      
     </div>
+    </Container>
   )
 }
 

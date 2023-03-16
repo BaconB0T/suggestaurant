@@ -1,5 +1,6 @@
 .button-test{
   display: grid;
+  width: 100%;
   
 }
 
@@ -25,9 +26,11 @@
     border: solid;
     border-width: thin;
     border-radius: 5px;
-    margin-top: 10px;
+    /* margin-top: 10px;
     margin-left: 7%;
-    margin-right: 10%;
+    margin-right: 10%; */
+    justify-content: center right;
+    align-items: center ;
     background-color: white;
 }
 
@@ -41,7 +44,9 @@
 }
 
 #liked{
-    padding-top: 5px;
+    justify-content: center;
+    align-items: center;
+    /* padding-top: 5px; */
     padding-left: 3px;
     color: blue;
 }
@@ -65,10 +70,10 @@
 
 #trash-button{
     place-self: center end;
-    padding-top: 7px;
+    /* padding-top: 7px; */
     background-color: transparent;
     border: none;
-    margin-right: 10%;
+    /* margin-right: 10%; */
 }
 
 #trash-button:hover{
@@ -126,7 +131,7 @@
     font-size: medium;
   }
 
-  .rest-address{
+  .rest-content{
     font-size: small;
   }
   
