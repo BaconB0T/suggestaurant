@@ -256,18 +256,7 @@ async function createUserEmailPassword(username, email, password) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
     // signed in
     const user = userCredential.user;
-    insertAccount({
-      uid: user.uid,
-      email: email,
-      username: username,
-      // No need for password, firesbase handles that for us.
-      authProvider: "local",
-      filters: {
-        dietaryRestrictions: [],
-        excludedCuisines: [],
-        preferences: defaultPreferences(),
-      },
-    });
+    insertAccount(userObj({uid: user.uid, displayName: username, email: email}, 'local'));
     return { uid: user.uid, name: username };
   } catch (error) {
     console.error(error);
@@ -277,6 +266,20 @@ async function createUserEmailPassword(username, email, password) {
   }
 }
 
+function userObj(user, provider) {
+  return {
+    uid: user.uid,
+    email: user.email,
+    username: user.displayName,
+    // No need for password, firesbase handles that for us.
+    authProvider: provider,
+    filters: {
+      dietaryRestrictions: [],
+      excludedCuisines: [],
+      preferences: defaultPreferences(),
+    },
+  }
+}
 
 async function signInEmailPassword(email, password) {
   try {
@@ -288,7 +291,6 @@ async function signInEmailPassword(email, password) {
   };
 }
 
-// idek if this works (or signInWithProviderRedirect).
 // May have to be called in the react component?
 function signInWithGoogleMobile() {
   signInWithPopup(auth, googleProvider)
@@ -325,9 +327,26 @@ function signInWithGoogleMobile() {
     });
 }
 
-// idek if this works (or signInWithProviderPopup).
-function signInWithProviderRedirect(provider) {
-  signInWithRedirect(auth, provider);
+async function signInWithGoogle() {
+  const result = await signInWithPopup(getAuth(), new GoogleAuthProvider());
+  // This gives you a Google Access Token. You can use it to access the Google API.
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  const token = credential.accessToken;
+  // The signed-in user info.
+  const user = result.user;
+  // IdP data available using getAdditionalUserInfo(result)
+  // ...
+  // 
+  insertAccount(userObj(user, 'google'));
+  return {uid: user.uid, name: user.displayName};
+  // Handle Errors here.
+  // const errorCode = error.code;
+  // const errorMessage = error.message;
+  // The email of the user's account used.
+  // const email = error.customData.email;
+  // The AuthCredential type that was used.
+  // const credential = GoogleAuthProvider.credentialFromError(error);
+  // ...
 }
 
 function signInAnon() {
@@ -693,7 +712,6 @@ function defaultGroupUserData(currentUser) {
     "Soy-free": '',
     "Vegetarian": '',
   }
-  
   const uf = currentUser.filters;
   const dr = (uf && uf.dietaryRestrictions) || [];
 
@@ -780,7 +798,7 @@ async function updateGroupHost(code, key, value) {
   if (supportedMemberGroupKeys.includes(key)) {
     return updateGroupMember(code, key, value);
   }
-  
+
   const groupDocRef = doc(db, 'groups', code);
   const groupDoc = (await getDoc(groupDocRef)).data();
 
@@ -808,4 +826,5 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, hasDietaryRestrictions, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+
