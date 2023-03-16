@@ -30,6 +30,7 @@ import Cuisine from './components/PresetCuisines';
 import HomePage from './components/HomePage';
 import ExpandRadius from './components/ExpandRadiusPage';
 import Group from './components/Group';
+import GroupWaiting from './components/GroupWaiting';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useState, useMemo, useEffect } from 'react';
 import { BsGearFill } from "react-icons/bs";
@@ -94,6 +95,8 @@ function App() {
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
         <Route path='/group/join' element={<Group isHost={false}/>}/>
         <Route path='/group/host' element={<Group isHost={true}/>}/>
+        <Route path='/group/waiting' element={<GroupWaiting/>}/>
+
       </Routes>
     </div>
   )

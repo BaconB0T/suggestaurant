@@ -453,12 +453,14 @@ function getGroupInfo(groupID) {
     groupCode: groupID,
     // boolean value
     host: (data['host'] === getAuth().currentUser.uid),
+    numUsers: data['numUsers'],
+    numUsersReady: data['numUsersReady'],
   }
   return jsonData
 }
 
 async function getGroup(groupId) {
-  return await getDocument(doc(db, 'groups', String(groupId)));
+  return (await getDocument(doc(db, 'groups', String(groupId))));
 }
 
 async function groupExists(groupId) {
@@ -685,6 +687,7 @@ function defaultGroup(code, currentUser) {
     data: data
   });
 }
+
 
 function defaultGroupUserData(currentUser) {
   const dids = {
