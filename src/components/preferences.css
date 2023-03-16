@@ -1,15 +1,43 @@
+.pref{
+  display: flex;
+  /* justify-content: center;
+  align-items: center; */
+}
+
+.Title {
+  display: flex;
+  justify-content: center;
+  font-size: xx-large;
+}
+
+.test{
+  display: flex;
+  font-size: large;
+  /* position: absolute; */
+  /* margin-right: 40%; */
+  /* margin-left: 20%; */
+  
+  justify-content: center;
+}
+
 .oneline{
     display: flex;
+    /* justify-content: center; */
+    /* background: red; */
+    /* justify-content: center; */
+    /* align-items: center;  */
 }
 
 .switch {
+    display: flex;
     position: absolute;
-    left: 0;
-    display: inline-block;
+    /* background: red; */
+    /* left: 0; */
     width: 40px;
     height: 20px;
     margin-top: 8px;
-    margin-left: 40%;
+    margin-left: 75%;
+    /* background: red; */
 }
 
 #checkb {
@@ -19,6 +47,7 @@
 }
 
 .slider {
+    justify-content: center;
     position:absolute;
     cursor: pointer;
     top: 0;
@@ -31,6 +60,7 @@
 }
 .slider:before {
     position: absolute;
+    justify-content: center;
     content: "";
     height: 15px;
     width: 15px;
@@ -49,7 +79,9 @@
     transform: translateX(19px);
   }
   .star-rating{
-    margin-left: 19%;
+    position: absolute;
+    margin-left: 66.3%;
+    /* background: red; */
   }
 
  #starSelector {
@@ -66,4 +98,10 @@
 
   .off{
     color: #ccc;
+  }
+
+  .but{
+    position: absolute;
+    padding-left: 69%;
+    padding-top: 1%;
   }

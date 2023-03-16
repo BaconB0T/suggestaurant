@@ -5,6 +5,7 @@ import { useCookies } from 'react-cookie';
 import {getDoc, doc} from "firebase/firestore";
 import "./preferences.css"
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Container, Card } from "react-bootstrap";
 
 function Preferences({user}) {  
     // const [user, setUser] = useState([]);
@@ -65,62 +66,69 @@ function Preferences({user}) {
 
     return(
         <div>
-            <h1>Preferences</h1>
-            <div className = 'oneline'>
-                <h4>Include Family Friendly</h4>
-                <label className='switch'>
-                    <input id = 'checkb' type = 'checkbox' checked = {FamilyFriendly} onClick = {handleFFChange}/>
-                    <span className = 'slider' />
-                </label>
-            </div>
-            <div className = 'oneline'>
-                <h4>Include History</h4>
-                <label className='switch'>
-                    <input id = 'checkb' type = 'checkbox' checked = {includeHis} onClick = {handleIncHisChange}/>
-                    <span className = 'slider' />
-                </label>
-            </div>
-            <div className = 'oneline'>
-                <h4>Include Fast Food</h4>
-                <label className='switch'>
-                    <input id = 'checkb' type = 'checkbox' checked = {FastFood} onClick = {handleFFoodChange}/>
-                    <span className = 'slider' />
-                </label>
-            </div>
+        <Container
+            className="d-flex align-items-center justify-content-center overflow-auto"
+            style={{ minHeight: "100vh" }}
+        >
+            <h3>Preferences</h3>
+            <Card className="w-100">
+                <Card.Body>
+                    <div className='oneline'>
+                        <div className="test">Include Family Friendly</div>
+                        <label className='switch'>
+                            <input id='checkb' type='checkbox' checked={FamilyFriendly} onClick={handleFFChange} />
+                            <span className='slider' />
+                        </label>
+                    </div>
+                    <div className='oneline'>
+                        <div className="test">Include History</div>
+                        <label className='switch'>
+                            <input id='checkb' type='checkbox' checked={includeHis} onClick={handleIncHisChange} />
+                            <span className='slider' />
+                        </label>
+                    </div>
+                    <div className='oneline'>
+                        <div className="test">Include Fast Food</div>
+                        <label className='switch'>
+                            <input id='checkb' type='checkbox' checked={FastFood} onClick={handleFFoodChange} />
+                            <span className='slider' />
+                        </label>
+                    </div>
 
-            <div className = 'oneline'>
-                <h4>Minimum Rating</h4>
-                <div className = 'star-rating'>
-                    {[...Array(5)].map((star,index) => {
-                        index += 1;
-                        return (
-                            <button 
-                                id = 'starSelector'
-                                type = 'button' 
-                                key={index} 
-                                className = {index <= (hover || minRating) ? 'on' : 'off'} 
-                                onClick = {() => {
-                                    setMR(index); 
-                                    setT(true);
-                                    setPreferences(user.uid, FamilyFriendly, includeHis, FastFood, index);
-                                    }
-                                }
-                                onMouseEnter = {() => {setHover(index); setT(true);}}
-                                onMouseLeave = {() => {setHover(minRating); setT(true);}}
-                            >
-                                <span className = "star">&#9733;</span>
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
+                    <div className='oneline'>
+                        <div className="test">Minimum Rating</div>
+                        <div className='star-rating'>
+                            {[...Array(5)].map((star, index) => {
+                                index += 1;
+                                return (
+                                    <button
+                                        id='starSelector'
+                                        type='button'
+                                        key={index}
+                                        className={index <= (hover || minRating) ? 'on' : 'off'}
+                                        onClick={() => {
+                                            setMR(index);
+                                            setT(true);
+                                            setPreferences(user.uid, FamilyFriendly, includeHis, FastFood, index);
+                                        }
+                                        }
+                                        onMouseEnter={() => { setHover(index); setT(true); }}
+                                        onMouseLeave={() => { setHover(minRating); setT(true); }}
+                                    >
+                                        <span className="star">&#9733;</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
 
-            <div>
-                <h4>Preselect Cuisines</h4>
-                <button><Link to='/selectCuisine'>Select Cuisine</Link></button>
-            </div>
-
-
+                    <div className='oneline'>
+                        <div className="test">Preselect Cuisines</div>
+                        <div className="but"><button><Link to='/selectCuisine'>Select Cuisine</Link></button></div>
+                    </div>
+                </Card.Body>
+            </Card>
+        </Container>
         </div>
     )
 }
