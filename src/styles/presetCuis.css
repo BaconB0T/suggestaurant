@@ -1,34 +1,27 @@
-.title{
-    display: flex;
-    font-size: x-large;
-    justify-content: center;
-    /* align-items: center; */
-}
-
-.list-container {
+.list-cont {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
 
-.test{
+.tes{
     position: relative;
     margin: 10px;
 }
 
-.item-name{
+.item-nam{
     background: transparent;
-    font-size:medium;
+    font-size:small;
     color: black;
-    padding: 14px 40px;
+    padding: 9px 15px;
     justify-content: center;
-    margin-top: 15px;
+    margin-top: 10px;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.3s;
 }
 
-input:checked ~ .item-name {
+input:checked ~ .item-nam {
     background: lightblue;
     transition: 0.3s;
 }
