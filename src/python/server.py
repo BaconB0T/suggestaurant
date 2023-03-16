@@ -95,6 +95,15 @@ app = Flask(__name__)
 # deal with CORS security issues
 CORS(app)
 
+def insert_restaurants_as_suggestions(ids_list, group_id):
+	groupDocRef = db.document('groups', group_id)
+	groupDoc = groupDocRef.get().to_dict()
+	suggestion_data = groupDoc['suggestions'] if 'suggestions' in groupDoc.keys() else dict()
+	for rest_id in ids_list:
+		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
+	groupDocRef.update({'suggestions': suggestion_data})
+
+
 # Route for seeing a data
 @app.route('/data', methods=['POST'])
 def keywords():	
@@ -202,6 +211,9 @@ def keywords():
 	topRecommendations=pd.DataFrame.sort_values(predictItemRating,['Rating'],ascending=[0])[:7]
 
 	print(topRecommendations.index.values.tolist(), file=sys.stderr)
+
+	if str(req['groupCode']) != '0':
+		insert_restaurants_as_suggestions(topRecommendations.index.values.tolist(), req['groupCode'])
 
 	return topRecommendations.index.values.tolist()
 
