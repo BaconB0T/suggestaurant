@@ -19,7 +19,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-const supportedMemberGroupKeys = ['diet', 'keywords', 'price', 'users'];
+const supportedMemberGroupKeys = ['diet', 'keywords', 'price', 'users', 'suggestions'];
 const supportedHostGroupKeys = supportedMemberGroupKeys.concat('latlong', 'time');
 
 // localize OAuth flow to user's preferred language.
@@ -80,7 +80,7 @@ async function getAllRestaurants() {
 async function getRestaurantById(id) {
   id = String(id)
   const docRef = doc(db, 'restaurants', id);
-  return getRestaurant(docRef);
+  return getDocument(docRef);
 }
 
 /**
@@ -115,7 +115,6 @@ async function getDocument(docRef) {
   try {
     const docSnap = await getDoc(docRef);
     const doc = docSnap.data();
-    console.log(doc)
     doc.id = docSnap.id;
     return doc;
   } catch (e) {
@@ -257,18 +256,7 @@ async function createUserEmailPassword(username, email, password) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
     // signed in
     const user = userCredential.user;
-    insertAccount({
-      uid: user.uid,
-      email: email,
-      username: username,
-      // No need for password, firesbase handles that for us.
-      authProvider: "local",
-      filters: {
-        dietaryRestrictions: [],
-        excludedCuisines: [],
-        preferences: defaultPreferences(),
-      },
-    });
+    insertAccount(userObj({uid: user.uid, displayName: username, email: email}, 'local'));
     return { uid: user.uid, name: username };
   } catch (error) {
     console.error(error);
@@ -278,6 +266,20 @@ async function createUserEmailPassword(username, email, password) {
   }
 }
 
+function userObj(user, provider) {
+  return {
+    uid: user.uid,
+    email: user.email,
+    username: user.displayName,
+    // No need for password, firesbase handles that for us.
+    authProvider: provider,
+    filters: {
+      dietaryRestrictions: [],
+      excludedCuisines: [],
+      preferences: defaultPreferences(),
+    },
+  }
+}
 
 async function signInEmailPassword(email, password) {
   try {
@@ -289,7 +291,6 @@ async function signInEmailPassword(email, password) {
   };
 }
 
-// idek if this works (or signInWithProviderRedirect).
 // May have to be called in the react component?
 function signInWithGoogleMobile() {
   signInWithPopup(auth, googleProvider)
@@ -326,9 +327,26 @@ function signInWithGoogleMobile() {
     });
 }
 
-// idek if this works (or signInWithProviderPopup).
-function signInWithProviderRedirect(provider) {
-  signInWithRedirect(auth, provider);
+async function signInWithGoogle() {
+  const result = await signInWithPopup(getAuth(), new GoogleAuthProvider());
+  // This gives you a Google Access Token. You can use it to access the Google API.
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  const token = credential.accessToken;
+  // The signed-in user info.
+  const user = result.user;
+  // IdP data available using getAdditionalUserInfo(result)
+  // ...
+  // 
+  insertAccount(userObj(user, 'google'));
+  return {uid: user.uid, name: user.displayName};
+  // Handle Errors here.
+  // const errorCode = error.code;
+  // const errorMessage = error.message;
+  // The email of the user's account used.
+  // const email = error.customData.email;
+  // The AuthCredential type that was used.
+  // const credential = GoogleAuthProvider.credentialFromError(error);
+  // ...
 }
 
 function signInAnon() {
@@ -406,26 +424,24 @@ function defaultHistory() {
 async function hasDietaryRestrictions(userID)
 {
   let data = await getDocument(doc(db, 'users', String(userID)));
-  console.log(data)
-  console.log(data["filters"])
-  return data["filters"]["dietaryRestrictions"].length === 0
+  return data["filters"]["dietaryRestrictions"].length !== 0;
 }
 
 function getGroupInfo(groupID) {
   let data = getDocument(doc(db, 'groups', String(groupID)));
   let users = data['users']
   let keywords = ""
-  let price = ""
+  let price = 0
   let diet = []
   for (let i = 0; i < users.length; i++)
   {
     keywords = keywords +  " " + data["data"][users[i]]["keywords"]
-    price += users[i]["price"]
-    for(let [key, value] of data["data"][users[i]][diet])
+    price += data[users[i]]["price"]
+    for(const key of Object.keys(data["data"][users[i]]["diet"]))
     {
-      if (!(value === ""))
+      if (!(data["data"][users[i]]["diet"][key] === ""))
       {
-        diet.push(value)
+        diet.push(data["data"][users[i]]["diet"][key])
       }
     }
   }
@@ -696,7 +712,6 @@ function defaultGroupUserData(currentUser) {
     "Soy-free": '',
     "Vegetarian": '',
   }
-  
   const uf = currentUser.filters;
   const dr = (uf && uf.dietaryRestrictions) || [];
 
@@ -746,15 +761,24 @@ async function updateGroupMember(code, key, value) {
       groupDoc['data'][user.uid] = defaultGroupUserData(user);
       break;
     case 'keywords':
+      userData[key] = value;
+      groupDoc['numUsersReady'] += 1;
+      break;
     case 'price':
     case 'diet':
       userData[key] = value;
+      break;
+    case 'suggestions':
+      const [acceptedRestaurantId, accepted] = value;
+      console.log(accepted);
+      const vk = accepted ? 'numAccepted' : 'numRejected';
+      console.log(vk);
+      groupDoc[key][acceptedRestaurantId][vk] += 1;
       break;
     default:
       console.log(`Invalid update key: ${key}`);
       return false
   }
-  console.log(groupDoc);
   try {
     updateDoc(groupDocRef, groupDoc);
     return true;
@@ -766,7 +790,6 @@ async function updateGroupMember(code, key, value) {
 }
 
 async function updateGroupHost(code, key, value) {
-  console.log(value);
   if (!(await isHost(code, getAuth().currentUser))) {
     console.error("Not the group's host!");
     return false;
@@ -775,7 +798,7 @@ async function updateGroupHost(code, key, value) {
   if (supportedMemberGroupKeys.includes(key)) {
     return updateGroupMember(code, key, value);
   }
-  
+
   const groupDocRef = doc(db, 'groups', code);
   const groupDoc = (await getDoc(groupDocRef)).data();
 
@@ -788,8 +811,6 @@ async function updateGroupHost(code, key, value) {
       console.error(`Invalid update key: ${key}`);
       return false;
   }
-  console.log(key);
-  console.log(groupDoc);
 
   try {
     await updateDoc(groupDocRef, groupDoc);
@@ -805,4 +826,5 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, hasDietaryRestrictions, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithProviderRedirect, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+
