@@ -2,6 +2,9 @@ import { getGroupInfo, getGroup } from "../firestore";
 import React, { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
+import Spinner from 'react-bootstrap/Spinner';
+import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
+import styles from '../styles/new.module.scss';
 
 
 const GroupWaiting = () => {
@@ -9,6 +12,11 @@ const GroupWaiting = () => {
     const [numUsersReady, setNumUsersReady] = useState(0);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
+
+
+
+
+
 
 
     async function updateVars() {
@@ -59,9 +67,9 @@ const GroupWaiting = () => {
                     }
                 })
         } catch (e) {
-        // else set an error
-        console.log(e)
-    }   
+            // else set an error
+            console.log(e)
+        }
     }
     useEffect(() => {
         async function idk() {
@@ -69,13 +77,15 @@ const GroupWaiting = () => {
             const group = await getGroup(groupCode)
             setNumUsers(group.numUsers)
             setNumUsersReady(group.numUsersReady)
-            
+
         }
 
-        idk().then(()=> { if (numUsersReady == numUsers) {
-            runAlgorithm()
-         } })
-        
+        idk().then(() => {
+            if (numUsersReady == numUsers) {
+                runAlgorithm()
+            }
+        })
+
 
     }, [numUsers, numUsersReady]);
 
@@ -90,7 +100,41 @@ const GroupWaiting = () => {
 
 
     return <>
-        numUsers is {numUsers} and numUsersReady is {numUsersReady}
+
+
+        {/* <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+        </Spinner>
+        numUsers is {numUsers} and numUsersReady is {numUsersReady} */}
+
+        <Container
+            className="d-flex align-items-center justify-content-center"
+            style={{ minHeight: "100vh" }}
+        >
+            <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
+                {/* <Card className="card-control w-75 center">
+                <Card.Body> */}
+
+                {/* </Card.Body>
+            </Card> */}
+                <br></br><br></br>
+
+                <>
+                    <div>
+                        <h3>There are {numUsersReady} out of {numUsers} quizzes still in progress!
+                        </h3>
+                        <br></br>
+                        <div>
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        </div>
+                    </div>
+                    <br></br>
+
+                </>
+            </div>
+        </Container >
     </>
 
 }
