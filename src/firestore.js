@@ -415,17 +415,17 @@ function getGroupInfo(groupID) {
   let data = getDocument(doc(db, 'groups', String(groupID)));
   let users = data['users']
   let keywords = ""
-  let price = ""
+  let price = 0
   let diet = []
   for (let i = 0; i < users.length; i++)
   {
     keywords = keywords +  " " + data["data"][users[i]]["keywords"]
-    price += users[i]["price"]
-    for(let [key, value] of data["data"][users[i]][diet])
+    price += data[users[i]]["price"]
+    for(const key of Object.keys(data["data"][users[i]]["diet"]))
     {
-      if (!(value === ""))
+      if (!(data["data"][users[i]]["diet"][key] === ""))
       {
-        diet.push(value)
+        diet.push(data["data"][users[i]]["diet"][key])
       }
     }
   }
