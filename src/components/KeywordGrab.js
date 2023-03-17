@@ -71,11 +71,14 @@ const KeywordGrab = () => {
             }
             if (cookies['groupCode'] != 0 && cookies["host"] != 'false')
             {
-                navigate("/hostRoom")
+                navigate("/group/waiting")
+                return
+                console.log("AFTER GROUP/WAITING NAV")
             }
             if (cookies["groupCode"] != 0)
             {
-                setURL("http://localhost:5000/groupMode")
+                navigate("/group/waiting")
+                return
             }
 
             fetch("http://localhost:5000/data", {
