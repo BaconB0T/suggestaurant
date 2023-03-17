@@ -3,7 +3,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { updateGroupMember, hasDietaryRestrictions, getFilters } from '../firestore';
+import { updateGroupMember, hasDietaryRestrictions, getFilters, getGroup } from '../firestore';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
 
@@ -20,6 +20,35 @@ const DietCheck = ({user}) => {
     const kosherRef = useRef();
     const veggieRef = useRef();
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
+    const [check2, setCheck2] = useState(false)
+
+    async function updateVars() {
+        setCheck2(!check2)
+    }
+    const MINUTE_MS = 1000;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updateVars()
+            // console.log('Logs every second');
+        }, MINUTE_MS);
+
+        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, [])
+
+    useEffect(() => {
+        async function idk() {
+            const groupCode = cookies["groupCode"]
+            const group = await getGroup(groupCode)
+            return group.hostReady
+        }
+        console.log('inside use effect')
+        idk().then((retVal) => {
+            if (retVal == true) {
+                navigate("/group/waiting")
+            }
+        })
+    }, [check2]);
 
     async function handleClickBack() {
         try {

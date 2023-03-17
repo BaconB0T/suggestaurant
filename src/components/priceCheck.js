@@ -1,10 +1,10 @@
 import { FaDollarSign } from "react-icons/fa";
-import React, {useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { getAccount, updateGroupMember, validateUser } from '../firestore'
+import { getAccount, updateGroupMember, getGroup } from '../firestore'
 import styles from '../styles/new.module.scss';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
@@ -19,6 +19,36 @@ const PriceGrab = () => {
     const [error, setError] = useState("")
     const [price, setPrice] = useState(5)
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
+    const [check, setCheck] = useState(false)
+
+    async function updateVars() {
+        setCheck(!check)
+    }
+    const MINUTE_MS = 1000;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updateVars()
+            // console.log('Logs every second');
+        }, MINUTE_MS);
+
+        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, [])
+
+    useEffect(() => {
+        async function idk() {
+            const groupCode = cookies["groupCode"]
+            const group = await getGroup(groupCode)
+            return group.hostReady
+        }
+        console.log('inside use effect')
+        idk().then((retVal) => {
+            if (retVal == true) {
+                navigate("/group/waiting")
+            }
+        })
+    }, [check]);
+
 
     async function handleClickBack() {
         try {
