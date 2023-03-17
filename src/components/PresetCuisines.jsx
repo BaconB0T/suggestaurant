@@ -2,8 +2,9 @@ import {useState, useEffect} from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { getCuisines, updateUserCuisine, getFilters} from '../firestore';
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { Navigate } from 'react-router-dom';
+import { Navigate,useNavigate } from 'react-router-dom';
 import "../styles/presetCuis.css";
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 function PreSetCuisines({user}) {
   
@@ -70,11 +71,26 @@ function PreSetCuisines({user}) {
         setSearchTerm(event.target.value);
     }
 
+    const navigate = useNavigate();
+    const [error, setError] = useState("")
+
+    async function handleClickBack() {
+        try {
+            navigate("/account/filters");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
     return(
-        <div id = 'has'>
-            <h3>Select Some Cuisines</h3>
-            <input type='text' value={searchTerm} onChange = {editSearchTerm} placeholder = 'Search for a cuisine'/>
-            {dynamicSearch()}
+        <div>
+        <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <div id='content-container'>
+                <h3>Select Some Cuisines</h3>
+                <input type='text' value={searchTerm} onChange = {editSearchTerm} placeholder = 'Search for a cuisine'/>
+                {dynamicSearch()}
+            </div>
         </div>
     )
 }

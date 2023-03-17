@@ -1,25 +1,14 @@
 import {useEffect, useState} from "react";
 import { getFilters, setPreferences, db } from "../firestore";
-import {Link, Navigate} from 'react-router-dom';
+import {useNavigate, Link, Navigate} from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import {getDoc, doc} from "firebase/firestore";
-import "./preferences.css"
-// import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import "./preferences.css";
 import { Container, Card } from "react-bootstrap";
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+
 
 function Preferences({user}) {  
-    // const [user, setUser] = useState([]);
-
-    // const auth = getAuth();
-    // useEffect(() => {
-    //     onAuthStateChanged(auth, (user) => {
-    //         if(!user.isAnonymous) {
-    //             setUser(user);
-    //         } else {
-    //             setUser(null);
-    //         }
-    //     });    
-    // });
     
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
@@ -27,6 +16,8 @@ function Preferences({user}) {
     const [hover, setHover] = useState(0);
     const [FastFood, setff] = useState(false);
     const [t,setT] = useState(false);
+    const navigate = useNavigate();
+    const [error, setError] = useState("")
     
     // redirect on anonymous user.
     if (user === null || user.isAnonymous) {
@@ -63,6 +54,15 @@ function Preferences({user}) {
         setPreferences(user.uid, FamilyFriendly, includeHis, !FastFood, minRating);
     };
 
+    async function handleClickBack() {
+        try {
+            navigate("/account");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
 
     return(
         <div>
@@ -70,6 +70,7 @@ function Preferences({user}) {
             className="d-flex align-items-center justify-content-center overflow-auto"
             style={{ minHeight: "100vh" }}
         >
+        <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
             <div>
             <h3>Preferences</h3>
             <Card className="w-100">
