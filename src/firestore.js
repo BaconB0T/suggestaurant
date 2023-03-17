@@ -608,6 +608,38 @@ async function setPreferences(user, FamVal, HisVal, FastFoodVal, rating) {
   })
 }
 
+async function setLastVisitedRestaurant(user, business_id) {
+  // const location = doc(db, `users/${user}/lastVisitedRestaurant`);
+  // setDoc(location, business_id);
+  updateDoc(doc(db, 'users', user), {
+    'lastVisitedRestaurant': business_id
+  })
+}
+
+async function getLastVisitedRestaurant(userID) {
+  try {
+    const userDocSnap = await getDoc(doc(db, 'users', userID));
+    const user = userDocSnap.data();
+    if (user && user.lastVisitedRestaurant) {
+      return getRestaurantById(user.lastVisitedRestaurant);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+// let exists = Object.values(user).includes("lastVisitedRestaurant");
+
+// try {
+//   const docSnap = await getDoc(docRef);
+//   const doc = docSnap.data();
+//   doc.id = docSnap.id;
+//   return doc;
+// } 
+
+
 /**
  * TODO: Finish. See firebase docs.
  */
@@ -712,6 +744,7 @@ function defaultGroupUserData(currentUser) {
     "Soy-free": '',
     "Vegetarian": '',
   }
+
   const uf = currentUser.filters;
   const dr = (uf && uf.dietaryRestrictions) || [];
 
@@ -741,7 +774,7 @@ async function joinGroup(code, user) {
  * @returns 
  */
 async function updateGroupMember(code, key, value) {
-  if(!(await groupExists(code))) {
+  if (!(await groupExists(code))) {
     console.log("Group doesn't exist.");
     return false;
   }
@@ -749,7 +782,7 @@ async function updateGroupMember(code, key, value) {
   const groupDocRef = doc(db, 'groups', code);
   const groupDoc = (await getDoc(groupDocRef)).data();
   const userData = groupDoc['data'][user.uid];
-  switch(key) {
+  switch (key) {
     case 'users':
       if (groupDoc.users.includes(value)) {
         console.log("Already in group");
@@ -802,7 +835,7 @@ async function updateGroupHost(code, key, value) {
   const groupDocRef = doc(db, 'groups', code);
   const groupDoc = (await getDoc(groupDocRef)).data();
 
-  switch(key) {
+  switch (key) {
     case 'latlong':
     case 'time':
       groupDoc[key] = value;
@@ -826,5 +859,5 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences, setLastVisitedRestaurant, getLastVisitedRestaurant }
 
