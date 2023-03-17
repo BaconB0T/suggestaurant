@@ -34,7 +34,6 @@ const HomePage = ({bob}) => {
       if (bob.isAnonymous)
       {
         setLoginOrAccount(<RiLoginBoxLine className = "w-20 icon-control login-or-account" onClick={() => handleClickLogin()}/>)
-        setUser(null)
       }
       else
       {
@@ -45,7 +44,7 @@ const HomePage = ({bob}) => {
 
     async function handleClickLogin() {
         try {
-            if (user == null)
+            if (!bob.isAnonymous)
             {
                 navigate("/login");
             }
@@ -99,24 +98,22 @@ const HomePage = ({bob}) => {
         }
     }
   
-    if(!user.isAnonymous && user.uid){
-        Promise.resolve(getLastVisitedRestaurant(user.uid)).then(result => {
+    if(!bob.isAnonymous && bob.uid){
+        Promise.resolve(getLastVisitedRestaurant(bob.uid)).then(result => {
             setStateLastVisitedRestaurant(result);
         });
     };
 
     const addRestToHistory = (rating_num) => {
         console.log("ADD REST TO HISTORY")
-        const user = getAuth().currentUser;
-        rateRestaurant(lastVisitedRestaurant, rating_num, user.uid);
-        setLastVisitedRestaurant(user.uid, null)        
+        rateRestaurant(lastVisitedRestaurant, rating_num, bob.uid);
+        setLastVisitedRestaurant(bob.uid, null)        
         
     };
 
     const closePopup = () => {
         console.log("CLOSE POPUP")
-        const user = getAuth().currentUser;
-        setLastVisitedRestaurant(user.uid, null)
+        setLastVisitedRestaurant(bob.uid, null)
     };    
 
     return (

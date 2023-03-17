@@ -50,7 +50,7 @@ class Recommendations extends React.Component {
         this.handleClick3();
       } else {
         this.handleGroupAction(true).then(() => {
-          this.handleClick3(this.state);
+          this.handleClick4(this.state);
         });
       }
       this.state.showingMap = true;
@@ -72,7 +72,7 @@ class Recommendations extends React.Component {
     return await updateGroupMember(this.state.groupCode, 'suggestions', [acceptedRestaurantId, accepted]);
   }
   
-  handleClick3(obj) {
+  handleClick4(obj) {
     const idx = obj.index+1;
     obj.setGlobalState({ business_id: obj.restIds[idx] });
     window.location.href = `/recommendations/map?business_id=${obj.restIds[idx]}`;
@@ -80,7 +80,7 @@ class Recommendations extends React.Component {
 
   // to change less code.
   handleClick3() {
-    this.handleClick3(this.state);
+    this.handleClick4(this.state);
   }
 
   render() {
