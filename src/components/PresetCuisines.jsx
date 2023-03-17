@@ -2,14 +2,16 @@ import {useState, useEffect} from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { getCuisines, updateUserCuisine, getFilters} from '../firestore';
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { Navigate } from 'react-router-dom';
+import { Navigate,useNavigate } from 'react-router-dom';
 import "../styles/presetCuis.css";
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 function PreSetCuisines({user}) {
   
     const [listOfCuisines, setCuisineList] = useState([]);
     const [userCuisineList, setUserCuisine] = useState([]);
     const [checked, setChecked] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [t, setT] = useState(false);
 
 
@@ -19,37 +21,12 @@ function PreSetCuisines({user}) {
                 setUserCuisine(val.filters.excludedCuisines);
                 setChecked(val.filters.excludedCuisines);
             })
-            // User is signed in, see docs for a list of available properties
-            // https://firebase.google.com/docs/reference/js/firebase.User
         }
     }, []);
 
-    // console.log(user);
-
-    
-
-
-    // if(user === null) {
-    //     return (
-    //         <Navigate to='/login' />
-    //     );
-    // }
-
-    // if(!t && user && user.uid){
-    //     //getInformation
-    //     if(userCuisineList.length === 0){
-    //         Promise.resolve(getFilters(user.uid)).then(val =>{
-    //             setUserCuisine(val.filters.excludedCuisines);
-    //         })
-    //     }
-
-    //     setT(true);
-    // }
-
-    // console.log(userCuisineList);
+   
     
     if(listOfCuisines.length === 0){
-        console.log('reached');
         Promise.resolve(getCuisines()).then(val =>{
             let test = [];
                 for(let i = 0; i<val.length; i++){
@@ -59,7 +36,6 @@ function PreSetCuisines({user}) {
         })
     }
 
-    // console.log(listOfCuisines);
     
     const handleCheck = (event) => {
         var updatedList = [...checked];
@@ -72,37 +48,10 @@ function PreSetCuisines({user}) {
         updateUserCuisine(user.uid, updatedList);
     };
 
-
-    return(
-        <div>
-            <br></br>
-            <h3>Select Some Cuisines</h3>
-            {/* <ButtonGroup style={{flexWrap: "wrap"}}>
-                {listOfCuisines.map(cuisine =>{
-                    return(
-                        <button
-                        type = 'button'
-                        key = {cuisine}
-                        id = 'cuisine'
-                        onClick = {() => {
-                            let tempList = userCuisineList;
-                            if(!(tempList.includes(cuisine))){
-                                tempList.push(cuisine);
-                            }
-                            else{
-                                tempList.splice(tempList.indexOf(cuisine),1);
-                            }
-                            updateUserCuisine(user.uid, tempList);
-                            //add update function 
-                        }}
-                        >{cuisine}</button>
-                    )
-                })}
-            </ButtonGroup> */}
-
-
+    const dynamicSearch = () => {
+        return(
             <div className='list-cont'>
-                {listOfCuisines.map((item, index) => (
+                {listOfCuisines.filter(cuisine => cuisine.toLowerCase().includes(searchTerm.toLowerCase())).map((item, index) => (
                     <div key={index} className = 'tes'>
                         <input 
                          id={'list-it' + index}
@@ -115,7 +64,33 @@ function PreSetCuisines({user}) {
                     </div>
                 ))}
             </div>
+        );
+    }
 
+    const editSearchTerm = (event) => {
+        setSearchTerm(event.target.value);
+    }
+
+    const navigate = useNavigate();
+    const [error, setError] = useState("")
+
+    async function handleClickBack() {
+        try {
+            navigate("/account/filters");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    return(
+        <div>
+        <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <div id='content-container'>
+                <h3>Select Some Cuisines</h3>
+                <input type='text' value={searchTerm} onChange = {editSearchTerm} placeholder = 'Search for a cuisine'/>
+                {dynamicSearch()}
+            </div>
         </div>
     )
 }

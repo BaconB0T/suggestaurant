@@ -3,8 +3,9 @@ import { ButtonGroup } from "react-bootstrap";
 import { getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 import "../styles/Allergies.css";
 import { getAuth } from 'firebase/auth';
-import { Navigate } from "react-router-dom";
-import { Container, Card } from "react-bootstrap"
+import { useNavigate,Navigate } from "react-router-dom";
+import { Container, Card } from "react-bootstrap";
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 
 function Allergies({ user }){
@@ -13,6 +14,8 @@ function Allergies({ user }){
     const[usersDietRest, setUserDietRest] = useState([]);
     const [t, setT] = useState(false);
     const[checked, setChecked] = useState([]);
+    const navigate = useNavigate();
+    const [error, setError] = useState("");
 
     useEffect(() =>{
         if (!(user.isAnonymous)) {
@@ -47,11 +50,25 @@ function Allergies({ user }){
         updateDietRestrictions(user.uid, updatedList);
     };
 
+    
+  
+    async function handleClickBack() {
+        try {
+            navigate("/account");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+
+
     return(
        <Container
             className="d-flex align-items-center justify-content-center overflow-auto"
             style={{ minHeight: "100vh" }}
         >
+        <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
          <div className = "checkList">
             <h2> Allergies </h2>
             <Card className="card-control">
