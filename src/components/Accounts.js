@@ -24,7 +24,7 @@ const DeleteAlert = (props) => {
   )
 }
 
-const PeepeePoopoo = ({ user }) => {
+const Account = ({ user }) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   // const [user, setUser] = useState([]);
@@ -126,4 +126,4 @@ const PeepeePoopoo = ({ user }) => {
   }
 }
 
-export default PeepeePoopoo
+export default Account
