@@ -427,16 +427,16 @@ async function hasDietaryRestrictions(userID)
   return data["filters"]["dietaryRestrictions"].length !== 0;
 }
 
-function getGroupInfo(groupID) {
-  let data = getDocument(doc(db, 'groups', String(groupID)));
+async function getGroupInfo(groupID) {
+  let data = await getDocument(doc(db, 'groups', String(groupID)));
   let users = data['users']
   let keywords = ""
-  let price = 0
+  let tolo = 0
   let diet = []
   for (let i = 0; i < users.length; i++)
   {
     keywords = keywords +  " " + data["data"][users[i]]["keywords"]
-    price += data[users[i]]["price"]
+    tolo = tolo + data["data"][users[i]]["price"]
     for(const key of Object.keys(data["data"][users[i]]["diet"]))
     {
       if (!(data["data"][users[i]]["diet"][key] === ""))
@@ -455,12 +455,12 @@ function getGroupInfo(groupID) {
     'Vegetarian':  !diet.includes("veggie") ? "" : "veggie"
   }
 
-  price = price/users.length
+  tolo = tolo/users.length
 
   const jsonData = {
     keywords: keywords,       // 1 string
     time: data['time'],       // Same as db
-    price: price,             // list of prices (integers)
+    price: tolo,             // list of prices (integers)
     diet: dietData,           // Same as db (all restrictions, 
                               //  and values are strings)
     // {'halal': 'halal'} true
@@ -469,12 +469,14 @@ function getGroupInfo(groupID) {
     groupCode: groupID,
     // boolean value
     host: (data['host'] === getAuth().currentUser.uid),
+    numUsers: data['numUsers'],
+    numUsersReady: data['numUsersReady'],
   }
   return jsonData
 }
 
 async function getGroup(groupId) {
-  return await getDocument(doc(db, 'groups', String(groupId)));
+  return (await getDocument(doc(db, 'groups', String(groupId))));
 }
 
 async function groupExists(groupId) {
@@ -486,6 +488,7 @@ async function rateRestaurant(restObject, restRating, user) {
   let text1 = "users";
   // const user = cookies.get("Name") || "";
   let text2 = user + '/history/';
+
   let finalText = text1.concat(text2);
   // console.log("rateRestaurant finalText")
   // console.log(finalText);
@@ -608,6 +611,38 @@ async function setPreferences(user, FamVal, HisVal, FastFoodVal, rating) {
   })
 }
 
+async function setLastVisitedRestaurant(user, business_id) {
+  // const location = doc(db, `users/${user}/lastVisitedRestaurant`);
+  // setDoc(location, business_id);
+  updateDoc(doc(db, 'users', user), {
+    'lastVisitedRestaurant': business_id
+  })
+}
+
+async function getLastVisitedRestaurant(userID) {
+  try {
+    const userDocSnap = await getDoc(doc(db, 'users', userID));
+    const user = userDocSnap.data();
+    if (user && user.lastVisitedRestaurant) {
+      return getRestaurantById(user.lastVisitedRestaurant);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+// let exists = Object.values(user).includes("lastVisitedRestaurant");
+
+// try {
+//   const docSnap = await getDoc(docRef);
+//   const doc = docSnap.data();
+//   doc.id = docSnap.id;
+//   return doc;
+// } 
+
+
 /**
  * TODO: Finish. See firebase docs.
  */
@@ -702,6 +737,7 @@ function defaultGroup(code, currentUser) {
   });
 }
 
+
 function defaultGroupUserData(currentUser) {
   const dids = {
     "Halal": '',
@@ -712,6 +748,7 @@ function defaultGroupUserData(currentUser) {
     "Soy-free": '',
     "Vegetarian": '',
   }
+
   const uf = currentUser.filters;
   const dr = (uf && uf.dietaryRestrictions) || [];
 
@@ -741,7 +778,7 @@ async function joinGroup(code, user) {
  * @returns 
  */
 async function updateGroupMember(code, key, value) {
-  if(!(await groupExists(code))) {
+  if (!(await groupExists(code))) {
     console.log("Group doesn't exist.");
     return false;
   }
@@ -749,7 +786,7 @@ async function updateGroupMember(code, key, value) {
   const groupDocRef = doc(db, 'groups', code);
   const groupDoc = (await getDoc(groupDocRef)).data();
   const userData = groupDoc['data'][user.uid];
-  switch(key) {
+  switch (key) {
     case 'users':
       if (groupDoc.users.includes(value)) {
         console.log("Already in group");
@@ -802,7 +839,7 @@ async function updateGroupHost(code, key, value) {
   const groupDocRef = doc(db, 'groups', code);
   const groupDoc = (await getDoc(groupDocRef)).data();
 
-  switch(key) {
+  switch (key) {
     case 'latlong':
     case 'time':
       groupDoc[key] = value;
@@ -826,5 +863,5 @@ async function isHost(code, user) {
   return groupSnap.data().host === user.uid;
 }
 
-export { db, analytics, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences }
+export { db, analytics, hasDietaryRestrictions, signInWithGoogle, isHost, updateGroupHost, updateGroupMember, joinGroup, groupExists, getCode, createGroup, getGroup, getDocument, getGroupInfo, getCuisines, updateUserCuisine, updateDietRestrictions, getDietRest, getRestaurantBy, changePassword, deleteUser, sendPasswordReset, signOutUser, getRedirectSignInResult, signInAnon, signInWithGoogleMobile, signInEmailPassword, createUserEmailPassword, deleteHistoryItem, getImagesForBusiness, getImageURLsForBusiness, getRestaurantById, getRestaurant, getAllRestaurants, getAllAccounts, getAccount, emailOrUsernameUsed, rateRestaurant, getHistory, validateUser, historyItem, getFilters, setPreferences, setLastVisitedRestaurant, getLastVisitedRestaurant }
 

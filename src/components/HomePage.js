@@ -4,6 +4,9 @@ import { useCookies } from 'react-cookie';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import Popup from './Popup';
+import './PopupStyling.css';
+import {getLastVisitedRestaurant, rateRestaurant, setLastVisitedRestaurant} from "../firestore.js";
 import logo from './../images/logo.png'; // Tell webpack this JS file uses this image
 import { BsGearFill } from "react-icons/bs";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -19,12 +22,18 @@ const HomePage = ({bob}) => {
     const [error, setError] = useState("")
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
 
-    const [user, setUser] = useState([]);
+    // const [isOpen, setIsOpen] = useState(false);
+    const [lastVisitedRestaurant, setStateLastVisitedRestaurant] = useState(null);
+
+    // const togglePopup = () => {
+    //     setIsOpen(!isOpen);
+    // }
+
+
     useEffect(() => {
       if (bob.isAnonymous)
       {
         setLoginOrAccount(<RiLoginBoxLine className = "w-20 icon-control login-or-account" onClick={() => handleClickLogin()}/>)
-        setUser(null)
       }
       else
       {
@@ -35,7 +44,7 @@ const HomePage = ({bob}) => {
 
     async function handleClickLogin() {
         try {
-            if (user == null)
+            if (bob.isAnonymous)
             {
                 navigate("/login");
             }
@@ -87,9 +96,27 @@ const HomePage = ({bob}) => {
             // else set an error
             setError(e)
         }
-    }    
-    
-    return(
+    }
+  
+    if(!bob.isAnonymous && bob.uid){
+        Promise.resolve(getLastVisitedRestaurant(bob.uid)).then(result => {
+            setStateLastVisitedRestaurant(result);
+        });
+    };
+
+    const addRestToHistory = (rating_num) => {
+        console.log("ADD REST TO HISTORY")
+        rateRestaurant(lastVisitedRestaurant, rating_num, bob.uid);
+        setLastVisitedRestaurant(bob.uid, null)        
+        
+    };
+
+    const closePopup = () => {
+        console.log("CLOSE POPUP")
+        setLastVisitedRestaurant(bob.uid, null)
+    };    
+
+    return (
         <Container
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
@@ -97,6 +124,20 @@ const HomePage = ({bob}) => {
             {loginOrAccount}
             <BsGearFill className = "w-20 icon-control settings" onClick={() => handleClickSettings()}/>
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px"}}>
+
+            <div>
+                
+                {lastVisitedRestaurant && <Popup
+                    content={<>
+                        <b>How was { lastVisitedRestaurant ? lastVisitedRestaurant.name : "YOU SHOULD NEVER SEE THIS" }?</b>
+                        <br></br>
+                        <br></br>
+                        <button onClick={()=>addRestToHistory(1)}>👍</button>  <button onClick={()=>addRestToHistory(-1)}>👎</button>
+
+                    </>}
+                    handleClose={closePopup}
+                />}
+            </div>
                 <>
                     {/* <Card className = "card-control">
                         <Card.Body> */}
@@ -118,9 +159,10 @@ const HomePage = ({bob}) => {
                         {/* </Card.Body>
                     </Card> */}
                 </>
+
             </div>
         </Container >
     )
-  }
+}
 
-  export default HomePage;
+export default HomePage;

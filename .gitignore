@@ -202,3 +202,7 @@ $RECYCLE.BIN/
 # Keys
 suggestaurant-873aa-d6566e2cfc10.json
 *.pkl
+
+*.firebase
+firebase.json
+*.firebaserc

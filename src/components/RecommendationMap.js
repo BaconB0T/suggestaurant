@@ -3,8 +3,9 @@ import validateJSON from '../security/web';
 import GoogleMapReact from 'google-map-react';
 // import Marker from 'google-map-react';
 import { Button } from 'react-bootstrap';
-import { getRestaurantById } from '../firestore';
+import { getLastVisitedRestaurant, getRestaurantById, setLastVisitedRestaurant } from '../firestore';
 import { Navigate } from 'react-router-dom';
+import {getAuth} from "firebase/auth";
 
 const ShareIcon = ({provider}) => {
     return (
@@ -57,7 +58,14 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
         });
     };
 
-    function openInApp(loc) {
+    function openInApp(restId, loc) {
+        console.log("userID:")
+        console.log(getAuth().currentUser)
+        console.log("restID:")
+        console.log(restId)
+        console.log("getting restaurant from firestore!!!")
+        console.log(getLastVisitedRestaurant(getAuth().currentUser.uid))
+        setLastVisitedRestaurant(getAuth().currentUser.uid, restId)
         window.open("https://www.google.com/maps/dir/?api=1&destination="+loc.latitude+","+loc.longitude);
     }
 
@@ -109,7 +117,7 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
                 <div>{loc.streetAddress}</div>
                 <div style={{display: 'inline'}}>{loc.city}, {loc.state} {loc.postalCode}</div>
                 <Button onClick={(loc) => {clipboardAddress(loc)}}>Copy Address</Button>
-                <Button style={{display: 'block'}} onClick={(loc) => {openInApp(loc)}}>Take me there!</Button>
+                <Button style={{display: 'block'}} onClick={(loc) => {openInApp(business_id, loc)}}>Take me there!</Button>
                 <div>Share with your friends by clicking the icons below!</div>
                 <div id='share-icons'>
                     <ul id='icons-list'>
