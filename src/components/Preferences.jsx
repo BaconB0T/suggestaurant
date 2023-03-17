@@ -70,29 +70,36 @@ function Preferences({user}) {
             className="d-flex align-items-center justify-content-center overflow-auto"
             style={{ minHeight: "100vh" }}
         >
+            <div>
             <h3>Preferences</h3>
             <Card className="w-100">
                 <Card.Body>
                     <div className='oneline'>
                         <div className="test">Include Family Friendly</div>
+                        <div id='toggle'>
                         <label className='switch'>
                             <input id='checkb' type='checkbox' checked={FamilyFriendly} onClick={handleFFChange} />
                             <span className='slider' />
                         </label>
+                        </div>
                     </div>
                     <div className='oneline'>
                         <div className="test">Include History</div>
+                        <div id = 'toggle'>
                         <label className='switch'>
                             <input id='checkb' type='checkbox' checked={includeHis} onClick={handleIncHisChange} />
                             <span className='slider' />
                         </label>
+                        </div>
                     </div>
                     <div className='oneline'>
                         <div className="test">Include Fast Food</div>
+                        <div id = 'toggle'>
                         <label className='switch'>
                             <input id='checkb' type='checkbox' checked={FastFood} onClick={handleFFoodChange} />
                             <span className='slider' />
                         </label>
+                        </div>
                     </div>
 
                     <div className='oneline'>
@@ -128,6 +135,7 @@ function Preferences({user}) {
                     </div>
                 </Card.Body>
             </Card>
+            </div>
         </Container>
         </div>
     )
