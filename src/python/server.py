@@ -154,7 +154,10 @@ def keywords():
 
 	print(len(id_list))
 
-	time = int(req["time"].replace(':', ''))
+	if req["groupCode"] == 0:
+		time = int(req["time"].replace(':', ''))
+	else:
+		time = req["time"]
 	
 	dayList = []
 

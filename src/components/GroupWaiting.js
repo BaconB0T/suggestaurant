@@ -7,7 +7,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import styles from '../styles/new.module.scss';
 
 
-const GroupWaiting = () => {
+const GroupWaiting = ({setGlobalState}) => {
     const [numUsers, setNumUsers] = useState(-1);
     const [numUsersReady, setNumUsersReady] = useState(0);
     const [cookies, setCookie] = useCookies(['user']);
@@ -36,13 +36,16 @@ const GroupWaiting = () => {
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
     }, [])
 
-    async function runAlgorithm() {
+    async function runAlgorithm(e) {
+        e && e.preventDefault();
         console.log("WE ARE RUNNING THE ALGORITHM")
         const groupCode = cookies["groupCode"]
+        const isHost = cookies["host"] // 'true', 'false'
         console.log(groupCode)
         const jsonData = await getGroupInfo(groupCode)//run recommendation algorithm and navigate to recommendations page
         console.log("GOT GROUP INFO")
         try {
+            console.log('inside try catch');
             fetch("http://localhost:5000/data", {
                 method: "POST",
                 cache: "no-cache",
@@ -56,9 +59,9 @@ const GroupWaiting = () => {
             }
             ).then(response => {
                 return response.json();
-            })
-                .then(json => {
-                    setCookie("businesslist", json, { path: '/' });
+            }).then(json => {
+                    setCookie("businesslist", json, { path: '/' })
+                    setGlobalState({businessList: json});
                     if (json.length == 0) {
                         navigate("/expandRadius");
                     }
@@ -68,7 +71,7 @@ const GroupWaiting = () => {
                 })
         } catch (e) {
             // else set an error
-            console.log(e)
+            console.err(e)
         }
     }
     useEffect(() => {
@@ -79,7 +82,7 @@ const GroupWaiting = () => {
             setNumUsersReady(group.numUsersReady)
 
         }
-
+        console.log('inside use effect')
         idk().then(() => {
             if (numUsersReady == numUsers) {
                 runAlgorithm()
@@ -129,11 +132,21 @@ const GroupWaiting = () => {
                                 <span className="visually-hidden">Loading...</span>
                             </Spinner>
                         </div>
-                    </div>
-                    <br></br>
 
+                    </div>
+                   
+                    <br></br>
+                    
+                    {(cookies["host"] === "true") ? 
+                        (<Form onSubmit={runAlgorithm}>  
+                            <Button className="w-50 mt-10 button-control" type="submit">
+                                continue anyway
+                            </Button>
+                        </Form>) : <></>
+                    }
                 </>
             </div>
+
         </Container >
     </>
 

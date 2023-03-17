@@ -431,12 +431,12 @@ async function getGroupInfo(groupID) {
   let data = await getDocument(doc(db, 'groups', String(groupID)));
   let users = data['users']
   let keywords = ""
-  let price = 0
+  let tolo = 0
   let diet = []
   for (let i = 0; i < users.length; i++)
   {
     keywords = keywords +  " " + data["data"][users[i]]["keywords"]
-    price += data[users[i]]["price"]
+    tolo = tolo + data["data"][users[i]]["price"]
     for(const key of Object.keys(data["data"][users[i]]["diet"]))
     {
       if (!(data["data"][users[i]]["diet"][key] === ""))
@@ -455,12 +455,12 @@ async function getGroupInfo(groupID) {
     'Vegetarian':  !diet.includes("veggie") ? "" : "veggie"
   }
 
-  price = price/users.length
+  tolo = tolo/users.length
 
   const jsonData = {
     keywords: keywords,       // 1 string
     time: data['time'],       // Same as db
-    price: price,             // list of prices (integers)
+    price: tolo,             // list of prices (integers)
     diet: dietData,           // Same as db (all restrictions, 
                               //  and values are strings)
     // {'halal': 'halal'} true

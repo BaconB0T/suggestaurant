@@ -73,7 +73,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={cookies["businesslist"]} setState={setState} />} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={state.businessList || cookies["businesslist"]} setState={setState} />} />
         {/* <Route path="/recommendations" element={<Recommendations recommendationIds={[testRestauarantId]} setState={setState} />} /> */}
         <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} state={state}/>}/>
         <Route path="/" element={<HomePage bob={user} />} />
@@ -98,7 +98,7 @@ function App() {
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
         <Route path='/group/join' element={<Group isHost={false}/>}/>
         <Route path='/group/host' element={<Group isHost={true}/>}/>
-        <Route path='/group/waiting' element={<GroupWaiting/>}/>
+        <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState}/>}/>
 
       </Routes>
     </div>
