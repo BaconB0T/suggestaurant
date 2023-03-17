@@ -117,7 +117,7 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
                 <div>{loc.streetAddress}</div>
                 <div style={{display: 'inline'}}>{loc.city}, {loc.state} {loc.postalCode}</div>
                 <Button onClick={(loc) => {clipboardAddress(loc)}}>Copy Address</Button>
-                <Button style={{display: 'block'}} onClick={(loc) => {openInApp(loc)}}>Take me there!</Button>
+                <Button style={{display: 'block'}} onClick={(loc) => {openInApp(business_id, loc)}}>Take me there!</Button>
                 <div>Share with your friends by clicking the icons below!</div>
                 <div id='share-icons'>
                     <ul id='icons-list'>

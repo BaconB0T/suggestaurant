@@ -44,7 +44,7 @@ const HomePage = ({bob}) => {
 
     async function handleClickLogin() {
         try {
-            if (!bob.isAnonymous)
+            if (bob.isAnonymous)
             {
                 navigate("/login");
             }
