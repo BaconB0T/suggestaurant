@@ -95,18 +95,27 @@ app = Flask(__name__)
 # deal with CORS security issues
 CORS(app)
 
+def insert_restaurants_as_suggestions(ids_list, group_id):
+	groupDocRef = db.document('groups', group_id)
+	groupDoc = groupDocRef.get().to_dict()
+	suggestion_data = groupDoc['suggestions'] if 'suggestions' in groupDoc.keys() else dict()
+	for rest_id in ids_list:
+		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
+	groupDocRef.update({'suggestions': suggestion_data})
+
+
 # Route for seeing a data
 @app.route('/data', methods=['POST'])
 def keywords():	
 	req = json.loads(request.data)
-
-	words = req["keywords"]
 
 	print(int(req["latlong"]["distance"]))
 	print(float(req["latlong"]["latitude"]))
 	print(int(req["price"]))
 
 	dt = datetime.now()
+
+	words = req["keywords"]
 
 	id_list = [x.to_dict() for x in collection]
 
@@ -136,7 +145,7 @@ def keywords():
 		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"]["RestaurantsPriceRange2"] is not None:
 			priced_list.append(x)
 	
-	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > int(req["price"])]
+	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > float(req["price"])]
 
 	print(len(id_list))
 
@@ -145,18 +154,35 @@ def keywords():
 
 	print(len(id_list))
 
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+	time = int(req["time"].replace(':', ''))
+	
+	dayList = []
 
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["end"] >= req["time"]]
-	# id_list = [x for x in id_list if x["hours"][dt.strftime('%A')]["start"] <= req["time"]]
+	for x in id_list:
+		if x["hours"] is not None:
+			if dt.strftime('%a') in x["hours"]:
+				dayList.append(x)
 
-	# id_list = [x for x in id_list if req["halal"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["vegan"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["dairy"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["gluten"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["kosher"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["veggie"] in x["dietaryRestrictions"]["true"]]
-	# id_list = [x for x in id_list if req["soy"] in x["dietaryRestrictions"]["true"]]
+	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["end"] <= time]
+	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["start"] >= time]
+
+	for x in dayList:
+		id_list.remove(x)
+
+	diet_list = []
+
+	for x in id_list:
+		if x["dietaryRestrictions"] is not None:
+			if x["dietaryRestrictions"]["true"] is not None:
+				diet_list.append(x)
+
+	diet_list = [x for x in diet_list if req['diet']["Halal"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Vegan"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Dairy-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Gluten-free"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Kosher"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Vegetarian"] in x["dietaryRestrictions"]["true"]]
+	diet_list = [x for x in diet_list if req['diet']["Soy-free"] in x["dietaryRestrictions"]["true"]]
 	
 	# business_list = [doc["business_id"] for doc in id_list]
 
@@ -186,6 +212,9 @@ def keywords():
 
 	print(topRecommendations.index.values.tolist(), file=sys.stderr)
 
+	if str(req['groupCode']) != '0':
+		insert_restaurants_as_suggestions(topRecommendations.index.values.tolist(), req['groupCode'])
+
 	return topRecommendations.index.values.tolist()
 
 
@@ -193,31 +222,35 @@ def keywords():
 def google_maps_key():
 	return jsonify(key=GOOGLE_MAPS_KEY)
 
-@app.route('/groupMode', methods=['POST'])
-def setGroupData():
-	req = json.loads(request.data)
-	group_ref = db.collection(u"groups").document(req["groupCode"]).to_dict()
 
-	group_keywords = group_ref["keywords"] +  " " + req["keywords"]
+# This code was rendered irrelevant by handling group quiz data updates in react
+# @app.route('/groupMode', methods=['POST'])
+# def setGroupData():
+# 	req = json.loads(request.data)
+# 	group_ref = db.collection(u"groups").document(req["groupCode"])
 
-	group_price = group_ref["price"].append(req["price"])
+# 	group_get = group_ref.get().to_dict()
 
-	# Atomically add a new region to the 'keywords' array field.
-	group_ref.update({u'keywords': group_keywords})
-	group_ref.update({u'price'}, group_price)
-	group_ref.update({u'halal'}, req["halal"])
-	group_ref.update({u'vegan'}, req["vegan"])
-	group_ref.update({u'veggie'}, req["veggie"])
-	group_ref.update({u'gluten'}, req["gluten"])
-	group_ref.update({u'kosher'}, req["kosher"])
-	group_ref.update({u'soy'}, req["soy"])
-	group_ref.update({u'dairy'}, req["soy"])
+# 	group_keywords = group_get["keywords"] +  " " + req["keywords"]
 
-	if req["host"] == 1:
-		group_ref.update({u'latlong'}, req["latlong"])
-		group_ref.update({u'time'}, req["time"])
+# 	group_price = group_get["price"].append(req["price"])
 
-	return 0
+# 	# Atomically add a new region to the 'keywords' array field.
+# 	group_ref.update({u'keywords': group_keywords})
+# 	group_ref.update({u'price'}, group_price)
+# 	group_ref.update({u'halal'}, req["halal"])
+# 	group_ref.update({u'vegan'}, req["vegan"])
+# 	group_ref.update({u'veggie'}, req["veggie"])
+# 	group_ref.update({u'gluten'}, req["gluten"])
+# 	group_ref.update({u'kosher'}, req["kosher"])
+# 	group_ref.update({u'soy'}, req["soy"])
+# 	group_ref.update({u'dairy'}, req["soy"])
+
+# 	if req["host"] == 1:
+# 		group_ref.update({u'latlong'}, req["latlong"])
+# 		group_ref.update({u'time'}, req["time"])
+
+# 	return 0
 
 	
 # Running app

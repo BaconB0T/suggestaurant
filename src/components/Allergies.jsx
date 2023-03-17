@@ -1,81 +1,80 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { ButtonGroup } from "react-bootstrap";
 import { getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 import "../styles/Allergies.css";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+import { Navigate } from "react-router-dom";
+import { Container, Card } from "react-bootstrap"
 
 
-function Allergies(){
-
-    const [user, setUser] = useState([]);
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-        if (!user.isAnonymous) {
-        setUser(user);
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        } else {
-        // User is signed out
-        setUser(null);
-        }
-    });
+function Allergies({ user }){
 
     const[dietRestList, setRestList] = useState([]);
     const[usersDietRest, setUserDietRest] = useState([]);
-    const[selected, setSelected] = useState("not-selected");
     const [t, setT] = useState(false);
+    const[checked, setChecked] = useState([]);
 
-    if(!t && user && user.uid){
-        Promise.resolve(getDietRest()).then(val =>{
-            setRestList(val.names[4].values);
-        });
-        Promise.resolve(getFilters(user.uid)).then(val =>{
-            setUserDietRest(val.filters.dietaryRestrictions)
-        });
-        setT(true);
-    }
-
-    // const isSelected = () => {
-    //     if (usersDietRest.includes(alergy)) 
-    // }
-
-    async function isSelected(elem) {
-        if (usersDietRest.includes(elem)){
-            setSelected("selected")
+    useEffect(() =>{
+        if (!(user.isAnonymous)) {
+            Promise.resolve(getDietRest()).then(val =>{
+                setRestList(val.names[4].values);
+                
+            });
+            Promise.resolve(getFilters(user.uid)).then(val =>{
+                setUserDietRest(val.filters.dietaryRestrictions);
+                setChecked(val.filters.dietaryRestrictions);
+            });
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
         }
-        else{setSelected('not-selected')}
+    }, []);
+    
+    // redirect on anonymous user.
+    if (user === null || user.isAnonymous) {
+        return (
+            <Navigate to='/login' />
+        );
     }
-    // const [sel, setSel] = useState('not-selected');
+
+    const handleCheck = (event) => {
+        var updatedList = [...checked];
+        if (event.target.checked) {
+            updatedList = [...checked, event.target.value];
+        } else{
+            updatedList.splice(checked.indexOf(event.target.value), 1);
+        }
+        setChecked(updatedList);
+        updateDietRestrictions(user.uid, updatedList);
+    };
+
     return(
-        <div>
-            <h1>Dietary Restrictions</h1>
-            <ButtonGroup>
-                {dietRestList.map(alergy => {
-                    return (
-                        <button
-                        type = 'button'
-                        key = {alergy}
-                        id = {(usersDietRest.includes(alergy)) ? 'selected' : 'not-selected'}
-                        onClick = {() => {
-                            let tempList = usersDietRest;
-                            if (!(tempList.includes(alergy))){
-                                tempList.push(alergy);
-                            }
-                            else{
-                                tempList.splice(tempList.indexOf(alergy),1);
-                            }
-                            updateDietRestrictions(user.uid, tempList);
-                            // setUserDietRest(tempList)
-                            // console.log(usersDietRest)
-                        }}
-                        >{alergy}</button>
-
-                    )
-                })}
-            </ButtonGroup>
-
+       <Container
+            className="d-flex align-items-center justify-content-center overflow-auto"
+            style={{ minHeight: "100vh" }}
+        >
+         <div className = "checkList">
+            <h2> Allergies </h2>
+            <Card className="card-control">
+                <Card.Body>
+                    <div className="list-container">
+                        {dietRestList.map((item, index) => (
+                            <div key={index} className = 'test'>
+                                <input className={checked.includes(item) ? 'selected' : 'notselected'} 
+                                id = {'list-item' + index}
+                                value={item} 
+                                type="checkbox" 
+                                checked= {checked.includes(item)} 
+                                onClick={handleCheck}
+                                hidden/>
+                                <label className="item-name" for={'list-item'+ index}>{item}</label>
+                            </div>
+                        ))}
+                    </div>
+                </Card.Body>
+            </Card>         
         </div>
-    )
+       </Container>
+    );
 }
 
 export default Allergies;

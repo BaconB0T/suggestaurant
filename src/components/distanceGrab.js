@@ -1,12 +1,17 @@
-import React, { useRef, useState, Component  } from 'react';
+import React, { useRef, useState, Component, useEffect  } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { Navigate, useNavigate } from 'react-router-dom'
 import Geocode from "react-geocode";
 import { useGeolocated } from "react-geolocated";
-import { updateGroupHost } from '../firestore';
+import { updateGroupHost, hasDietaryRestrictions, getFilters } from '../firestore';
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import car from './../images/Transportation.png'; // Tell webpack this JS file uses this image
+import { BsGearFill } from "react-icons/bs";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { filter } from 'lodash';
 
-const DistanceGrab = () => {
+const DistanceGrab = ({user}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const latRef = useRef()
@@ -20,6 +25,34 @@ const DistanceGrab = () => {
             },
             userDecisionTimeout: 5000,
         });
+
+    async function handleClickLogin() {
+        try {
+            navigate("/login");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+    async function handleClickSettings() {
+        try {
+            navigate("/login");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
+
+
+    async function handleClickBack() {
+        try {
+            navigate("/");
+        } catch (e) {
+            // else set an error
+            setError(e)
+        }
+    }
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
@@ -67,10 +100,13 @@ const DistanceGrab = () => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            <div className="w-100" style={{ maxWidth: "400px" }}>
+            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
+            <img src={car} className="image-control" alt="Logo" />
+            <br></br><br></br>
                 <>
-                    <Card>
-                        <Card.Body>
+                    {/* <Card className="card-control">
+                        <Card.Body> */}
                             {
                                 isGeolocationAvailable ? (
  
@@ -82,31 +118,30 @@ const DistanceGrab = () => {
                                       // location is available or not
                                       coords ? (
                                         <div>
-                                            <h2 className="text-center mb-4">We've pulled your Location</h2>
+                                            <h3 className="text-center mb-4">Enter a travel distance!</h3>
                                             {error && <Alert variant="danger">{error}</Alert>}
                                             <Form onSubmit={handleSubmit}>
-                                                <Form.Group id="latitude" className="mb-2">
+                                                <Form.Group id="latitude" className="mb-2 hidden">
                                                     <Form.Label>Latitude</Form.Label>
                                                     <Form.Control 
                                                         ref={latRef} required 
                                                         defaultValue={coords.latitude}
                                                     />
                                                 </Form.Group>
-                                                <Form.Group id="longitude" className="mb-2">
+                                                <Form.Group id="longitude" className="mb-2 hidden">
                                                     <Form.Label>Longitude</Form.Label>
                                                     <Form.Control 
                                                         ref={longRef} required 
                                                         defaultValue={coords.longitude}
                                                     />
                                                 </Form.Group>
-                                                <Form.Group id="distance" className="mb-2">
-                                                    <Form.Label>Distance</Form.Label>
+                                                <Form.Group id="distance" className="w-75 mb-2 center">
                                                     <Form.Control 
                                                         ref={distRef} required
                                                         defaultValue={25}
                                                     />
                                                 </Form.Group>
-                                                <Button className="w-40 mt-10" type="submit">
+                                                <Button className="w-75 button-control" type="submit">
                                                     Go
                                                 </Button>
                                             </Form>
@@ -115,14 +150,14 @@ const DistanceGrab = () => {
                                         <h1>Getting the location data...</h1>   
                                       )
                                     ) : (
-                                      <h1>Please enable location on your browser</h1>
+                                      <h1>Enable location on your browser</h1>
                                     )
                                   ) : (
                                     <h1>Please, update or change your browser </h1>
                                   )
                             }
-                        </Card.Body>
-                    </Card>
+                        {/* </Card.Body>
+                    </Card> */}
                 </>
             </div>
         </Container >
