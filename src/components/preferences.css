@@ -12,7 +12,7 @@
 
 .test{
   display: flex;
-  font-size: large;
+  font-size: medium;
   /* position: absolute; */
   /* margin-right: 40%; */
   /* margin-left: 20%; */
@@ -20,12 +20,17 @@
   justify-content: center;
 }
 
+#toggle{
+  width:40px;
+  height:20px;
+}
+
 .oneline{
     display: flex;
     /* justify-content: center; */
     /* background: red; */
-    /* justify-content: center; */
-    /* align-items: center;  */
+    justify-content: space-between;
+    align-items: center; 
 }
 
 .switch {
@@ -35,8 +40,7 @@
     /* left: 0; */
     width: 40px;
     height: 20px;
-    margin-top: 8px;
-    margin-left: 75%;
+    /* margin-left: 75%; */
     /* background: red; */
 }
 
@@ -65,7 +69,7 @@
     height: 15px;
     width: 15px;
     left: 3px;
-    bottom: 2.6px;
+    bottom: 2.5px;
     background-color: #fff;
     border-radius: 50%;
     transition: 0.3s;
@@ -79,8 +83,8 @@
     transform: translateX(19px);
   }
   .star-rating{
-    position: absolute;
-    margin-left: 66.3%;
+    /* position: absolute;
+    margin-left: 66.3%; */
     /* background: red; */
   }
 
@@ -101,7 +105,7 @@
   }
 
   .but{
-    position: absolute;
+    /* position: absolute;
     padding-left: 69%;
-    padding-top: 1%;
+    padding-top: 1%; */
   }
