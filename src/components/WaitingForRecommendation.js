@@ -34,22 +34,31 @@ const WaitingForRecommendation = () => {
     //     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
     // }, [])
 
-    useEffect(() => {
-       
-            const groupCode = cookies["groupCode"]
-            const group = getGroup(groupCode)
+    const MINUTE_MS = 1000;
 
+    async function idk() {
+        const groupCode = cookies["groupCode"]
+        const group = await getGroup(groupCode)
+        return group
+    }
 
-
+    async function checkGroupDone() {
+        idk().then((group) => {
             if (group && "suggestions" in group) {   
                 setCookie('businesslist', group.suggestions, { path: '/' });
                 navigate("/recommendations");
             }
-        
+        })
+    }
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkGroupDone()
+            // console.log('Logs every second');
+        }, MINUTE_MS);
 
-    });
-
+        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, [])
 
 
     return <>
