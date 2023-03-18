@@ -35,6 +35,7 @@ const GroupWaiting = ({setGlobalState}) => {
     async function runAlgorithm(e) {
         e && e.preventDefault();
         console.log("WE ARE RUNNING THE ALGORITHM")
+        navigate("/recommendations/waiting")
         const groupCode = cookies["groupCode"]
         const isHost = cookies["host"] // 'true', 'false'
         if(!isHost)
@@ -87,6 +88,7 @@ const GroupWaiting = ({setGlobalState}) => {
         idk().then((retVal) => {
             if (numUsersReady == numUsers || retVal == true) {
                 runAlgorithm()
+                
             }
         })
 
