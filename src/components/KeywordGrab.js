@@ -28,7 +28,7 @@ const KeywordGrab = () => {
     async function checkGroupDone() {
         idk().then((retVal) => {
             if (retVal == true) {
-                navigate("/group/waiting")
+                navigate("/recommendations/waiting")
             }
         })
     }
