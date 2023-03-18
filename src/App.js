@@ -34,6 +34,7 @@ import GroupWaiting from './components/GroupWaiting';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useState, useMemo, useEffect } from 'react';
 import { BsGearFill } from "react-icons/bs";
+import WaitingForRecommendation from './components/WaitingForRecommendation';
 
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy, BsGearFill);
@@ -99,6 +100,7 @@ function App() {
         <Route path='/group/join' element={<Group isHost={false}/>}/>
         <Route path='/group/host' element={<Group isHost={true}/>}/>
         <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState}/>}/>
+        <Route path='/recommendations/waiting' element={<WaitingForRecommendation/>}/>
 
       </Routes>
     </div>
