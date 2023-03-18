@@ -37,12 +37,13 @@ const GroupWaiting = ({setGlobalState}) => {
         console.log("WE ARE RUNNING THE ALGORITHM")
         const groupCode = cookies["groupCode"]
         const isHost = cookies["host"] // 'true', 'false'
-        if(isHost)
+        if(!isHost)
         {
-            updateGroupHost(groupCode, "hostReady", true)
+            navigate("/recommendations/waiting")
         }
+        updateGroupHost(groupCode, "hostReady", true)
         console.log(groupCode)
-        const jsonData = await getGroupInfo(groupCode)//run recommendation algorithm and navigate to recommendations page
+        const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
         console.log("GOT GROUP INFO")
         try {
             console.log('inside try catch');

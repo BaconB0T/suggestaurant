@@ -20,35 +20,33 @@ const DietCheck = ({user}) => {
     const kosherRef = useRef();
     const veggieRef = useRef();
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
-    const [check2, setCheck2] = useState(false)
+    // const [check2, setCheck2] = useState(false)
 
-    async function updateVars() {
-        setCheck2(!check2)
-    }
     const MINUTE_MS = 1000;
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            updateVars()
-            // console.log('Logs every second');
-        }, MINUTE_MS);
+    async function idk() {
+        const groupCode = cookies["groupCode"]
+        const group = await getGroup(groupCode)
+        console.log(group.hostReady)
+        return group.hostReady
+    }
 
-        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-    }, [])
-
-    useEffect(() => {
-        async function idk() {
-            const groupCode = cookies["groupCode"]
-            const group = await getGroup(groupCode)
-            return group.hostReady
-        }
-        console.log('inside use effect')
+    async function checkGroupDone() {
         idk().then((retVal) => {
             if (retVal == true) {
                 navigate("/group/waiting")
             }
         })
-    }, [check2]);
+    }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkGroupDone()
+            // console.log('Logs every second');
+        }, MINUTE_MS);
+
+        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, [])
 
     async function handleClickBack() {
         try {
