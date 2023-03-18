@@ -32,6 +32,7 @@ const PriceGrab = () => {
         idk().then((retVal) => {
             if (retVal == true) {
                 navigate("/recommendations/waiting")
+                return
             }
         })
     }

@@ -29,6 +29,7 @@ const KeywordGrab = () => {
         idk().then((retVal) => {
             if (retVal == true) {
                 navigate("/recommendations/waiting")
+                return
             }
         })
     }

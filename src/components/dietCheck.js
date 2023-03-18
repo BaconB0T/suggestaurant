@@ -35,6 +35,7 @@ const DietCheck = ({user}) => {
         idk().then((retVal) => {
             if (retVal == true) {
                 navigate("/recommendations/waiting")
+                return
             }
         })
     }

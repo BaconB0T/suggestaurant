@@ -41,6 +41,7 @@ const GroupWaiting = ({setGlobalState}) => {
         if(!isHost)
         {
             navigate("/recommendations/waiting")
+            return
         }
         updateGroupHost(groupCode, "hostReady", true)
         console.log(groupCode)

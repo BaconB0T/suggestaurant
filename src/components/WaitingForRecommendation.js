@@ -44,8 +44,11 @@ const WaitingForRecommendation = () => {
 
     async function checkGroupDone() {
         idk().then((group) => {
-            if (group && "suggestions" in group) {   
-                setCookie('businesslist', group.suggestions, { path: '/' });
+            if (group && "suggestions" in group) {
+                console.log(typeof group.suggestions)
+                console.log(group.suggestions.keys)
+                let suggestions = group.suggestions.keys;
+                setCookie('businesslist', suggestions, { path: '/' });
                 navigate("/recommendations");
             }
         })
