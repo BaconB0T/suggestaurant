@@ -1,4 +1,4 @@
-import { getGroupInfo, getGroup } from "../firestore";
+import { getGroupInfo, getGroup, updateGroupHost } from "../firestore";
 import React, { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
@@ -13,24 +13,39 @@ const GroupWaiting = ({setGlobalState}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
 
-
-
-
-
-
-
     async function updateVars() {
         const groupCode = cookies["groupCode"]
         const group = await getGroup(groupCode)
         setNumUsers(group.numUsers)
         setNumUsersReady(group.numUsersReady)
+
+        async function idk() {
+            const groupCode = cookies["groupCode"]
+            const group = await getGroup(groupCode)
+            setNumUsers(group.numUsers)
+            setNumUsersReady(group.numUsersReady)
+            return group.hostReady
+        }
+        console.log('inside use effect')
+        idk().then((retVal) => {
+            if (numUsersReady == numUsers || retVal == true) {
+                const isHost = cookies["host"] // 'true', 'false'
+                console.log(isHost)
+                if(!(isHost == 'true'))
+                {
+                    navigate("/recommendations/waiting")
+                    return
+                }
+                runAlgorithm()
+            }
+        })
     }
     const MINUTE_MS = 1000;
 
     useEffect(() => {
         const interval = setInterval(() => {
             updateVars()
-            console.log('Logs every second');
+            // console.log('Logs every second');
         }, MINUTE_MS);
 
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
@@ -41,9 +56,9 @@ const GroupWaiting = ({setGlobalState}) => {
         console.log("WE ARE RUNNING THE ALGORITHM")
         navigate("/recommendations/waiting")
         const groupCode = cookies["groupCode"]
-        const isHost = cookies["host"] // 'true', 'false'
+        updateGroupHost(groupCode, "hostReady", true)
         console.log(groupCode)
-        const jsonData = await getGroupInfo(groupCode)//run recommendation algorithm and navigate to recommendations page
+        const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
         console.log("GOT GROUP INFO")
         try {
             console.log('inside try catch');
@@ -75,24 +90,6 @@ const GroupWaiting = ({setGlobalState}) => {
             console.err(e)
         }
     }
-    useEffect(() => {
-        async function idk() {
-            const groupCode = cookies["groupCode"]
-            const group = await getGroup(groupCode)
-            setNumUsers(group.numUsers)
-            setNumUsersReady(group.numUsersReady)
-
-        }
-        console.log('inside use effect')
-        idk().then(() => {
-            if (numUsersReady == numUsers) {
-                runAlgorithm()
-                
-            }
-        })
-
-
-    }, [numUsers, numUsersReady]);
 
     // useEffect(() => {
     //     if (numUsersReady == numUsers) {
