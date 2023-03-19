@@ -28,7 +28,9 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
 
     useEffect(() => {
         // get Maps API key
-        fetch('http://127.0.0.1:5000/google-maps-key')
+        // "http://10.18.101.16:5000/data"
+        // "http://localhost:5000/data"
+        fetch('http://10.18.101.16:5000/google-maps-key')
             .then(validateJSON)
             .then((json) => {
                 setApiKey(json.key);
