@@ -23,6 +23,14 @@ class Recommendations extends React.Component {
       restIds = newRestIds.reverse();
       console.log(restIds);
     }
+    else
+    {
+      const newRestIds = [];
+      for (let i = 0; i < restIds.length; ++i) {
+        newRestIds.push(restIds[i]);
+      }
+      restIds = newRestIds.reverse();
+    }
     this.MINUTE_MS = 1000;
     this.state = {
       restIds: restIds,
