@@ -20,9 +20,19 @@ const KeywordGrab = () => {
 
     async function idk() {
         const groupCode = cookies["groupCode"]
-        const group = await getGroup(groupCode)
-        console.log(group.hostReady)
-        return group.hostReady
+        if (groupCode != 0)
+        {
+            const group = await getGroup(groupCode)
+            if (group && group["hostReady"] != undefined)
+            {
+                console.log(group.hostReady)
+                return group.hostReady
+            }
+            else
+            {
+                return false
+            }
+        }
     }
 
     async function checkGroupDone() {
@@ -106,7 +116,9 @@ const KeywordGrab = () => {
                 return
             }
 
-            fetch("http://localhost:5000/data", {
+            //  "http://10.18.101.16:5000/data"
+            // "http://localhost:5000/data"
+            fetch("http://10.18.101.16:5000/data", {
                 method:"POST",
                 cache: "no-cache",
                 headers:{

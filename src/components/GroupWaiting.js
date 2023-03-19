@@ -59,7 +59,9 @@ const GroupWaiting = ({setGlobalState}) => {
         console.log("GOT GROUP INFO")
         try {
             console.log('inside try catch');
-            fetch("http://localhost:5000/data", {
+            // "http://10.18.101.16:5000/data"
+            // "http://localhost:5000/data"
+            fetch("http://10.18.101.16:5000/data", {
                 method: "POST",
                 cache: "no-cache",
                 headers: {
