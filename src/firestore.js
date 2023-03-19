@@ -840,6 +840,7 @@ async function updateGroupHost(code, key, value) {
   switch (key) {
     case 'latlong':
     case 'time':
+    case 'hostReady':
       groupDoc[key] = value;
       break;
     case 'decision':

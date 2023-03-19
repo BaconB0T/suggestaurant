@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { getAccount, updateGroupMember, validateUser } from '../firestore'
+import { getAccount, updateGroupMember, validateUser, getGroup } from '../firestore'
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
 import image from './../images/Restaurant.png'; // Tell webpack this JS file uses this image
@@ -16,6 +16,32 @@ const KeywordGrab = () => {
     const [error, setError] = useState("")
     const [urlString, setURL] = useState("")
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
+    const MINUTE_MS = 1000;
+
+    async function idk() {
+        const groupCode = cookies["groupCode"]
+        const group = await getGroup(groupCode)
+        console.log(group.hostReady)
+        return group.hostReady
+    }
+
+    async function checkGroupDone() {
+        idk().then((retVal) => {
+            if (retVal == true) {
+                navigate("/recommendations/waiting")
+                return
+            }
+        })
+    }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkGroupDone()
+            // console.log('Logs every second');
+        }, MINUTE_MS);
+
+        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, [])
 
     async function handleClickLogin() {
         try {
