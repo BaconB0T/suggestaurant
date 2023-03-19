@@ -25,7 +25,7 @@ const GroupWaiting = ({setGlobalState}) => {
         console.log(group.numUsers)
         console.log(group.numUsersReady)
         idk().then((retVal) => {
-            if (numUsersReady == numUsers || retVal == true) {
+            if (group.numUsers == group.numUsers || retVal == true) {
                 const isHost = cookies["host"] // 'true', 'false'
                 console.log(isHost)
                 if(!(isHost == 'true'))
