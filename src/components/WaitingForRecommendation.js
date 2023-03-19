@@ -39,15 +39,17 @@ const WaitingForRecommendation = () => {
     async function idk() {
         const groupCode = cookies["groupCode"]
         const group = await getGroup(groupCode)
+        // console.log(group.suggestions)
+        // console.log(Object.keys(group.suggestions))
         return group
     }
 
     async function checkGroupDone() {
-        idk().then((group) => {
+        await idk().then((group) => {
             if (group && "suggestions" in group) {
-                console.log(typeof group.suggestions)
-                console.log(group.suggestions.keys)
-                let suggestions = group.suggestions.keys;
+                // console.log(typeof group.suggestions);
+                // console.log(Object.keys(group.suggestions));
+                let suggestions = Object.keys(group.suggestions);
                 setCookie('businesslist', suggestions, { path: '/' });
                 navigate("/recommendations");
             }

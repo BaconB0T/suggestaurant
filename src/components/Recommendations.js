@@ -12,8 +12,8 @@ class Recommendations extends React.Component {
   constructor(props) {
     super(props);
     var restIds = props.recommendationIds;
-    console.log(props.recommendationIds)
-    console.log(props.allCookies['groupCode'])
+    // console.log(props.recommendationIds)
+    // console.log(props.allCookies['groupCode'])
     restIds.reverse();
     this.state = {
       restIds: restIds,
