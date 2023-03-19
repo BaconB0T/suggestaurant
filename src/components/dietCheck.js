@@ -98,7 +98,7 @@ const DietCheck = ({user}) => {
             navigate("/timeGrab");
         } catch (e) {
             // else set an error
-            console.log(e)
+            console.error(e)
             setError(e.message)
         }
     }

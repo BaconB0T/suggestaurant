@@ -79,11 +79,11 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
             console.log(`Copied addres to clipboard`);
         });
     }
-    console.log('res');
-    console.log(res);
+    // console.log('res');
+    // console.log(res);
     if(apiKey === '' || apiKey === null || res === '') {
         // restaurant has not been fetched yet.
-        console.log('loading')
+        // console.log('loading')
         return (
             <>
                 <p className='loading-animation'>Loading...</p>

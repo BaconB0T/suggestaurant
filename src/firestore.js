@@ -93,16 +93,16 @@ async function getRestaurantById(id) {
  * @returns The restaurant, or null
  */
 async function getRestaurant(docRef) {
-  // return getDocument(docRef);
-  try {
-    const docSnap = await getDoc(docRef);
-    const doc = docSnap.data();
-    doc.id = docSnap.id;
-    return doc;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
+  return getDocument(docRef);
+  // try {
+  //   const docSnap = await getDoc(docRef);
+  //   const doc = docSnap.data();
+  //   doc.id = docSnap.id;
+  //   return doc;
+  // } catch (e) {
+  //   console.error(e);
+  //   return null;
+  // }
 }
 
 /**
@@ -118,7 +118,7 @@ async function getDocument(docRef) {
     doc.id = docSnap.id;
     return doc;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return null;
   }
 }
@@ -629,7 +629,7 @@ async function getLastVisitedRestaurant(userID) {
       return null;
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return null;
   }
 }
@@ -807,9 +807,7 @@ async function updateGroupMember(code, key, value) {
       break;
     case 'suggestions':
       const [acceptedRestaurantId, accepted] = value;
-      console.log(accepted);
       const vk = accepted ? 'numAccepted' : 'numRejected';
-      console.log(vk);
       groupDoc[key][acceptedRestaurantId][vk] += 1;
       break;
     default:
@@ -844,6 +842,11 @@ async function updateGroupHost(code, key, value) {
     case 'time':
     case 'hostReady':
       groupDoc[key] = value;
+      break;
+    case 'decision':
+      // value: {restId1: true}
+      const restId = Object.keys(value)[0];
+      groupDoc['suggestions'][restId]['decision'] = value[restId];
       break;
     default:
       console.error(`Invalid update key: ${key}`);

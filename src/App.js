@@ -100,7 +100,7 @@ function App() {
         <Route path='/group/join' element={<Group isHost={false}/>}/>
         <Route path='/group/host' element={<Group isHost={true}/>}/>
         <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState}/>}/>
-        <Route path='/recommendations/waiting' element={<WaitingForRecommendation/>}/>
+        <Route path='/recommendations/waiting' element={<WaitingForRecommendation setGlobalState={setState}/>}/>
 
       </Routes>
     </div>

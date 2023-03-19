@@ -7,7 +7,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import styles from '../styles/new.module.scss';
 import { faTruckMedical } from "@fortawesome/free-solid-svg-icons";
 
-const WaitingForRecommendation = () => {
+const WaitingForRecommendation = ({setGlobalState}) => {
     const [numUsers, setNumUsers] = useState(-1);
     const [numUsersReady, setNumUsersReady] = useState(0);
     const [cookies, setCookie] = useCookies(['user']);
@@ -46,11 +46,14 @@ const WaitingForRecommendation = () => {
 
     async function checkGroupDone() {
         await idk().then((group) => {
-            if (group && "suggestions" in group) {
+            if (group && group["suggestions"] !== undefined) {
                 // console.log(typeof group.suggestions);
                 // console.log(Object.keys(group.suggestions));
                 let suggestions = Object.keys(group.suggestions);
+                suggestions.sort();
+                console.log(suggestions);
                 setCookie('businesslist', suggestions, { path: '/' });
+                setGlobalState({business_list: suggestions});
                 navigate("/recommendations");
             }
         })
