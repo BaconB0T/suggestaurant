@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
 import { withCookies, useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
-import { isMobile } from 'react-device-detect';
+import { ConsoleView, isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
 import memoize from "memoize-one";
 
@@ -13,14 +13,15 @@ import '../styles/Recommendations.css';
 class Recommendations extends React.Component {
   constructor(props) {
     super(props);
-    var restIds = props.recommendationIds.reverse();
+    var restIds = props.recommendationIds; // .reverse()
     if (props.allCookies['groupCode'] != 0) {
       // in a group, insert groupDecision cards between each restaurant.
       const newRestIds = [];
-      for (let i = 0; i < restIds.length; ++i) {
-        i % 2 == 0 ? newRestIds.push(restIds[i]) : newRestIds.push(`groupDecision-${i-1}`);
+      for (let i = 0; i < restIds.length*2; ++i) {
+        i % 2 == 0 ? newRestIds.push(restIds[Math.trunc(i/2)]) : newRestIds.push(`groupDecision-${restIds.length*2-i}`);
       }
-      restIds = newRestIds;
+      restIds = newRestIds.reverse();
+      console.log(restIds);
     }
     this.MINUTE_MS = 1000;
     this.state = {
@@ -35,7 +36,6 @@ class Recommendations extends React.Component {
       groupCode: props.allCookies['groupCode'],
       check: false,
     }
-    // console.log(this.state.childRefs());
 
   }
 
@@ -76,6 +76,8 @@ class Recommendations extends React.Component {
         this.memberAction(direction === 'right'); 
       } else {
         // After vote, Host must decide
+        console.log(direction);
+        console.log(state.host);
         if(state.host === 'true') {
           // Host decides for the group.
           this.hostAction(this.state.restIds[index+1], (direction === 'right'));
@@ -89,7 +91,7 @@ class Recommendations extends React.Component {
       if(direction === 'right') {
         // Go to next recommendation.
         this.state.showingMap = true;
-        this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index+1]})
+        this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index]})
       }
     }
   }
@@ -126,7 +128,6 @@ class Recommendations extends React.Component {
 
   navToMap({setGlobalState, business_id}) {
     setGlobalState({ business_id: business_id });
-    console.log({ business_id: business_id });
     window.location.href = `/recommendations/map?business_id=${business_id}`;
   }
 
@@ -158,7 +159,6 @@ class Recommendations extends React.Component {
   }
 
   componentDidMount() {
-    // console.log(this.state.childRefs);
     if(this.state.groupCode != 0) {
       const newIntervalId = setInterval(() => {
         this.updateGroup();
@@ -215,7 +215,6 @@ class Recommendations extends React.Component {
           ))}
         </div>
         {!isMobile ? buttons : <></>}
-        {/* {console.log(this.state.childRefs())} */}
       </div>
     );
   }
@@ -262,7 +261,7 @@ const Recommendation = (props) => {
   const [cookies, setCookie] = useCookies(['user']);
   const navigate = useNavigate();
   const { setGlobalState, id, restId, passRef, onSwipe, onCardLeftScreen } = props;
-  // console.log(passRef);
+
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurantById(String(restId));
@@ -340,6 +339,7 @@ const GroupDecision = (props) => {
   // Update restaurant;
   // console.log('passRef');
   // console.log(passRef);
+  // console.log(props);
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurantById(restId);

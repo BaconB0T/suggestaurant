@@ -19,13 +19,13 @@ const GroupWaiting = ({setGlobalState}) => {
         async function idk() {
             setNumUsers(group.numUsers)
             setNumUsersReady(group.numUsersReady)
-            return group.hostReady
+            return (group.hostReady) || (group.numUsers == group.numUsersRead);
         }
         console.log('inside use effect')
         console.log(group.numUsers)
         console.log(group.numUsersReady)
         idk().then((retVal) => {
-            if (group.numUsersReady == group.numUsers || retVal == true) {
+            if (numUsersReady == numUsers || retVal == true) {
                 const isHost = cookies["host"] // 'true', 'false'
                 console.log(isHost)
                 if(!(isHost == 'true'))
@@ -73,6 +73,7 @@ const GroupWaiting = ({setGlobalState}) => {
             ).then(response => {
                 return response.json();
             }).then(json => {
+                    json.sort();
                     setCookie("businesslist", json, { path: '/' })
                     setGlobalState({businessList: json});
                     if (json.length == 0) {
