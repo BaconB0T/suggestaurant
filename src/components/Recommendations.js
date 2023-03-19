@@ -1,4 +1,4 @@
-import { getRestaurantById, getImageURLsForBusiness, updateGroupMember, getGroup } from "../firestore";
+import { getRestaurantById, getImageURLsForBusiness, updateGroupMember, getGroup, updateGroupHost } from "../firestore";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
@@ -6,6 +6,8 @@ import { withCookies, useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
 import { isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
+import memoize from "memoize-one";
+
 import '../styles/Recommendations.css';
 
 class Recommendations extends React.Component {
@@ -25,12 +27,16 @@ class Recommendations extends React.Component {
       restIds: restIds,
       index: props.indexNum || restIds.length - 1,
       setGlobalState: props.setState,
-      childRefs: restIds.map((i) => React.createRef()),
+      // need to memoize the VALUE, not a component. useMemo lets us do that,
+      // but only in a function...
+      childRefs: memoize(() => restIds.map((i) => React.createRef())),
       currentIndexRef: React.createRef(props.indexNum),
       host: props.allCookies['host'],
       groupCode: props.allCookies['groupCode'],
       check: false,
     }
+    // console.log(this.state.childRefs());
+
   }
 
   updateIndex(val) {
@@ -39,87 +45,120 @@ class Recommendations extends React.Component {
   }
 
   canSwipe() {
-    return this.state.index >= 0;
+    const onGroupDecision = this.state.restIds[this.state.index].includes('groupDecision');
+    let acceptedOrRejected;
+    // If index > 0 and (if i'm not on groupDecision or (I am the host and am on groupDecision))
+    if(onGroupDecision) {
+      // undefined if no decision. True for accepted, false for rejected;
+      const restId = this.state.restIds[this.state.index+1];
+      acceptedOrRejected = this.state.group['suggestions'][restId]['decision'];
+    }
+    // Can swipe if there are cards remaining to swipe and
+    // either I'm not on a group decision, OR if i AM on groupDecision
+    // then I am either the host or there has been a decision made. 
+    const canSwipe = 
+      this.state.index >= 0 
+      && (!onGroupDecision 
+        || (onGroupDecision 
+          && (this.state.host === 'true' || acceptedOrRejected !== undefined)
+        )
+      )
+    return canSwipe;
     // return this.state.index < this.state.restIds.length;
   }
 
   swiped(direction, nameToDelete, index, state) {
+    this.updateIndex(index - 1);
     if (state.groupCode != 0) {
-      // in group, do something new!
+      // in group
       if(!nameToDelete.includes('groupDecision')) {
-        // This needs to happen when the host makes a decision... interval
-        // needs to update this.
-        this.updateIndex(index - 1);
+        // Regular card, host and member vote on suggestion.
+        this.memberAction(direction === 'right'); 
+      } else {
+        // After vote, Host must decide
+        if(state.host === 'true') {
+          // Host decides for the group.
+          this.hostAction(this.state.restIds[index+1], (direction === 'right'));
+        }
+        if(direction === 'right') {
+          this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index+1]});
+        }
       }
     } else {
-
-      this.updateIndex(index - 1);
+      // Not in a group.
+      if(direction === 'right') {
+        // Go to next recommendation.
+        this.state.showingMap = true;
+        this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index+1]})
+      }
     }
   }
 
   outOfFrame(dir, name, idx) {
     console.log(`${name} at ${idx} has left the screen`);
-    // delete? idk, this works for now.
     document.getElementById(name).setAttribute('style', 'display: none;');
-
-    if (dir === 'right') {
-      console.log(this.state.groupCode);
-      // accepting suggestion.
-      if (this.state.groupCode == 0) {
-        // Not in a group.
-        this.handleClick3();
-      } else {
-        this.handleGroupAction(true).then(() => {
-          this.handleClick4(this.state);
-        });
-      }
-      this.state.showingMap = true;
-    } else if (this.state.groupCode != 0) {
-      this.handleGroupAction(false);
-    }
   }
 
   async swipe(dir) {
     if (this.canSwipe()) {// && this.state.index < this.state.restIds.length) {
-      await this.state.childRefs[this.state.index].current.swipe(dir) // Swipe the card!
+      // exists, but value is null. obv can't swipe on it.
+      await this.state.childRefs()[this.state.index].current.swipe(dir) // Swipe the card!
+    } else {
+      console.warn("Can't swipe!");
     }
   }
 
-  async handleGroupAction(accepted) {
+  memberAction(accepted) {
     // When a member of a group accepts the suggestion
+    // +1 because the previous index has the actual restaurant's id.
+    // WIthout +1 we are accessing the GroupDecision component's id, 
+    // Which is groupDecision-#
     const idx = this.state.index + 1;
-    console.log(idx);
-    console.log(this.state.restIds);
     const acceptedRestaurantId = this.state.restIds[idx];
-    console.log([acceptedRestaurantId, accepted]);
-    return await updateGroupMember(this.state.groupCode, 'suggestions', [acceptedRestaurantId, accepted]);
-  }
-  
-  handleClick4(obj) {
-    const idx = obj.index+1;
-    obj.setGlobalState({ business_id: obj.restIds[idx] });
-    window.location.href = `/recommendations/map?business_id=${obj.restIds[idx]}`;
+    updateGroupMember(this.state.groupCode, 'suggestions', [acceptedRestaurantId, accepted]);
   }
 
-  // to change less code.
-  handleClick3() {
-    this.handleClick4(this.state);
+  hostAction(business_id, decision) {
+    const obj={};
+    obj[business_id] = decision;
+    updateGroupHost(this.state.groupCode, 'decision', obj);
+  }
+
+  navToMap({setGlobalState, business_id}) {
+    setGlobalState({ business_id: business_id });
+    console.log({ business_id: business_id });
+    window.location.href = `/recommendations/map?business_id=${business_id}`;
   }
 
   // interval stuff
   async updateGroup() {
     const group = await getGroup(this.state.groupCode);
-    console.log(group);
-    this.state.group = group;
-    // this.setState(prevState => {
-    //   return {
-    //     ...prevState,
-    //     group: group
-    //   }
-    // });
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        group: group
+      }
+    });
+    // If in group and current card is the groupDecision card:
+    if(this.state.groupCode != 0) {
+      // group decision card indices are +1  relative to their 
+      // corresponding restaurant card.
+      const currCardId = this.state.restIds[this.state.index];
+      const currRestId = this.state.restIds[this.state.index+1];
+      if(currCardId.includes('groupDecision')) {
+        const hostDecision = group['suggestions'][currRestId]['decision'];
+        if(hostDecision !== undefined) {
+          // a decision was made. Decision value is 
+          // True for accepted, false for rejected
+          if(this.state.host !== 'true') this.swipe(hostDecision ? 'right' : 'left');
+        }
+        // else no decision was made, keep waiting.
+      }
+    }
   }
 
   componentDidMount() {
+    // console.log(this.state.childRefs);
     if(this.state.groupCode != 0) {
       const newIntervalId = setInterval(() => {
         this.updateGroup();
@@ -135,7 +174,8 @@ class Recommendations extends React.Component {
 
   componentWillUnmount() {
     console.log("Component unmounting!");
-    if(this.state.groupCode != 0) {
+    // Exists only if the interval is created
+    if(this.state.intervalId) {
       clearInterval(this.state.intervalId);
     }
   }
@@ -143,8 +183,8 @@ class Recommendations extends React.Component {
   render() {
     const buttons =
       (<div className="recommendation--buttons">
-        <button className='reject' onClick={() => this.swipe('left')}>Reject Recommendation</button>
-        <button className='accept' onClick={() => this.swipe('right')}>Go to Map Page</button>
+        <button className='reject' onClick={() => this.swipe('left')}>Reject</button>
+        <button className='accept' onClick={() => this.swipe('right')}>Accept</button>
       </div>);
 
     return (
@@ -153,7 +193,7 @@ class Recommendations extends React.Component {
         <div className="recommendation--cards" style={{ display: this.state.showingMap ? 'none' : 'auto' }}>
           {this.state.restIds.map((id, index) => (!id.includes('groupDecision')) ? (
             <Recommendation
-              passRef={this.state.childRefs[index]}
+              passRef={this.state.childRefs()[index]}
               onSwipe={(dir) => this.swiped(dir, id, index, this.state)}
               onCardLeftScreen={(dir) => this.outOfFrame(dir, id, index)}
               restId={id}
@@ -162,18 +202,20 @@ class Recommendations extends React.Component {
             />
           ) : (
             <GroupDecision
-              passRef={this.state.childRefs[index]}
+              passRef={this.state.childRefs()[index]}
               onSwipe={(dir) => this.swiped(dir, id, index, this.state)}
               onCardLeftScreen={(dir) => this.outOfFrame(dir, id, index)}
               restId={this.state.restIds[index+1]}
               key={id}
               id={id}
-              groupCode={this.state.groupCode}
+              numAccepted={this.state.group && this.state.group['suggestions'][this.state.restIds[index+1]].numAccepted}
+              numRejected={this.state.group && this.state.group['suggestions'][this.state.restIds[index+1]].numRejected}
               isHost={this.state.host}
             />
           ))}
         </div>
         {!isMobile ? buttons : <></>}
+        {/* {console.log(this.state.childRefs())} */}
       </div>
     );
   }
@@ -220,7 +262,7 @@ const Recommendation = (props) => {
   const [cookies, setCookie] = useCookies(['user']);
   const navigate = useNavigate();
   const { setGlobalState, id, restId, passRef, onSwipe, onCardLeftScreen } = props;
-
+  // console.log(passRef);
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurantById(String(restId));
@@ -292,11 +334,12 @@ const Recommendation = (props) => {
 }
 
 const GroupDecision = (props) => {
-  const { setGlobalState, id, restId, groupCode, passRef, onSwipe, onCardLeftScreen, isHost } = props;
+  const { setGlobalState, id, restId, numAccepted, numRejected, passRef, onSwipe, onCardLeftScreen, isHost } = props;
   const [restaurant, setRestaurant] = useState([]);
   const [group, setGroup] = useState({});
-  
   // Update restaurant;
+  // console.log('passRef');
+  // console.log(passRef);
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurantById(restId);
@@ -312,30 +355,32 @@ const GroupDecision = (props) => {
     }
     setRes();
   }, [props.restId]);
-
-  useEffect(() => {
-    async function getGroupFromDB() {
-      const group = await getGroup(groupCode);
-      setGroup(group);
-    }
-    getGroupFromDB();
-  }, [groupCode]);
-
-  if (isHost !== 'true') return (<div className='swipe recommendation--card'>Waiting for host...</div>)
-  if (group['suggestions'] === undefined) return (<div>Loading...</div>)
+  const preventSwipeList = ['up', 'down'];
+  const concatToPreventSwipeList = 
+    (isHost !== 'true' || numAccepted === undefined || numRejected === undefined) 
+    ? ['left', 'right'] : []
+  
+  concatToPreventSwipeList.forEach((value) => preventSwipeList.push(value));
   return (
     <div id={id} className='swipe recommendation--card'>
+      {/* Guarantees the ref is tied to a tinder card, else we can never swipe the group decision card. */}
       <TinderCard
         ref={passRef}
         onSwipe={onSwipe}
         onCardLeftScreen={onCardLeftScreen}
-        preventSwipe={['up', 'down']}>
-        <h1>{restaurant.name}</h1>
-        <div>Make a decision!</div>
-        <div className='votes'>
-          <div className='rejected'>Rejected: <span className='numRejected'>{group['suggestions'][restId].numRejected}</span></div>
-          <div className='accepted'>Accepted: <span className='numAccepted'>{group['suggestions'][restId].numAccepted}</span></div>
-        </div>
+        preventSwipe={preventSwipeList}>
+      {isHost !== 'true' 
+        ? (<>Waiting for host...</>) 
+        : ((numAccepted === undefined || numRejected === undefined ) ? (<>Loading...</>) : 
+          <>
+          <h1>{restaurant.name}</h1>
+          <div>Make a decision!</div>
+          <div className='votes'>
+            <div className='rejected'>Rejected: <span className='numRejected'>{numRejected}</span></div>
+            <div className='accepted'>Accepted: <span className='numAccepted'>{numAccepted}</span></div>
+          </div>
+          </>
+      )}
       </TinderCard>
     </div>
   )

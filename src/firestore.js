@@ -842,6 +842,11 @@ async function updateGroupHost(code, key, value) {
     case 'time':
       groupDoc[key] = value;
       break;
+    case 'decision':
+      // value: {restId1: true}
+      const restId = Object.keys(value)[0];
+      groupDoc['suggestions'][restId]['decision'] = value[restId];
+      break;
     default:
       console.error(`Invalid update key: ${key}`);
       return false;
