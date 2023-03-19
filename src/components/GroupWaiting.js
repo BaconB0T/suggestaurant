@@ -16,19 +16,16 @@ const GroupWaiting = ({setGlobalState}) => {
     async function updateVars() {
         const groupCode = cookies["groupCode"]
         const group = await getGroup(groupCode)
-        setNumUsers(group.numUsers)
-        setNumUsersReady(group.numUsersReady)
-
         async function idk() {
-            const groupCode = cookies["groupCode"]
-            const group = await getGroup(groupCode)
             setNumUsers(group.numUsers)
             setNumUsersReady(group.numUsersReady)
             return group.hostReady
         }
         console.log('inside use effect')
+        console.log(group.numUsers)
+        console.log(group.numUsersReady)
         idk().then((retVal) => {
-            if (numUsersReady == numUsers || retVal == true) {
+            if (group.numUsersReady == group.numUsers || retVal == true) {
                 const isHost = cookies["host"] // 'true', 'false'
                 console.log(isHost)
                 if(!(isHost == 'true'))
