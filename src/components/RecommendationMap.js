@@ -59,13 +59,14 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
     };
 
     function openInApp(restId, loc) {
-        console.log("userID:")
-        console.log(getAuth().currentUser)
-        console.log("restID:")
-        console.log(restId)
-        console.log("getting restaurant from firestore!!!")
-        console.log(getLastVisitedRestaurant(getAuth().currentUser.uid))
+        // console.log("userID:")
+        // console.log(getAuth().currentUser)
+        // console.log("restID:")
+        // console.log(restId)
+        // console.log("getting restaurant from firestore!!!")
+        // console.log(getLastVisitedRestaurant(getAuth().currentUser.uid))
         setLastVisitedRestaurant(getAuth().currentUser.uid, restId)
+        // console.log(loc);
         window.open("https://www.google.com/maps/dir/?api=1&destination="+loc.latitude+","+loc.longitude);
     }
 
@@ -116,8 +117,8 @@ const RecommendationMap = ({state: globalState, business_id: id}) => {
                 <h1>{res.name}</h1>
                 <div>{loc.streetAddress}</div>
                 <div style={{display: 'inline'}}>{loc.city}, {loc.state} {loc.postalCode}</div>
-                <Button onClick={(loc) => {clipboardAddress(loc)}}>Copy Address</Button>
-                <Button style={{display: 'block'}} onClick={(loc) => {openInApp(business_id, loc)}}>Take me there!</Button>
+                <Button onClick={() => {clipboardAddress(loc)}}>Copy Address</Button>
+                <Button style={{display: 'block'}} onClick={() => {openInApp(business_id, loc)}}>Take me there!</Button>
                 <div>Share with your friends by clicking the icons below!</div>
                 <div id='share-icons'>
                     <ul id='icons-list'>
