@@ -26,9 +26,19 @@ const DietCheck = ({user}) => {
 
     async function idk() {
         const groupCode = cookies["groupCode"]
-        const group = await getGroup(groupCode)
-        console.log(group.hostReady)
-        return group.hostReady
+        if (groupCode != 0)
+        {
+            const group = await getGroup(groupCode)
+            if (group && group["hostReady"] != undefined)
+            {
+                console.log(group.hostReady)
+                return group.hostReady
+            }
+            else
+            {
+                return false
+            }
+        }
     }
 
     async function checkGroupDone() {

@@ -21,7 +21,13 @@ class Recommendations extends React.Component {
         i % 2 == 0 ? newRestIds.push(restIds[Math.trunc(i/2)]) : newRestIds.push(`groupDecision-${restIds.length*2-i}`);
       }
       restIds = newRestIds.reverse();
-      console.log(restIds);
+      // console.log(restIds);
+    } else {
+      const newRestIds = [];
+      for (let i = 0; i < restIds.length; ++i) {
+        newRestIds.push(restIds[i]);
+      }
+      restIds = newRestIds.reverse();
     }
     this.MINUTE_MS = 1000;
     this.state = {
