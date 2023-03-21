@@ -13,7 +13,7 @@ function DisplayTest() {
 	useEffect(() => {
 		// Using fetch to fetch the api from
 		// flask server it will be redirected to proxy
-        setBusiness_ID(cookies["business_list"])
+        setBusiness_ID(cookies["businesslist"])
 	}, []);
 
 	return (

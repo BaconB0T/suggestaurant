@@ -74,7 +74,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={state.business_list || cookies["business_list"]} setGlobalState={setState} />} />
+        <Route path="/recommendations" element={<Recommendations recommendationIds={state.businesslist || cookies["businesslist"]} setGlobalState={setState} />} />
         {/* <Route path="/recommendations" element={<Recommendations recommendationIds={[testRestauarantId]} setGlobalState={setState} />} /> */}
         <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} globalState={state}/>}/>
         <Route path="/" element={<HomePage bob={user} />} />

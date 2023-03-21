@@ -19,7 +19,7 @@ const WaitingForRecommendation = ({setGlobalState}) => {
     //     // setNumUsers(group.numUsers)
     //     // setNumUsersReady(group.numUsersReady)
     //     if (group.suggestions != null) {
-    //         setCookie('business_list', group.suggestions, { path: '/' });
+    //         setCookie('businesslist', group.suggestions, { path: '/' });
     //         navigate("/recommendations");
     //     }
     // }
@@ -52,8 +52,8 @@ const WaitingForRecommendation = ({setGlobalState}) => {
                 let suggestions = Object.keys(group.suggestions);
                 suggestions.sort();
                 console.log(suggestions);
-                setCookie('business_list', suggestions, { path: '/' });
-                setGlobalState({business_list: suggestions});
+                setCookie('businesslist', suggestions, { path: '/' });
+                setGlobalState({businesslist: suggestions});
                 navigate("/recommendations");
             }
         })

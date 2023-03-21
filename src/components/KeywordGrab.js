@@ -85,7 +85,7 @@ const KeywordGrab = ({setGlobalState}) => {
         try {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
-            // setGlobalState({'business_list': keywordRef.current.value});
+            // setGlobalState({'businesslist': keywordRef.current.value});
             const jsonData = {
                 keywords: keywordRef.current.value,
                 time: cookies["time"],
@@ -127,8 +127,8 @@ const KeywordGrab = ({setGlobalState}) => {
                 return response.json();
             })
             .then(json => {
-                setCookie("business_list", json, { path: '/' });
-                setGlobalState({'business_list': json});
+                setCookie("businesslist", json, { path: '/' });
+                setGlobalState({'businesslist': json});
 
                 if (json.length == 0)
                 {
