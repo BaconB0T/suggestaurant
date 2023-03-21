@@ -9,7 +9,7 @@ import { BsGearFill } from "react-icons/bs";
 import image from './../images/Restaurant.png'; // Tell webpack this JS file uses this image
 
 
-const KeywordGrab = () => {
+const KeywordGrab = ({setGlobalState}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const keywordRef = useRef()
@@ -85,7 +85,7 @@ const KeywordGrab = () => {
         try {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
-            
+            // setGlobalState({'business_list': keywordRef.current.value});
             const jsonData = {
                 keywords: keywordRef.current.value,
                 time: cookies["time"],
@@ -105,11 +105,11 @@ const KeywordGrab = () => {
             {
                 updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
             }
-            if (cookies['groupCode'] != 0 && cookies["host"] != 'false')
-            {
-                navigate("/group/waiting")
-                return
-            }
+            // if (cookies['groupCode'] != 0 && cookies["host"] != 'false')
+            // {
+            //     navigate("/group/waiting")
+            //     return
+            // }
             if (cookies["groupCode"] != 0)
             {
                 navigate("/group/waiting")
@@ -131,7 +131,9 @@ const KeywordGrab = () => {
                 return response.json();
             })
             .then(json => {
-                setCookie("businesslist", json, { path: '/' });
+                setCookie("business_list", json, { path: '/' });
+                setGlobalState({'business_list': json});
+
                 if (json.length == 0)
                 {
                     navigate("/expandRadius");
@@ -143,7 +145,8 @@ const KeywordGrab = () => {
             })
         } catch (e) {
             // else set an error
-            setError(e)
+            console.error(e);
+            setError("Uh oh, Please try again later!");
         }
     }
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
 import { withCookies, useCookies } from 'react-cookie';
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { ConsoleView, isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
 import memoize from "memoize-one";
@@ -136,6 +136,59 @@ class Recommendations extends React.Component {
   navToMap({setGlobalState, business_id}) {
     setGlobalState({ business_id: business_id });
     window.location.href = `/recommendations/map?business_id=${business_id}`;
+  }
+
+  // interval stuff
+  async updateGroup() {
+    const group = await getGroup(this.state.groupCode);
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        group: group
+      }
+    });
+    // If in group and current card is the groupDecision card:
+    if(this.state.groupCode != 0) {
+      // group decision card indices are +1  relative to their 
+      // corresponding restaurant card.
+      const currCardId = this.state.restIds[this.state.index];
+      const currRestId = this.state.restIds[this.state.index+1];
+      if(currCardId.includes('groupDecision')) {
+        const hostDecision = group['suggestions'][currRestId]['decision'];
+        if(hostDecision !== undefined) {
+          // a decision was made. Decision value is 
+          // True for accepted, false for rejected
+          if(this.state.host !== 'true') this.swipe(hostDecision ? 'right' : 'left');
+        }
+        // else no decision was made, keep waiting.
+      }
+    }
+  }
+
+  componentDidMount() {
+    if(this.state.groupCode != 0) {
+      const newIntervalId = setInterval(() => {
+        this.updateGroup();
+      }, this.MINUTE_MS);
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          intervalId: newIntervalId
+        }
+      });
+    }
+  }
+
+  navToMap({setGlobalState, business_id}) {
+    setGlobalState({ business_id: business_id });
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        navToMap: true,
+        navToMapBusinessId: business_id
+      }
+    });
+    // this.props.navigation.navigate(`/recommendations/map?business_id=${business_id}`);
   }
 
   // interval stuff
