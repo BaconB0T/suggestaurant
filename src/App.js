@@ -74,9 +74,9 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/recommendations" element={<Recommendations recommendationIds={state.businessList || cookies["businesslist"]} setState={setState} />} />
-        {/* <Route path="/recommendations" element={<Recommendations recommendationIds={[testRestauarantId]} setState={setState} />} /> */}
-        <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} state={state}/>}/>
+        <Route path="/recommendations" element={<Recommendations recommendationIds={state.businesslist || cookies["businesslist"]} setGlobalState={setState} />} />
+        {/* <Route path="/recommendations" element={<Recommendations recommendationIds={[testRestauarantId]} setGlobalState={setState} />} /> */}
+        <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} globalState={state}/>}/>
         <Route path="/" element={<HomePage bob={user} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={<Account user={user}/>} />
@@ -87,7 +87,7 @@ function App() {
         {/* should /historySearch be blocked to anon users? */}
         <Route path="/historySearch" element={<HistorySearch />}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
-        <Route path="/keywordGrab"element={<KeywordGrab/>}/>
+        <Route path="/keywordGrab"element={<KeywordGrab setGlobalState={setState}/>}/>
         <Route path="/priceCheck"element={<PriceGrab/>}/>
         <Route path="/timeGrab"element={<TimeGrab/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck user={user}/>}/>

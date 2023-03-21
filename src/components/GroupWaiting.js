@@ -75,7 +75,7 @@ const GroupWaiting = ({setGlobalState}) => {
             }).then(json => {
                     json.sort();
                     setCookie("businesslist", json, { path: '/' })
-                    setGlobalState({businessList: json});
+                    setGlobalState({businesslist: json});
                     if (json.length == 0) {
                         navigate("/expandRadius");
                     }

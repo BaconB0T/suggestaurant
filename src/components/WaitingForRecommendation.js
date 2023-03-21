@@ -53,7 +53,7 @@ const WaitingForRecommendation = ({setGlobalState}) => {
                 suggestions.sort();
                 console.log(suggestions);
                 setCookie('businesslist', suggestions, { path: '/' });
-                setGlobalState({business_list: suggestions});
+                setGlobalState({businesslist: suggestions});
                 navigate("/recommendations");
             }
         })

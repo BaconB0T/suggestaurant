@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
 import { withCookies, useCookies } from 'react-cookie';
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { ConsoleView, isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
 import memoize from "memoize-one";
@@ -13,7 +13,10 @@ import '../styles/Recommendations.css';
 class Recommendations extends React.Component {
   constructor(props) {
     super(props);
-    var restIds = props.recommendationIds; // .reverse()
+    // idk why this cookie keeps being assigned the name 'businesslist', it's
+    // driving me crazy.
+    var restIds = props.recommendationIds || props.allCookies['businesslist'] || props.allCookies['businesslist']; // .reverse()
+    restIds = restIds.sort();
     if (props.allCookies['groupCode'] != 0) {
       // in a group, insert groupDecision cards between each restaurant.
       const newRestIds = [];
@@ -34,14 +37,14 @@ class Recommendations extends React.Component {
     this.state = {
       restIds: restIds,
       index: props.indexNum || restIds.length - 1,
-      setGlobalState: props.setState,
+      setGlobalState: props.setGlobalState,
       // need to memoize the VALUE, not a component. useMemo lets us do that,
       // but only in a function...
       childRefs: memoize(() => restIds.map((i) => React.createRef())),
       currentIndexRef: React.createRef(props.indexNum),
       host: props.allCookies['host'],
       groupCode: props.allCookies['groupCode'],
-      check: false,
+      showMap: false
     }
 
   }
@@ -87,9 +90,12 @@ class Recommendations extends React.Component {
         console.log(state.host);
         if(state.host === 'true') {
           // Host decides for the group.
-          this.hostAction(this.state.restIds[index+1], (direction === 'right'));
-        }
-        if(direction === 'right') {
+          this.hostAction(this.state.restIds[index+1], (direction === 'right')).then((v) => {
+            if(direction === 'right') {
+              this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index+1]});
+            }
+          });
+        } else if(direction === 'right') {
           this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index+1]});
         }
       }
@@ -97,7 +103,6 @@ class Recommendations extends React.Component {
       // Not in a group.
       if(direction === 'right') {
         // Go to next recommendation.
-        this.state.showingMap = true;
         this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index]})
       }
     }
@@ -127,15 +132,22 @@ class Recommendations extends React.Component {
     updateGroupMember(this.state.groupCode, 'suggestions', [acceptedRestaurantId, accepted]);
   }
 
-  hostAction(business_id, decision) {
+  async hostAction(business_id, decision) {
     const obj={};
     obj[business_id] = decision;
-    updateGroupHost(this.state.groupCode, 'decision', obj);
+    return await updateGroupHost(this.state.groupCode, 'decision', obj);
   }
 
   navToMap({setGlobalState, business_id}) {
     setGlobalState({ business_id: business_id });
-    window.location.href = `/recommendations/map?business_id=${business_id}`;
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        showMap: true,
+        showMapBusinessId: business_id
+      }
+    })
+    // window.location.href = `/recommendations/map?business_id=${business_id}`;
   }
 
   // interval stuff
@@ -196,8 +208,9 @@ class Recommendations extends React.Component {
 
     return (
       <div className="recommendations">
-        <div id='enjoy' style={{ display: this.state.showingMap ? 'auto' : 'none' }}>Enjoy!</div>
-        <div className="recommendation--cards" style={{ display: this.state.showingMap ? 'none' : 'auto' }}>
+        {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`}/>)}
+        <div id='enjoy' style={{ display: this.state.showMap ? 'auto' : 'none' }}>Enjoy!</div>
+        <div className="recommendation--cards" style={{ display: this.state.showMap ? 'none' : 'auto' }}>
           {this.state.restIds.map((id, index) => (!id.includes('groupDecision')) ? (
             <Recommendation
               passRef={this.state.childRefs()[index]}

@@ -18,7 +18,7 @@ const ShareIcon = ({provider}) => {
     );
 }
 
-const RecommendationMap = ({state: globalState, business_id: id}) => {
+const RecommendationMap = ({globalState, business_id: id}) => {
     const zoomLevel = 15;
     // console.log(globalState);
     const business_id = globalState.business_id || id;

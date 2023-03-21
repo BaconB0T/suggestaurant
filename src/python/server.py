@@ -187,24 +187,24 @@ def keywords():
 	diet_list = [x for x in diet_list if req['diet']["Vegetarian"] in x["dietaryRestrictions"]["true"]]
 	diet_list = [x for x in diet_list if req['diet']["Soy-free"] in x["dietaryRestrictions"]["true"]]
 	
-	# business_list = [doc["business_id"] for doc in id_list]
+	# businesslist = [doc["business_id"] for doc in id_list]
 
-	# print(business_list, file=sys.stderr)
+	# print(businesslist, file=sys.stderr)
 
-	# business_2 = df_business[df_business['business_id'].isin(business_list)]
+	# business_2 = df_business[df_business['business_id'].isin(businesslist)]
 
 	# def filter_func(id, row1, row2):
 	# 	if (geodesic(user_loc,(row1, row2)).miles < float(req["latlong"]["distance"])):
-	# 		business_list_final.append(id)
+	# 		businesslist_final.append(id)
 	# 		return True
 	# 	else:
 	# 		return False
 
 	# business_2.apply(lambda x: filter_func(x['business_id'], x['latitude'], x['longitude']), axis=1)
 
-	business_list_final = [x["business_id"] for x in id_list]
+	businesslist_final = [x["business_id"] for x in id_list]
 
-	Q2 = Q[Q.columns.intersection(business_list_final)]
+	Q2 = Q[Q.columns.intersection(businesslist_final)]
 
 	test_df= pd.DataFrame([words], columns=['text'])
 	test_df['text'] = test_df['text'].apply(text_process)
