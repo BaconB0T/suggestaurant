@@ -105,12 +105,7 @@ const KeywordGrab = ({setGlobalState}) => {
             {
                 updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
             }
-            // if (cookies['groupCode'] != 0 && cookies["host"] != 'false')
-            // {
-            //     navigate("/group/waiting")
-            //     return
-            // }
-            if (cookies["groupCode"] != 0)
+            if (cookies['groupCode'] != 0 && cookies["host"] != 'true')
             {
                 navigate("/group/waiting")
                 return
