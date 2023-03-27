@@ -3,6 +3,7 @@ import { changePassword } from '../firestore';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useRef, useState } from 'react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 // TODO: Repurpose to general change password screen.
 const ChangePassword = () => {
@@ -59,11 +60,33 @@ const ChangePassword = () => {
             //     setError('');
             // }
           }
-    
+
+  
+          async function handleClickBack() {
+            try {
+                navigate(-1);
+            } catch (e) {
+                // else set an error
+                setError(e)
+            }
+        }
+        
+        async function handleClickSettings() {
+          try {
+              navigate("/");
+          } catch (e) {
+              // else set an error
+              setError(e)
+          }
+        }
+
         return (
             <Container
                 className="d-flex align-items-center justify-content-center"
                 style={{ minHeight: "100vh" }}>
+                    
+            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
                 <div className="w-100" style={{ maxWidth: "400px" }}>
                     <Card>
                         <Card.Body>

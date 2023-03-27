@@ -2,8 +2,9 @@ import { getAuth } from 'firebase/auth';
 import React, { useEffect, useRef, useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { groupExists, createGroup, getCode, joinGroup } from '../firestore';
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 const Member = () => {
   const groupCodeRef = useRef();
@@ -61,12 +62,22 @@ const Member = () => {
       setError('')
     }
   }
+  async function handleClickBack() {
+    try {
+        navigate('/');
+    } catch (e) {
+        // else set an error
+        setError(e)
+    }
+  }
+
 
   return (
     <Container
       className="d-flex align-items-center justify-content-center"
       style={{ minHeight: "100vh" }}
     >
+      <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
@@ -149,11 +160,21 @@ const Host = ({ setGlobalState }) => {
     return true;
   }
 
+  async function handleClickBack() {
+    try {
+        navigate(-1);
+    } catch (e) {
+        // else set an error
+        setError(e)
+    }
+  }
+
   return (
     <Container
       className="d-flex align-items-center justify-content-center"
       style={{ minHeight: "100vh" }}
     >
+      <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>

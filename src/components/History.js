@@ -121,7 +121,7 @@ function History({user}) {
   
   async function handleClickBack() {
     try {
-        navigate("/account");
+        navigate('/account');
     } catch (e) {
         // else set an error
         setError(e)
