@@ -75,7 +75,10 @@ const Login = () => {
                                 Login
                             </Button>
                         </Form>
-                      <button onClick={() => providerSignIn('google')}>Sign in with Google</button>
+
+                        {/* <h6>Or login using your Google account!</h6> */}
+                        <br></br>
+                        <Button className="w-75 mt-10 button-control-2" onClick={() => providerSignIn('google')}>Sign in with Google</Button>
                         <div className="w-100 text-center mt-2">
                             Need an account? <Link to="/signup">Sign Up</Link>
                         </div>
