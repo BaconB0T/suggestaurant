@@ -42,6 +42,16 @@ body {
   color: white;
 }
 
+.button-control-2
+{
+  background-color: var(--green-secondary) !important;
+  font-weight: bold;
+  font-family: Montserrat;
+  border-color: lightgreen !important;
+  border-radius: 50px;
+  color: black;
+}
+
 .button-control:hover
 {
   background-color: rgb(55, 179, 55) !important;
@@ -114,6 +124,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.alert-button-flex{
+  display: flex!important;
 }
 
 .d-flex {

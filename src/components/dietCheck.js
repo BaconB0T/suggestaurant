@@ -6,12 +6,16 @@ import { Link } from 'react-router-dom'
 import { updateGroupMember, hasDietaryRestrictions, getFilters, getGroup } from '../firestore';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
+import Popup from './Popup';
 
-const DietCheck = ({user}) => {
+const DietCheck = ({user, globalState, setGlobalState}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const [check, setCheck] = useState(false)
+    const [showGroupPopup, setGroupPopup] = useState(false);
+    const [loginOrAccount, setLoginOrAccount] = useState("Login");
+
     const veganRef  = useRef();
     const halalRef  = useRef();
     const dairyRef  = useRef();
@@ -19,7 +23,6 @@ const DietCheck = ({user}) => {
     const soyRef    = useRef();
     const kosherRef = useRef();
     const veggieRef = useRef();
-    const [loginOrAccount, setLoginOrAccount] = useState("Login")
     // const [check2, setCheck2] = useState(false)
 
     const MINUTE_MS = 1000;
@@ -50,6 +53,9 @@ const DietCheck = ({user}) => {
     }
 
     useEffect(() => {
+        if(globalState.showGroupJoinPopup) {
+            setGroupPopup(true);
+        }
         const interval = setInterval(() => {
             checkGroupDone()
             // console.log('Logs every second');
@@ -155,6 +161,8 @@ const DietCheck = ({user}) => {
             style={{ minHeight: "100vh" }}
         >
             <div className="w-100" style={{ maxWidth: "400px" }}>
+            {!check && showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => {setGroupPopup(false); setGlobalState({...globalState, showGroupJoinPopup: false})}}/>}
+
             <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
             <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
                 <>
