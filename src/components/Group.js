@@ -4,6 +4,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { groupExists, createGroup, getCode, joinGroup } from '../firestore';
+import CustomAlert from "./CustomAlert";
 
 const Member = () => {
   const groupCodeRef = useRef();
@@ -11,19 +12,23 @@ const Member = () => {
   const [error, setError] = useState("");
   const [cookies, setCookie] = useCookies(['user']);
   const [variant, setVariant] = useState("danger");
+  const [show, setShow] = useState(false);
+  const [groupCode, setGroupCode] = useState('');
 
   async function handleSubmit(e) {
     e.preventDefault(); // don't refresh the page
     setError('');
     const code = e.target.querySelector('[name=code]').value;
+    setGroupCode(code);
     // errors are set inside of validateForm(e);
     if (validateForm(e)) {
       groupExists(code).then((val) => {
         if (val) {
-          // Group exists, join it.
-          setCookie('groupCode', groupCodeRef.current.value, { path: '/' });
-          joinGroup(code, getAuth().currentUser);
-          navigate("/dietaryRestrictions");
+          // Group exists, confirmation popup.
+          setShow(true);
+          // Then join it.
+          // joinGroup(code, getAuth().currentUser);
+          // navigate("/dietaryRestrictions");
         } else {
           // Group doesn't exist.
           setError("Invalid code: Group doesn't exist.");
@@ -51,8 +56,15 @@ const Member = () => {
     return true;
   }
 
+  function confirmGroup() {
+    setCookie('groupCode', groupCodeRef.current.value, { path: '/' });
+    joinGroup(groupCode, getAuth().currentUser); 
+    navigate("/dietaryRestrictions");
+  }
+
   function handleChange(event) {
     const value = event.target.value;
+    setGroupCode(value);
     if(value.length !== 6) {
       setVariant('warning');
       setError('Code must be 6 digits long.')
@@ -70,6 +82,16 @@ const Member = () => {
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
+            <CustomAlert 
+            alertHeading="Join Group"
+            alertMessage={`You're about to join group ${groupCode}. Click 'Join' to confirm.`}
+            alertVariant='info'
+            show={show}
+            setShow={setShow}
+            buttons={[['danger-outline', () => {}, 'Cancel'],
+              ['outline-success', confirmGroup, 'Join']]}
+              />
+            
             <h2 className="text-center mb-4">Join Group</h2>
             {error && <Alert variant={variant || "danger"}>{error}</Alert>}
             <Form onSubmit={handleSubmit}>
@@ -89,6 +111,9 @@ const Member = () => {
   );
 }
 
+// Idea: We lift location and time out of the quiz just for this part, so the
+// host sets these before they create the group and can then get a sort of 
+// confirmation for it.
 const Host = ({ setGlobalState }) => {
   const [cookies, setCookie] = useCookies(['user']);
   // const [group, setGroup] = useCookies(['group']);
@@ -120,8 +145,9 @@ const Host = ({ setGlobalState }) => {
           // Try to make group with that code.
           createGroup(code).then((group) => {
             if (group === null) {
-              setError('Group not created, please try again later.');
+              setError('Failed to create the Group, please try again later.');
             } else {
+              // Confirmation popup??
               setCookie('groupCode', code, { path: '/' });
               navigate("/location");
             }
@@ -165,7 +191,7 @@ const Host = ({ setGlobalState }) => {
                 <Form.Control name='code' defaultValue={code} required disabled readOnly />
               </Form.Group>
               <Button className="w-40 mt-10" type="submit">
-                Go
+                Create Group
               </Button>
             </Form>
           </Card.Body>
