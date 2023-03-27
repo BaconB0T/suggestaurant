@@ -112,6 +112,7 @@ const KeywordGrab = ({setGlobalState}) => {
                 return
             }
 
+            //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
             fetch("http://localhost:5000/data", {
                 method:"POST",
                 cache: "no-cache",

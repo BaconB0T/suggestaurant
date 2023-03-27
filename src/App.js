@@ -92,9 +92,9 @@ function App() {
         <Route path="/timeGrab"element={<TimeGrab/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck user={user}/>}/>
         <Route path="/location"element={<DistanceGrab user={user}/>}/>
-        <Route path="/account/filters" element={<Preferences user={user}/>}/>
+        <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated} />}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
-        <Route path='/selectCuisine' element={<Cuisine user={user}/>} />
+        <Route path='/selectCuisine' element={<Cuisine user={user} setGlobalState={setState}/>} />
         <Route path='/expandRadius' element={<ExpandRadius />} />
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
         <Route path='/group/join' element={<Group isHost={false}/>}/>

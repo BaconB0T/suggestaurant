@@ -6,7 +6,7 @@ import { Navigate,useNavigate } from 'react-router-dom';
 import "../styles/presetCuis.css";
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
-function PreSetCuisines({user}) {
+function PreSetCuisines({user, setGlobalState}) {
   
     const [listOfCuisines, setCuisineList] = useState([]);
     const [userCuisineList, setUserCuisine] = useState([]);
@@ -39,6 +39,7 @@ function PreSetCuisines({user}) {
     
     const handleCheck = (event) => {
         var updatedList = [...checked];
+        setGlobalState({'updated': true})
         if (event.target.checked) {
             updatedList = [...checked, event.target.value];
         } else{
