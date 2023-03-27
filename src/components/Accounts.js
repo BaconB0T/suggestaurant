@@ -4,25 +4,7 @@ import { signOutUser, deleteUser } from "../firestore";
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Container, Card, Alert, Button, Form } from "react-bootstrap";
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
-
-
-const DeleteAlert = (props) => {
-  const { setShow, show, alertCallback } = props;
-
-  return (
-    <div style={{ display: 'flex', 'justify-content': 'center' }}>
-      <Alert show={show} variant="danger">
-        <Alert.Heading>Account Deletion</Alert.Heading>
-        <p>Are you sure you want to delete your account? This cannot be undone.</p>
-        <hr />
-        <div className="d-flex justify-content-end">
-          <Button variant="outline-danger" onClick={() => { setShow(false); alertCallback(); }}>Delete</Button>
-          <Button variant="success-outline" onClick={() => { setShow(false); }}>Cancel</Button>
-        </div>
-      </Alert>
-    </div>
-  )
-}
+import CustomAlert from "./CustomAlert";
 
 const Account = ({ user }) => {
   const navigate = useNavigate();
@@ -94,7 +76,16 @@ const Account = ({ user }) => {
             <>
               <Card>
                 <Card.Body>
-                  <DeleteAlert alertCallback={() => { deleteUser(); navigate('/login'); }} show={show} setShow={setShow}></DeleteAlert>
+                  {/*   const { buttons } */}
+                  <CustomAlert
+                    alertHeading='Delete Account' 
+                    alertMessage="Are you sure you want to delete your account? This cannot be undone." 
+                    alertVariant='danger' 
+                    show={show}
+                    setShow={setShow}
+                    buttons={[['outline-danger', () => { deleteUser(); navigate('/login'); }, 'Delete'],
+                              ['success-outline', () => {}, 'Cancel']]}>
+                  </CustomAlert>
                   <h1>Hello {user && user.username}</h1>
                   <div>Email: {user && user.email}</div>
                   <Link to='/account/allergies'>Allergies</Link>

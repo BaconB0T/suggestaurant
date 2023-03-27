@@ -9,15 +9,16 @@ import styles from '../styles/new.module.scss';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
 import money from './../images/money.png'; // Tell webpack this JS file uses this image
+import Popup from './Popup';
 
-
-const PriceGrab = () => {
+const PriceGrab = ({globalState, setGlobalState}) => {
   
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const [price, setPrice] = useState(5)
+    const [showGroupPopup, setGroupPopup] = useState(false);
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
     const MINUTE_MS = 1000;
 
@@ -48,6 +49,9 @@ const PriceGrab = () => {
     }
 
     useEffect(() => {
+        if(globalState.showGroupJoinPopup) {
+            setGroupPopup(true);
+        }
         const interval = setInterval(() => {
             checkGroupDone()
             // console.log('Logs every second');
@@ -118,6 +122,8 @@ const PriceGrab = () => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
+            {showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => {setGroupPopup(false); setGlobalState({...globalState, showGroupJoinPopup: false});}}/>}
+
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
             {/* <Card className="card-control w-75 center">
                 <Card.Body> */}
