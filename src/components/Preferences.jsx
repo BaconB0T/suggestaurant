@@ -6,9 +6,9 @@ import {getDoc, doc} from "firebase/firestore";
 import "./preferences.css";
 import { Container, Card } from "react-bootstrap";
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import Popup from './Popup';
 
-
-function Preferences({user}) {  
+function Preferences({user, setGlobalState, updated}) {  
     
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
@@ -27,8 +27,8 @@ function Preferences({user}) {
     }
     
     if(!t && user && user.uid){
-        console.log(user);
-        console.log(user.uid);
+        // console.log(user);
+        // console.log(user.uid);
         Promise.resolve(getFilters(user.uid)).then(val => {
             setFF(val.filters.preferences.requireFamilyFriendly);
             setHis(val.filters.preferences.includeHistory);
@@ -63,6 +63,10 @@ function Preferences({user}) {
         }
     }
 
+    const closePopup = () => {
+        setGlobalState({"updated": false})
+        console.log("CLOSE POPUP")
+    };    
 
     return(
         <div>
@@ -72,11 +76,19 @@ function Preferences({user}) {
         >
         <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
             <div>
+            {updated && <Popup
+                    content={<>
+                        <b>Cuisines Updated!</b>
+                        <br></br>
+                        <br></br>
+                    </>}
+                    handleClose={closePopup}
+                />}
             <h3>Preferences</h3>
             <Card className="w-100">
                 <Card.Body>
                     <div className='oneline'>
-                        <div className="test">Include Family Friendly</div>
+                        <div className="test">Only Family Friendly Restaurants</div>
                         <div id='toggle'>
                         <label className='switch'>
                             <input id='checkb' type='checkbox' checked={FamilyFriendly} onClick={handleFFChange} />
@@ -85,7 +97,7 @@ function Preferences({user}) {
                         </div>
                     </div>
                     <div className='oneline'>
-                        <div className="test">Include History</div>
+                        <div className="test">Exclude Visited Restaurants</div>
                         <div id = 'toggle'>
                         <label className='switch'>
                             <input id='checkb' type='checkbox' checked={includeHis} onClick={handleIncHisChange} />
@@ -94,7 +106,7 @@ function Preferences({user}) {
                         </div>
                     </div>
                     <div className='oneline'>
-                        <div className="test">Include Fast Food</div>
+                        <div className="test">No Fast Food</div>
                         <div id = 'toggle'>
                         <label className='switch'>
                             <input id='checkb' type='checkbox' checked={FastFood} onClick={handleFFoodChange} />
@@ -129,6 +141,7 @@ function Preferences({user}) {
                             })}
                         </div>
                     </div>
+                    
 
                     <div className='oneline'>
                         <div className="test">Preselect Cuisines</div>

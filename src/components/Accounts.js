@@ -11,8 +11,8 @@ const Account = ({ user }) => {
   const [show, setShow] = useState(false);
   // const [user, setUser] = useState([]);
   const [error, setError] = useState("");
-  console.log("In Accounts.js user");
-  console.log(user);
+  // console.log("In Accounts.js user");
+  // console.log(user);
   // const auth = getAuth();
   // useEffect(() => {
   //   onAuthStateChanged(auth, (user) => {
@@ -90,9 +90,9 @@ const Account = ({ user }) => {
                   <div>Email: {user && user.email}</div>
                   <Link to='/account/allergies'>Allergies</Link>
                   <br></br>
-                  <Link to='/account/filters'>Filters</Link>
+                  <Link to='/account/filters'>Restaurant Preferences</Link>
                   <br></br>
-                  <Link to='/history'>History</Link>
+                  <Link to='/history'>Restaurant History</Link>
                   <br></br>
                   <button>
                     <Link to='/change-password'>Change Password</Link>
