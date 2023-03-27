@@ -7,6 +7,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { ConsoleView, isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
 import memoize from "memoize-one";
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 import '../styles/Recommendations.css';
 
@@ -206,8 +207,33 @@ class Recommendations extends React.Component {
         <button className='accept' onClick={() => this.swipe('right')}>Accept</button>
       </div>);
 
+    // const navigate = useNavigate();
+    // const [error, setError] = useState("");
+    // async function handleClickBack() {
+    //   try {
+    //       navigate('/account');
+    //   } catch (e) {
+    //       // else set an error
+    //       // setError(e)
+    //       console.log(e);
+    //   }
+    // }
+    
+    // async function handleClickSettings() {
+    //   try {
+    //       navigate("/");
+    //   } catch (e) {
+    //       // else set an error
+    //       // setError(e)
+    //       console.log(e);
+    //   }
+    // }
+    
+
     return (
       <div className="recommendations">
+        {/* <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => this.props.navigation}/>
+        <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/> */}
         {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`}/>)}
         <div id='enjoy' style={{ display: this.state.showMap ? 'auto' : 'none' }}>Enjoy!</div>
         <div className="recommendation--cards" style={{ display: this.state.showMap ? 'none' : 'auto' }}>
