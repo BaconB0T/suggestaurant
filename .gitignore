@@ -206,3 +206,6 @@ suggestaurant-873aa-d6566e2cfc10.json
 *.firebase
 firebase.json
 *.firebaserc
+src/python/requirements.txt
+src/python/Dockerfile
+src/python/.dockerignore

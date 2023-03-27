@@ -136,10 +136,13 @@ const DistanceGrab = ({user}) => {
                                                     />
                                                 </Form.Group>
                                                 <Form.Group id="distance" className="w-75 mb-2 center">
-                                                    <Form.Control 
-                                                        ref={distRef} required
-                                                        defaultValue={25}
-                                                    />
+                                                    <Form.FloatingLabel label="Distance in Miles">
+                                                        <Form.Control 
+                                                            ref={distRef} required
+                                                            defaultValue={25}
+                                                            placeholder="Miles"
+                                                        />
+                                                    </Form.FloatingLabel>
                                                 </Form.Group>
                                                 <Button className="w-75 button-control" type="submit">
                                                     Go
