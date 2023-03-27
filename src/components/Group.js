@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { groupExists, createGroup, getCode, joinGroup } from '../firestore';
 import CustomAlert from "./CustomAlert";
 
-const Member = () => {
+
+const Member = ({globalState, setGlobalState}) => {
   const groupCodeRef = useRef();
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -25,10 +26,15 @@ const Member = () => {
       groupExists(code).then((val) => {
         if (val) {
           // Group exists, confirmation popup.
-          setShow(true);
           // Then join it.
-          // joinGroup(code, getAuth().currentUser);
-          // navigate("/dietaryRestrictions");
+          joinGroup(code, getAuth().currentUser).then(joined => {
+            if(joined) {
+              setGlobalState({...globalState, showGroupJoinPopup: true});
+              navigate("/dietaryRestrictions");
+            } else {
+              setError('Failed to join group!');
+            }
+          });
         } else {
           // Group doesn't exist.
           setError("Invalid code: Group doesn't exist.");
@@ -82,15 +88,15 @@ const Member = () => {
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
-            <CustomAlert 
+            {/* <CustomAlert
             alertHeading="Join Group"
             alertMessage={`You're about to join group ${groupCode}. Click 'Join' to confirm.`}
             alertVariant='info'
             show={show}
             setShow={setShow}
             buttons={[['danger-outline', () => {}, 'Cancel'],
-              ['outline-success', confirmGroup, 'Join']]}
-              />
+             ['outline-success', confirmGroup, 'Join']]}
+            /> */}
             
             <h2 className="text-center mb-4">Join Group</h2>
             {error && <Alert variant={variant || "danger"}>{error}</Alert>}
@@ -202,8 +208,8 @@ const Host = ({ setGlobalState }) => {
   );
 }
 
-const Group = ({ isHost, setGlobalState }) => {
-  const toRender = isHost ? (<Host setGlobalState={setGlobalState} />) : (<Member setGlobalState={setGlobalState} />);
+const Group = ({ isHost, setGlobalState, globalState }) => {
+  const toRender = isHost ? (<Host setGlobalState={setGlobalState} />) : (<Member globalState={globalState} setGlobalState={setGlobalState} />);
   // Create group when visiting the page, set to active.
   // Delete inactive groups regularly.
   // A group is set to inactive after 30 minutes of inactivity.

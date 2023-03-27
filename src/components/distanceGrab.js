@@ -10,6 +10,7 @@ import car from './../images/Transportation.png'; // Tell webpack this JS file u
 import { BsGearFill } from "react-icons/bs";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { filter } from 'lodash';
+import Popup from './Popup';
 
 const DistanceGrab = ({user}) => {
     const [cookies, setCookie] = useCookies(['user']);
@@ -18,6 +19,8 @@ const DistanceGrab = ({user}) => {
     const longRef = useRef()
     const distRef = useRef()
     const [error, setError] = useState("")
+    const [showGroupPopup, setGroupPopup] = useState(false);
+    
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
         useGeolocated({
             positionOptions: {
@@ -89,6 +92,12 @@ const DistanceGrab = ({user}) => {
         }
     }
 
+    useEffect(() => {
+        if (cookies['host'] === 'true') {
+            setGroupPopup(true);
+        }
+    }, []);
+
     if((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
         return (
             <Navigate to='/dietaryRestrictions' />
@@ -100,6 +109,7 @@ const DistanceGrab = ({user}) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
+            {showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => {setGroupPopup(false)}}/>}
             <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
             <img src={car} className="image-control" alt="Logo" />

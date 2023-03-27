@@ -60,8 +60,6 @@ function App() {
         setUser(userObj);
       }
     });
-    // For testing recommendations:
-    setCookie({host: false, groupCode: 123456})
   }, [user]);
   // const restaurant = {name: "Fake Restaurant!", location: {streetAddress: "4903 State Rd 54", state: "FL", city: "New Port Richey", postalCode: '16127', latitude: 28.2172884, longitude: -82.7333444}};
   // To get query parameters, use the line below and use the parameters name instead of paramName
@@ -88,16 +86,16 @@ function App() {
         <Route path="/historySearch" element={<HistorySearch />}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab setGlobalState={setState}/>}/>
-        <Route path="/priceCheck"element={<PriceGrab/>}/>
+        <Route path="/priceCheck"element={<PriceGrab globalState={state} setGlobalState={setState}/>}/>
         <Route path="/timeGrab"element={<TimeGrab/>}/>
-        <Route path="/dietaryRestrictions"element={<DietCheck user={user}/>}/>
+        <Route path="/dietaryRestrictions"element={<DietCheck user={user} globalState={state} setGlobalState={setState}/>}/>
         <Route path="/location"element={<DistanceGrab user={user}/>}/>
         <Route path="/account/filters" element={<Preferences user={user}/>}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user}/>} />
         <Route path='/expandRadius' element={<ExpandRadius />} />
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
-        <Route path='/group/join' element={<Group isHost={false}/>}/>
+        <Route path='/group/join' element={<Group isHost={false} globalState={state} setGlobalState={setState}/>}/>
         <Route path='/group/host' element={<Group isHost={true}/>}/>
         <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState}/>}/>
         <Route path='/recommendations/waiting' element={<WaitingForRecommendation setGlobalState={setState}/>}/>
