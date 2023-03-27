@@ -88,7 +88,7 @@ const TimeGrab = () => {
                             <br></br>
                             <Card className="card-control">
                                 <Card.Body> 
-                                    <TimePicker onChange={onChange} value={value} />
+                                    <TimePicker onChange={onChange} value={value} disableClock={true} />
                                 </Card.Body>
                             </Card>
                             <br></br>
