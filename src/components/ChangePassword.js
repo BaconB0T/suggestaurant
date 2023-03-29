@@ -54,11 +54,6 @@ const ChangePassword = () => {
             const pass = passRef.current.value
             const cpass = confPassRef.current.value
             pass !== cpass ? setError("Passwords do not match!") : setError('');
-            // if (pass !== cpass) {
-            //     setError("Passwords do not match!");
-            // } else {
-            //     setError('');
-            // }
         }
 
 

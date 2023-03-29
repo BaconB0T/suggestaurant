@@ -93,10 +93,6 @@ function History({ user }) {
   const [cookies] = useCookies(['id']);
   const [history, setHistory] = useState([]);
 
-  // const [user, setUser] = useState([]);
-
-  // const auth = getAuth();
-
   useEffect(() => {
     if (!user.isAnonymous) {
       getHistory(user.uid).then((usersHistory) => {
@@ -108,33 +104,9 @@ function History({ user }) {
       // https://firebase.google.com/docs/reference/js/firebase.User
     }
   }, []);
-  // useEffect(() => {
-  //   async function cried() {
-
-  //   }
-  //   cried();
-  // }, []);
 
   const navigate = useNavigate();
   const [error, setError] = useState("")
-
-  async function handleClickBack() {
-    try {
-      navigate('/account');
-    } catch (e) {
-      // else set an error
-      setError(e)
-    }
-  }
-
-  async function handleClickSettings() {
-    try {
-      navigate("/");
-    } catch (e) {
-      // else set an error
-      setError(e)
-    }
-  }
 
   // redirect on anonymous user
   if (user === null || user.isAnonymous) {

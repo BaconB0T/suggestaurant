@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
+import { Container, Card, Form, Button } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { Navigate, useNavigate } from 'react-router-dom'
 import TimePicker from 'react-time-picker';
@@ -12,7 +12,6 @@ function timeToInt(timeString) {
 }
 
 const TimeGrab = () => {
-
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();

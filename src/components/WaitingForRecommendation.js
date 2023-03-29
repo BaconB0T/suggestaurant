@@ -1,11 +1,9 @@
-import { getGroupInfo, getGroup } from "../firestore";
-import React, { useEffect, useRef, useState } from 'react';
+import { getGroup } from "../firestore";
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import Spinner from 'react-bootstrap/Spinner';
-import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
-import styles from '../styles/new.module.scss';
-import { faTruckMedical } from "@fortawesome/free-solid-svg-icons";
+import { Container } from 'react-bootstrap'
 
 const WaitingForRecommendation = ({setGlobalState}) => {
     const [numUsers, setNumUsers] = useState(-1);

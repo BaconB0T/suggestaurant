@@ -59,9 +59,8 @@ const ExpandRadius = () => {
                         </Card.Body>
                     </Card>
                 </>
-
             </div>
-        </Container >
+        </Container>
 
     );
 };

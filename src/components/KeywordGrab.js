@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
+import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { updateGroupMember, getGroup } from '../firestore'

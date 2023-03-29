@@ -3,11 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
-import { Link } from 'react-router-dom'
-import { getAccount, updateGroupMember, getGroup } from '../firestore'
+import { updateGroupMember, getGroup } from '../firestore'
 import styles from '../styles/new.module.scss';
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft } from 'react-icons/fa';
-import { BsGearFill } from "react-icons/bs";
 import money from './../images/money.png'; // Tell webpack this JS file uses this image
 import Popup from './Popup';
 import { BackButton, HomeButton } from "./Buttons";

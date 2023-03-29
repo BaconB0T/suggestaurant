@@ -9,25 +9,7 @@ import { BackButton } from './Buttons';
 const Account = ({ user }) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
-  // const [user, setUser] = useState([]);
   const [error, setError] = useState("");
-  // console.log("In Accounts.js user");
-  // console.log(user);
-  // const auth = getAuth();
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     console.log('In onAuthStateChanged');
-  //     console.log(user);
-  //     if (!user.isAnonymous) {
-  //       setUser(user);
-  //       // User is signed in, see docs for a list of available properties
-  //       // https://firebase.google.com/docs/reference/js/firebase.User
-  //     } else {
-  //       // User is signed out
-  //       setUser(null);
-  //     }
-  //   });
-  // });
 
   // redirect on anonymous user
   if (user === null || user.isAnonymous) {

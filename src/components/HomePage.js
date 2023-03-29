@@ -16,13 +16,7 @@ const HomePage = ({ bob }) => {
     const [error, setError] = useState("")
     const [loginOrAccount, setLoginOrAccount] = useState("Login")
 
-    // const [isOpen, setIsOpen] = useState(false);
     const [lastVisitedRestaurant, setStateLastVisitedRestaurant] = useState(null);
-
-    // const togglePopup = () => {
-    //     setIsOpen(!isOpen);
-    // }
-
 
     useEffect(() => {
         setLoginOrAccount(<AccountOrLoginButton isAnonymous={bob.isAnonymous} />)
