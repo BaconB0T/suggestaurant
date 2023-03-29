@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom'
-import { Link } from 'react-router-dom'
-import { getAccount, validateUser } from '../firestore'
+import { useNavigate } from 'react-router-dom';
+import {BackButton, HomeButton } from './Buttons';
 
 const ExpandRadius = () => {
     const [cookies, setCookie] = useCookies(['user']);
@@ -31,12 +30,14 @@ const ExpandRadius = () => {
             setError(e)
         }
     }
-
+    
     return (
         <Container
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
+            <BackButton to='/location'/>
+            <HomeButton/>
             <div className="w-100" style={{ maxWidth: "400px" }}>
                 <>
                     <Card>

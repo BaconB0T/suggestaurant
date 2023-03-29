@@ -3,7 +3,7 @@ import { changePassword } from '../firestore';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useRef, useState } from 'react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import { HomeButton, BackButton } from './Buttons';
 
 // TODO: Repurpose to general change password screen.
 const ChangePassword = () => {
@@ -15,16 +15,16 @@ const ChangePassword = () => {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
         if (!user.isAnonymous) {
-        setUser(user);
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
+            setUser(user);
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
         } else {
-        // User is signed out
-        setUser(null);
+            // User is signed out
+            setUser(null);
         }
     });
 
-    if(user === null) {
+    if (user === null) {
         return (
             <Navigate to='/login' />
         );
@@ -34,7 +34,7 @@ const ChangePassword = () => {
             setError("");
             const pass = passRef.current.value
             const cpass = confPassRef.current.value
-            if(pass !== cpass) {
+            if (pass !== cpass) {
                 alert("Passwords do not match!");
                 setError("Passwords do not match!");
             } else {
@@ -43,11 +43,11 @@ const ChangePassword = () => {
                         console.log("Password changed!");
                         alert("Password successfully changed!");
                         navigate('/account');
-                }).catch((reason) => {
-                    alert("Something went wrong!");
-                    setError("Something went wrong!");
-                    console.log(reason);
-                });
+                    }).catch((reason) => {
+                        alert("Something went wrong!");
+                        setError("Something went wrong!");
+                        console.log(reason);
+                    });
             }
         }
         function check() {
@@ -59,34 +59,16 @@ const ChangePassword = () => {
             // } else {
             //     setError('');
             // }
-          }
+        }
 
-  
-          async function handleClickBack() {
-            try {
-                navigate(-1);
-            } catch (e) {
-                // else set an error
-                setError(e)
-            }
-        }
-        
-        async function handleClickSettings() {
-          try {
-              navigate("/");
-          } catch (e) {
-              // else set an error
-              setError(e)
-          }
-        }
 
         return (
             <Container
                 className="d-flex align-items-center justify-content-center"
                 style={{ minHeight: "100vh" }}>
-                    
-            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
-            <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
+
+                <BackButton to={-1} />
+                <HomeButton />
                 <div className="w-100" style={{ maxWidth: "400px" }}>
                     <Card>
                         <Card.Body>

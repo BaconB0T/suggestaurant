@@ -1,18 +1,19 @@
-import React, { useRef, useState, Component, useEffect  } from 'react';
+import React, { useRef, useState, Component, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { Navigate, useNavigate } from 'react-router-dom'
 import Geocode from "react-geocode";
 import { useGeolocated } from "react-geolocated";
 import { updateGroupHost, hasDietaryRestrictions, getFilters } from '../firestore';
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft } from 'react-icons/fa';
 import car from './../images/Transportation.png'; // Tell webpack this JS file uses this image
 import { BsGearFill } from "react-icons/bs";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { filter } from 'lodash';
 import Popup from './Popup';
+import { BackButton } from './Buttons';
 
-const DistanceGrab = ({user}) => {
+const DistanceGrab = ({ user }) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const latRef = useRef()
@@ -20,7 +21,7 @@ const DistanceGrab = ({user}) => {
     const distRef = useRef()
     const [error, setError] = useState("")
     const [showGroupPopup, setGroupPopup] = useState(false);
-    
+
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
         useGeolocated({
             positionOptions: {
@@ -79,13 +80,13 @@ const DistanceGrab = ({user}) => {
             }
 
             setCookie('latlong', latlong, { path: '/' });
-            if(cookies['groupCode'] != 0 && cookies['host'] === 'true') {
+            if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
                 updateGroupHost(cookies['groupCode'], 'latlong', latlong);
             }
 
 
             navigate("/dietaryRestrictions");
-            
+
         } catch (e) {
             // else set an error
             setError(e.message)
@@ -98,7 +99,7 @@ const DistanceGrab = ({user}) => {
         }
     }, []);
 
-    if((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
+    if ((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
         return (
             <Navigate to='/dietaryRestrictions' />
         );
@@ -109,67 +110,67 @@ const DistanceGrab = ({user}) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            {showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => {setGroupPopup(false)}}/>}
-            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            {showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => { setGroupPopup(false) }} />}
+            <BackButton to='/' />
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
-            <img src={car} className="image-control" alt="Logo" />
-            <br></br><br></br>
+                <img src={car} className="image-control" alt="Logo" />
+                <br></br><br></br>
                 <>
                     {/* <Card className="card-control">
                         <Card.Body> */}
-                            {
-                                isGeolocationAvailable ? (
- 
-                                    // Check location is enable in
-                                    // browser or not
-                                    isGeolocationEnabled ? (
-                                
-                                      // Check coordinates of current
-                                      // location is available or not
-                                      coords ? (
-                                        <div>
-                                            <h3 className="text-center mb-4">Enter a travel distance!</h3>
-                                            {error && <Alert variant="danger">{error}</Alert>}
-                                            <Form onSubmit={handleSubmit}>
-                                                <Form.Group id="latitude" className="mb-2 hidden">
-                                                    <Form.Label>Latitude</Form.Label>
-                                                    <Form.Control 
-                                                        ref={latRef} required 
-                                                        defaultValue={coords.latitude}
+                    {
+                        isGeolocationAvailable ? (
+
+                            // Check location is enable in
+                            // browser or not
+                            isGeolocationEnabled ? (
+
+                                // Check coordinates of current
+                                // location is available or not
+                                coords ? (
+                                    <div>
+                                        <h3 className="text-center mb-4">Enter a travel distance!</h3>
+                                        {error && <Alert variant="danger">{error}</Alert>}
+                                        <Form onSubmit={handleSubmit}>
+                                            <Form.Group id="latitude" className="mb-2 hidden">
+                                                <Form.Label>Latitude</Form.Label>
+                                                <Form.Control
+                                                    ref={latRef} required
+                                                    defaultValue={coords.latitude}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group id="longitude" className="mb-2 hidden">
+                                                <Form.Label>Longitude</Form.Label>
+                                                <Form.Control
+                                                    ref={longRef} required
+                                                    defaultValue={coords.longitude}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group id="distance" className="w-75 mb-2 center">
+                                                <Form.FloatingLabel label="Distance in Miles">
+                                                    <Form.Control
+                                                        ref={distRef} required
+                                                        defaultValue={25}
+                                                        placeholder="Miles"
                                                     />
-                                                </Form.Group>
-                                                <Form.Group id="longitude" className="mb-2 hidden">
-                                                    <Form.Label>Longitude</Form.Label>
-                                                    <Form.Control 
-                                                        ref={longRef} required 
-                                                        defaultValue={coords.longitude}
-                                                    />
-                                                </Form.Group>
-                                                <Form.Group id="distance" className="w-75 mb-2 center">
-                                                    <Form.FloatingLabel label="Distance in Miles">
-                                                        <Form.Control 
-                                                            ref={distRef} required
-                                                            defaultValue={25}
-                                                            placeholder="Miles"
-                                                        />
-                                                    </Form.FloatingLabel>
-                                                </Form.Group>
-                                                <Button className="w-75 button-control" type="submit">
-                                                    Go
-                                                </Button>
-                                            </Form>
-                                        </div>
-                                      ) : (
-                                        <h1>Getting the location data...</h1>   
-                                      )
-                                    ) : (
-                                      <h1>Enable location on your browser</h1>
-                                    )
-                                  ) : (
-                                    <h1>Please, update or change your browser </h1>
-                                  )
-                            }
-                        {/* </Card.Body>
+                                                </Form.FloatingLabel>
+                                            </Form.Group>
+                                            <Button className="w-75 button-control" type="submit">
+                                                Go
+                                            </Button>
+                                        </Form>
+                                    </div>
+                                ) : (
+                                    <h1>Getting the location data...</h1>
+                                )
+                            ) : (
+                                <h1>Enable location on your browser</h1>
+                            )
+                        ) : (
+                            <h1>Please, update or change your browser </h1>
+                        )
+                    }
+                    {/* </Card.Body>
                     </Card> */}
                 </>
             </div>

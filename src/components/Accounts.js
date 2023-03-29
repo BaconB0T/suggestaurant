@@ -3,8 +3,8 @@ import { signOutUser, deleteUser } from "../firestore";
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Container, Card, Alert, Button, Form } from "react-bootstrap";
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import CustomAlert from "./CustomAlert";
+import { BackButton } from './Buttons';
 
 const Account = ({ user }) => {
   const navigate = useNavigate();
@@ -57,21 +57,13 @@ const Account = ({ user }) => {
       }
     }
 
-    async function handleClickBack() {
-        try {
-            navigate("/");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
     return (
       <div display='block'>
         <Container
           className="d-flex align-items-center justify-content-center"
           style={{ minHeight: "100vh" }}
         >
-          <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+          <BackButton to='/'/>
           <div className="w-100" style={{ maxWidth: "400px" }}>
             <>
               <Card>

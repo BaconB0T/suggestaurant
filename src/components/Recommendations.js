@@ -10,6 +10,7 @@ import memoize from "memoize-one";
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 import '../styles/Recommendations.css';
+import { HomeButton } from "./Buttons";
 
 class Recommendations extends React.Component {
   constructor(props) {
@@ -232,8 +233,8 @@ class Recommendations extends React.Component {
 
     return (
       <div className="recommendations">
-        {/* <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => this.props.navigation}/>
-        <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/> */}
+        {/* <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => this.props.navigation}/> */}
+        {/* <HomeButton/> */}
         {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`}/>)}
         <div id='enjoy' style={{ display: this.state.showMap ? 'auto' : 'none' }}>Enjoy!</div>
         <div className="recommendation--cards" style={{ display: this.state.showMap ? 'none' : 'auto' }}>

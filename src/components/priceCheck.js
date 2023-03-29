@@ -1,18 +1,19 @@
 import { FaDollarSign } from "react-icons/fa";
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { getAccount, updateGroupMember, getGroup } from '../firestore'
 import styles from '../styles/new.module.scss';
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft } from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
 import money from './../images/money.png'; // Tell webpack this JS file uses this image
 import Popup from './Popup';
+import { BackButton, HomeButton } from "./Buttons";
 
-const PriceGrab = ({globalState, setGlobalState}) => {
-  
+const PriceGrab = ({ globalState, setGlobalState }) => {
+
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
@@ -24,16 +25,13 @@ const PriceGrab = ({globalState, setGlobalState}) => {
 
     async function idk() {
         const groupCode = cookies["groupCode"]
-        if (groupCode != 0)
-        {
+        if (groupCode != 0) {
             const group = await getGroup(groupCode)
-            if (group && group["hostReady"] != undefined)
-            {
+            if (group && group["hostReady"] != undefined) {
                 console.log(group.hostReady)
                 return group.hostReady
             }
-            else
-            {
+            else {
                 return false
             }
         }
@@ -49,7 +47,7 @@ const PriceGrab = ({globalState, setGlobalState}) => {
     }
 
     useEffect(() => {
-        if(globalState.showGroupJoinPopup) {
+        if (globalState.showGroupJoinPopup) {
             setGroupPopup(true);
         }
         const interval = setInterval(() => {
@@ -60,45 +58,16 @@ const PriceGrab = ({globalState, setGlobalState}) => {
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
     }, [])
 
-
-    async function handleClickBack() {
-        try {
-            navigate("/timeGrab");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
-    async function handleClickSettings() {
-        try {
-            navigate("/");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
-    async function handleClickLogin() {
-        try {
-            navigate("/login");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
-
     const handleStarClick = (e, index) => {
-      e.preventDefault();
-      let clickStates = [...clicked];
-      for (let i = 0; i < 5; i++) {
-        if (i <= index) clickStates[i] = true;
-        else clickStates[i] = false;
-      }
-  
-      setClicked(clickStates);
-      setPrice(index)
+        e.preventDefault();
+        let clickStates = [...clicked];
+        for (let i = 0; i < 5; i++) {
+            if (i <= index) clickStates[i] = true;
+            else clickStates[i] = false;
+        }
+
+        setClicked(clickStates);
+        setPrice(index)
     };
 
     async function handleSubmit(e) {
@@ -107,8 +76,8 @@ const PriceGrab = ({globalState, setGlobalState}) => {
             setError("")
 
             setCookie('price', price + 1, { path: '/' });
-            if(cookies['groupCode'] != 0) {
-                updateGroupMember(cookies['groupCode'], 'price', price+1);
+            if (cookies['groupCode'] != 0) {
+                updateGroupMember(cookies['groupCode'], 'price', price + 1);
             }
             navigate("/keywordGrab");
         } catch (e) {
@@ -116,60 +85,60 @@ const PriceGrab = ({globalState, setGlobalState}) => {
             setError(e)
         }
     }
-    
-    return(
+
+    return (
         <Container
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            {showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => {setGroupPopup(false); setGlobalState({...globalState, showGroupJoinPopup: false});}}/>}
+            {showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }); }} />}
 
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
-            {/* <Card className="card-control w-75 center">
+                {/* <Card className="card-control w-75 center">
                 <Card.Body> */}
-                    <img src={money} className="image-control" alt="Logo" />
+                <img src={money} className="image-control" alt="Logo" />
                 {/* </Card.Body>
             </Card> */}
-            <br></br><br></br>
-            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
-            <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
+                <br></br><br></br>
+                <BackButton to='/timeGrab' />
+                <HomeButton />
                 <>
-                            <div className={styles.rating}>
-                                <h3>Select a price point!</h3>
-                                <br></br>
-                                <div>
-                                    <FaDollarSign
-                                        onClick={(e) => handleStarClick(e, 0)}
-                                        className={clicked[0] ? styles.clickeddollar : null}
-                                    />
-                                    <FaDollarSign
-                                        onClick={(e) => handleStarClick(e, 1)}
-                                        className={clicked[1] ? styles.clickeddollar : null}
-                                    />
-                                    <FaDollarSign
-                                        onClick={(e) => handleStarClick(e, 2)}
-                                        className={clicked[2] ? styles.clickeddollar : null}
-                                    />
-                                    <FaDollarSign
-                                        onClick={(e) => handleStarClick(e, 3)}
-                                        className={clicked[3] ? styles.clickeddollar : null}
-                                    />
-                                    <FaDollarSign
-                                        onClick={(e) => handleStarClick(e, 4)}
-                                        className={clicked[4] ? styles.clickeddollar : null}
-                                    />
-                                </div>
-                            </div> 
-                            <br></br>
-                            <Form onSubmit={handleSubmit}>
-                                <Button className="w-50 mt-10 button-control" type="submit">
-                                    Next
-                                </Button>
-                            </Form>
+                    <div className={styles.rating}>
+                        <h3>Select a price point!</h3>
+                        <br></br>
+                        <div>
+                            <FaDollarSign
+                                onClick={(e) => handleStarClick(e, 0)}
+                                className={clicked[0] ? styles.clickeddollar : null}
+                            />
+                            <FaDollarSign
+                                onClick={(e) => handleStarClick(e, 1)}
+                                className={clicked[1] ? styles.clickeddollar : null}
+                            />
+                            <FaDollarSign
+                                onClick={(e) => handleStarClick(e, 2)}
+                                className={clicked[2] ? styles.clickeddollar : null}
+                            />
+                            <FaDollarSign
+                                onClick={(e) => handleStarClick(e, 3)}
+                                className={clicked[3] ? styles.clickeddollar : null}
+                            />
+                            <FaDollarSign
+                                onClick={(e) => handleStarClick(e, 4)}
+                                className={clicked[4] ? styles.clickeddollar : null}
+                            />
+                        </div>
+                    </div>
+                    <br></br>
+                    <Form onSubmit={handleSubmit}>
+                        <Button className="w-50 mt-10 button-control" type="submit">
+                            Next
+                        </Button>
+                    </Form>
                 </>
             </div>
         </Container >
     )
-  }
+}
 
-  export default PriceGrab;
+export default PriceGrab;

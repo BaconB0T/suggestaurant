@@ -3,8 +3,8 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { signInEmailPassword, getAccount, signInWithGoogle } from '../firestore'
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
+import { BackButton } from './Buttons';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -12,29 +12,20 @@ const Login = () => {
     const passwordRef = useRef();
     const [error, setError] = useState("");
 
-    async function handleClickBack() {
-        try {
-            navigate("/");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         setError("");
-        const username=usernameRef.current.value;
+        const username = usernameRef.current.value;
         getAccount('username', username).then((acc) => {
             const email = (acc && acc.email) || username
             signInEmailPassword(email, passwordRef.current.value)
-                .then(({bool, idOrCode}) => {
+                .then(({ bool, idOrCode }) => {
                     if (bool) {
                         navigate("/account");
                     } else {
                         setError("Invalid username (or email) and password combination.");
                     }
-            });
+                });
         });
     }
 
@@ -49,7 +40,7 @@ const Login = () => {
                 console.error(`Invalid provider: ${provider}. Supported providers are: ${supportedProviders}`)
         }
         // console.log(result);
-        if(result) {
+        if (result) {
             navigate('/account');
         }
     }
@@ -58,8 +49,8 @@ const Login = () => {
         <Container
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}>
-            <div className="w-100" style={{ maxWidth: "400px"}}>
-            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
+            <div className="w-100" style={{ maxWidth: "400px" }}>
+                <BackButton to='/' />
                 <Card>
                     <Card.Body>
                         <h2 className="text-center mb-4">Login</h2>
