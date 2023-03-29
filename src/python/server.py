@@ -9,6 +9,8 @@ from geopy.distance import geodesic
 from dotenv import load_dotenv;
 import sys
 from google.api_core.retry import Retry
+import multiprocessing
+from functools import partial
 
 
 
@@ -103,11 +105,20 @@ def insert_restaurants_as_suggestions(ids_list, group_id):
 		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
 	groupDocRef.update({'suggestions': suggestion_data})
 
+def MyFilterFunction(x, user_loc, req):
+	if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles < int(req):
+		return x
+	return None
 
 # Route for seeing a data
 @app.route('/data', methods=['POST'])
 def keywords():	
 	req = json.loads(request.data)
+
+	try:
+		cpus = multiprocessing.cpu_count()
+	except NotImplementedError:
+		cpus = 2   # arbitrary default
 
 	print(int(req["latlong"]["distance"]))
 	print(float(req["latlong"]["latitude"]))
@@ -119,40 +130,40 @@ def keywords():
 
 	id_list = [x.to_dict() for x in collection]
 
-	print(len(id_list))
-
-	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
+	for x in id_list:
+		acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
+		for a in list(x.keys()):
+			if a not in acceptedKeys:
+				x.pop(a)
+		if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
+			x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
+		if x["attributes"] is not None:
+			x["attributes"] = None
+		print(x["attributes"])
 	
-	print(user_loc)
+	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
 
-	# for x in id_list: 
-	# 	if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles <  int(req["latlong"]["distance"]):
-	# 		print("check\n")
+	pool = multiprocessing.Pool(processes=cpus)
+	parallelized = pool.map(partial(MyFilterFunction, user_loc, req["latlong"]["distance"]), id_list)
 
-	id_list = [x for x in id_list if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles < int(req["latlong"]["distance"])]
+	id_list = [x for x in parallelized if x]
 
-	print(len(id_list))
+	# id_list = [x for x in id_list if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles < int(req["latlong"]["distance"])]
 
 	none_list = [x for x in id_list if x["attributes"] is None]
 
 	id_list = [x for x in id_list if x["attributes"] is not None]
 
-	print(len(id_list))
-
 	priced_list = []
 
 	for x in id_list:
-		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"]["RestaurantsPriceRange2"] is not None:
+		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"] is not None:
 			priced_list.append(x)
 	
-	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > float(req["price"])]
-
-	print(len(id_list))
+	priced_list = [y for y in priced_list if y["attributes"] > float(req["price"])]
 
 	for x in priced_list:
 		id_list.remove(x)
-
-	print(len(id_list))
 
 	if req["groupCode"] == 0:
 		time = int(req["time"].replace(':', ''))
@@ -187,21 +198,6 @@ def keywords():
 	diet_list = [x for x in diet_list if req['diet']["Vegetarian"] in x["dietaryRestrictions"]["true"]]
 	diet_list = [x for x in diet_list if req['diet']["Soy-free"] in x["dietaryRestrictions"]["true"]]
 	
-	# businesslist = [doc["business_id"] for doc in id_list]
-
-	# print(businesslist, file=sys.stderr)
-
-	# business_2 = df_business[df_business['business_id'].isin(businesslist)]
-
-	# def filter_func(id, row1, row2):
-	# 	if (geodesic(user_loc,(row1, row2)).miles < float(req["latlong"]["distance"])):
-	# 		businesslist_final.append(id)
-	# 		return True
-	# 	else:
-	# 		return False
-
-	# business_2.apply(lambda x: filter_func(x['business_id'], x['latitude'], x['longitude']), axis=1)
-
 	businesslist_final = [x["business_id"] for x in id_list]
 
 	Q2 = Q[Q.columns.intersection(businesslist_final)]
