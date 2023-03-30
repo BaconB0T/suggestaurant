@@ -7,9 +7,10 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { ConsoleView, isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
 import memoize from "memoize-one";
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
+// import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 import '../styles/Recommendations.css';
+import { BackButton, HomeButton } from "./Buttons";
 
 class Recommendations extends React.Component {
   constructor(props) {
@@ -140,16 +141,6 @@ class Recommendations extends React.Component {
     return await updateGroupHost(this.state.groupCode, 'decision', obj);
   }
 
-  async handleClickBack() {
-    console.log("Reached")
-    this.setState(prevState => {
-        return {  
-          ...prevState,  
-          goBack: true
-        }
-      })
-  }
-
   navToMap({setGlobalState, business_id}) {
     setGlobalState({ business_id: business_id });
     this.setState(prevState => {
@@ -159,7 +150,6 @@ class Recommendations extends React.Component {
         showMapBusinessId: business_id
       }
     })
-    // window.location.href = `/recommendations/map?business_id=${business_id}`;
   }
 
   // interval stuff
@@ -218,38 +208,13 @@ class Recommendations extends React.Component {
         <button className='accept' onClick={() => this.swipe('right')}>Accept</button>
       </div>);
 
-    // const navigate = useNavigate();
-    // const [error, setError] = useState("");
-    // async function handleClickBack() {
-    //   try {
-    //       navigate('/account');
-    //   } catch (e) {
-    //       // else set an error
-    //       // setError(e)
-    //       console.log(e);
-    //   }
-    // }
-    
-    // async function handleClickSettings() {
-    //   try {
-    //       navigate("/");
-    //   } catch (e) {
-    //       // else set an error
-    //       // setError(e)
-    //       console.log(e);
-    //   }
-    // }
-    
-
     return (
       <div className="recommendations">
-        {/* <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => this.props.navigation}/>
-        <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/> */}
-        {this.state.goBack && (<Navigate to={`/keywordGrab`}/>)}
         {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`}/>)}
         <div id='enjoy' style={{ display: this.state.showMap ? 'auto' : 'none' }}>Enjoy!</div>
         <div className="recommendation--cards" style={{ display: this.state.showMap ? 'none' : 'auto' }}>
-          <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => this.handleClickBack()}/>
+          <BackButton to='/keywordGrab'/>
+          <HomeButton />
           {this.state.restIds.map((id, index) => (!id.includes('groupDecision')) ? (
             <Recommendation
               passRef={this.state.childRefs()[index]}
@@ -339,15 +304,6 @@ const Recommendation = (props) => {
     }
     setRes();
   }, [props.restId]);
-
-  // const handleClick2 = (your_lat, your_lng) => {
-  //     window.open("https://maps.google.com?q="+ your_lat+","+your_lng );
-  // }
-  // const handleClick3 = () => {
-  //   setGlobalState({ business_id: restaurant.business_id });
-  //   navigate(`/recommendations/map?business_id=${restaurant.business_id}`);
-  //   // window.open("http://localhost:3000/recommendations/map" );
-  // }
 
   return (
     <div id={id}

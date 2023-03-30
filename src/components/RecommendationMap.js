@@ -5,7 +5,8 @@ import GoogleMapReact from 'google-map-react';
 import { Button } from 'react-bootstrap';
 import { getLastVisitedRestaurant, getRestaurantById, setLastVisitedRestaurant } from '../firestore';
 import { Navigate } from 'react-router-dom';
-import {getAuth} from "firebase/auth";
+import  {getAuth } from "firebase/auth";
+import { HomeButton } from './Buttons';
 
 const ShareIcon = ({provider}) => {
     return (
@@ -103,6 +104,7 @@ const RecommendationMap = ({globalState, business_id: id}) => {
         return (
             <>
                 {/* TODO: Disable drag/recenter */}
+                <HomeButton/>
                 <div className="google-map" style={{height:'30vh',width:'80%'}}>
                     <GoogleMapReact
                         bootstrapURLKeys={{ key: apiKey }}
