@@ -10,7 +10,7 @@ import memoize from "memoize-one";
 // import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 
 import '../styles/Recommendations.css';
-import { BackButton } from "./Buttons";
+import { BackButton, HomeButton } from "./Buttons";
 
 class Recommendations extends React.Component {
   constructor(props) {
@@ -250,7 +250,8 @@ class Recommendations extends React.Component {
         {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`}/>)}
         <div id='enjoy' style={{ display: this.state.showMap ? 'auto' : 'none' }}>Enjoy!</div>
         <div className="recommendation--cards" style={{ display: this.state.showMap ? 'none' : 'auto' }}>
-          <BackButton to='/keywords'/>
+          <BackButton to='/keywordGrab'/>
+          <HomeButton />
           {this.state.restIds.map((id, index) => (!id.includes('groupDecision')) ? (
             <Recommendation
               passRef={this.state.childRefs()[index]}
