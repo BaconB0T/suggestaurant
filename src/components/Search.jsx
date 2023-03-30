@@ -37,15 +37,6 @@ export default function SearchPrint({ user }) {
         );
     }
 
-    async function handleClickBack() {
-        try {
-            navigate("/history");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
     return (
         <div>
             <BackButton to='/history' />

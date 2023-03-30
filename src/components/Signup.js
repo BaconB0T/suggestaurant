@@ -29,18 +29,6 @@ class Signup extends React.Component {
     });
   }
 
-  handleClickBack = async (event) => {
-    const navigate = useNavigate();
-    const [error, setError] = useState("");
-    event.preventDefault();
-    try {
-      navigate("/");
-    } catch (e) {
-      // else set an error
-      setError(e)
-    }
-  }
-
 
   handleSubmit = async (event) => {
     event.preventDefault();

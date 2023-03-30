@@ -51,33 +51,6 @@ const KeywordGrab = ({setGlobalState}) => {
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
     }, [])
 
-    async function handleClickLogin() {
-        try {
-            navigate("/login");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
-    async function handleClickSettings() {
-        try {
-            navigate("/");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
-    async function handleClickBack() {
-        try {
-            navigate("/priceCheck");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
