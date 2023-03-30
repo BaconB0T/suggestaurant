@@ -3,14 +3,14 @@
 :root
 {
   --main-color: rgb(15, 169, 1);
-  --secondary-color: rgb(102, 75, 160);
+  --secondary-color: rgb(53, 50, 134);
   --green-secondary: rgb(129, 204, 122);
+  --border-color: green
 }
 
 .image-control
 {
   width: 200px;
-
 }
 
 body {
@@ -24,7 +24,7 @@ body {
 
 .borders
 {
-  background-color: green;
+  background-color: var(--border-color);
 }
 
 .mobile-wrap
@@ -62,7 +62,7 @@ body {
   background-color: var(--main-color);
   font-weight: bold;
   font-family: Montserrat;
-  border-color: green;
+  border-color: var(--border-color);;
   padding: 10px;
 }
 
@@ -71,7 +71,7 @@ body {
   background-color: var(--main-color);
   font-weight: bold;
   font-family: Montserrat;
-  border-color: green;
+  border-color: var(--border-color);;
   padding: 7px;
   border-radius: 50px;
   font-size: 60px;
@@ -155,7 +155,7 @@ h2 {
   font-weight: bold;
   font-size: 45px;
   color: var(--main-color);
-  text-shadow: -1px 0 green, 0 1px green, 1px 0 green, 0 -1px green;
+  text-shadow: -1px 0 var(--border-color), 0 1px var(--border-color), 1px 0 var(--border-color), 0 -1px var(--border-color);
 }
 
 .settings
