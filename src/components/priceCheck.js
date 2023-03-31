@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { updateGroupMember, getGroup } from '../firestore'
 import styles from '../styles/new.module.scss';
 import money from './../images/money.png'; // Tell webpack this JS file uses this image
-import Popup from './Popup';
+import Popup, {TimedPopup} from './Popup';
 import { BackButton, HomeButton } from "./Buttons";
 
 const PriceGrab = ({ globalState, setGlobalState }) => {
@@ -88,7 +88,7 @@ const PriceGrab = ({ globalState, setGlobalState }) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            {showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }); }} />}
+            {showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} handleClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }); }} />}
 
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
                 {/* <Card className="card-control w-75 center">

@@ -39,3 +39,9 @@
     border: 1px solid #999;
     font-size: 20px;
   }
+  
+.timed-popup.fade-out {
+  visibility: hidden;
+  opacity: 0%;
+  transition: visibility 0s 1s, opacity 1s ease-in-out;
+}
