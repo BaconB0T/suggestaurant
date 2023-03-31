@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import{ getAllRestaurants} from "../firestore"
+import { BackButton, HomeButton } from "./Buttons";
 // import SearchIcon from "@material-ui/icons/Search";
 // import CloseIcon from "@material-ui/icons/Close";
 
@@ -40,6 +41,8 @@ export default function HistorySearch() {
     
     return (
         <div className="search">
+          <BackButton to={-1}/>
+          <HomeButton/>
           <div className="searchInputs">
             <input
               type="text"

@@ -1,32 +1,30 @@
-import {useEffect, useState} from "react";
+import { useState } from "react";
 import { getFilters, setPreferences, db } from "../firestore";
-import {useNavigate, Link, Navigate} from 'react-router-dom';
-import { useCookies } from 'react-cookie';
-import {getDoc, doc} from "firebase/firestore";
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import "./preferences.css";
 import { Container, Card } from "react-bootstrap";
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
 import Popup from './Popup';
+import { BackButton } from "./Buttons";
 
-function Preferences({user, setGlobalState, updated}) {  
-    
+function Preferences({ user, setGlobalState, updated }) {
+
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
     const [minRating, setMR] = useState(0);
     const [hover, setHover] = useState(0);
     const [FastFood, setff] = useState(false);
-    const [t,setT] = useState(false);
+    const [t, setT] = useState(false);
     const navigate = useNavigate();
     const [error, setError] = useState("")
-    
+
     // redirect on anonymous user.
     if (user === null || user.isAnonymous) {
         return (
             <Navigate to='/login' />
         );
     }
-    
-    if(!t && user && user.uid){
+
+    if (!t && user && user.uid) {
         // console.log(user);
         // console.log(user.uid);
         Promise.resolve(getFilters(user.uid)).then(val => {
@@ -36,7 +34,7 @@ function Preferences({user, setGlobalState, updated}) {
             setff(val.filters.preferences.includeFastFood);
         });
     };
-    
+
     const handleFFChange = () => {
         setFF(!FamilyFriendly);
         setT(true);
@@ -54,103 +52,94 @@ function Preferences({user, setGlobalState, updated}) {
         setPreferences(user.uid, FamilyFriendly, includeHis, !FastFood, minRating);
     };
 
-    async function handleClickBack() {
-        try {
-            navigate("/account");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
     const closePopup = () => {
-        setGlobalState({"updated": false})
+        setGlobalState({ "updated": false })
         console.log("CLOSE POPUP")
-    };    
+    };
 
-    return(
+    return (
         <div>
-        <Container
-            className="d-flex align-items-center justify-content-center overflow-auto"
-            style={{ minHeight: "100vh" }}
-        >
-        <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
-            <div>
-            {updated && <Popup
-                    content={<>
-                        <b>Cuisines Updated!</b>
-                        <br></br>
-                        <br></br>
-                    </>}
-                    handleClose={closePopup}
-                />}
-            <h3>Preferences</h3>
-            <Card className="w-100">
-                <Card.Body>
-                    <div className='oneline'>
-                        <div className="test">Only Family Friendly Restaurants</div>
-                        <div id='toggle'>
-                        <label className='switch'>
-                            <input id='checkb' type='checkbox' checked={FamilyFriendly} onClick={handleFFChange} />
-                            <span className='slider' />
-                        </label>
-                        </div>
-                    </div>
-                    <div className='oneline'>
-                        <div className="test">Exclude Visited Restaurants</div>
-                        <div id = 'toggle'>
-                        <label className='switch'>
-                            <input id='checkb' type='checkbox' checked={includeHis} onClick={handleIncHisChange} />
-                            <span className='slider' />
-                        </label>
-                        </div>
-                    </div>
-                    <div className='oneline'>
-                        <div className="test">No Fast Food</div>
-                        <div id = 'toggle'>
-                        <label className='switch'>
-                            <input id='checkb' type='checkbox' checked={FastFood} onClick={handleFFoodChange} />
-                            <span className='slider' />
-                        </label>
-                        </div>
-                    </div>
+            <Container
+                className="d-flex align-items-center justify-content-center overflow-auto"
+                style={{ minHeight: "100vh" }}
+            >
+                <BackButton to='/account' />
+                <div>
+                    {updated && <Popup
+                        content={<>
+                            <b>Cuisines Updated!</b>
+                            <br></br>
+                            <br></br>
+                        </>}
+                        handleClose={closePopup}
+                    />}
+                    <h3>Preferences</h3>
+                    <Card className="w-100">
+                        <Card.Body>
+                            <div className='oneline'>
+                                <div className="test">Only Family Friendly Restaurants</div>
+                                <div id='toggle'>
+                                    <label className='switch'>
+                                        <input id='checkb' type='checkbox' checked={FamilyFriendly} onClick={handleFFChange} />
+                                        <span className='slider' />
+                                    </label>
+                                </div>
+                            </div>
+                            <div className='oneline'>
+                                <div className="test">Exclude Visited Restaurants</div>
+                                <div id='toggle'>
+                                    <label className='switch'>
+                                        <input id='checkb' type='checkbox' checked={includeHis} onClick={handleIncHisChange} />
+                                        <span className='slider' />
+                                    </label>
+                                </div>
+                            </div>
+                            <div className='oneline'>
+                                <div className="test">No Fast Food</div>
+                                <div id='toggle'>
+                                    <label className='switch'>
+                                        <input id='checkb' type='checkbox' checked={FastFood} onClick={handleFFoodChange} />
+                                        <span className='slider' />
+                                    </label>
+                                </div>
+                            </div>
 
-                    <div className='oneline'>
-                        <div className="test">Minimum Rating</div>
-                        <div className='star-rating'>
-                            {[...Array(5)].map((star, index) => {
-                                index += 1;
-                                return (
-                                    <button
-                                        id='starSelector'
-                                        type='button'
-                                        key={index}
-                                        className={index <= (hover || minRating) ? 'on' : 'off'}
-                                        onClick={() => {
-                                            setMR(index);
-                                            setT(true);
-                                            setPreferences(user.uid, FamilyFriendly, includeHis, FastFood, index);
-                                        }
-                                        }
-                                        onMouseEnter={() => { setHover(index); setT(true); }}
-                                        onMouseLeave={() => { setHover(minRating); setT(true); }}
-                                    >
-                                        <span className="star">&#9733;</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                    
+                            <div className='oneline'>
+                                <div className="test">Minimum Rating</div>
+                                <div className='star-rating'>
+                                    {[...Array(5)].map((star, index) => {
+                                        index += 1;
+                                        return (
+                                            <button
+                                                id='starSelector'
+                                                type='button'
+                                                key={index}
+                                                className={index <= (hover || minRating) ? 'on' : 'off'}
+                                                onClick={() => {
+                                                    setMR(index);
+                                                    setT(true);
+                                                    setPreferences(user.uid, FamilyFriendly, includeHis, FastFood, index);
+                                                }
+                                                }
+                                                onMouseEnter={() => { setHover(index); setT(true); }}
+                                                onMouseLeave={() => { setHover(minRating); setT(true); }}
+                                            >
+                                                <span className="star">&#9733;</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
 
-                    <div className='oneline'>
-                        <div className="test">Preselect Cuisines</div>
-                        <div className="but"><button><Link to='/selectCuisine'>Select Cuisine</Link></button></div>
-                    </div>
-                </Card.Body>
-            </Card>
-            </div>
-        </Container>
+
+                            <div className='oneline'>
+                                <div className="test">Preselect Cuisines</div>
+                                <div className="but"><button><Link to='/selectCuisine'>Select Cuisine</Link></button></div>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </div>
+            </Container>
         </div>
     )
 }

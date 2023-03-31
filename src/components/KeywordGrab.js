@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
+import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
-import { Link } from 'react-router-dom'
-import { getAccount, updateGroupMember, validateUser, getGroup } from '../firestore'
-import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
-import { BsGearFill } from "react-icons/bs";
+import { updateGroupMember, getGroup } from '../firestore'
 import image from './../images/Restaurant.png'; // Tell webpack this JS file uses this image
+import { BackButton, HomeButton } from './Buttons';
 
 
 const KeywordGrab = ({setGlobalState}) => {
@@ -52,33 +50,6 @@ const KeywordGrab = ({setGlobalState}) => {
 
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
     }, [])
-
-    async function handleClickLogin() {
-        try {
-            navigate("/login");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
-    async function handleClickSettings() {
-        try {
-            navigate("/");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
-
-    async function handleClickBack() {
-        try {
-            navigate("/priceCheck");
-        } catch (e) {
-            // else set an error
-            setError(e)
-        }
-    }
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
@@ -154,8 +125,8 @@ const KeywordGrab = ({setGlobalState}) => {
         >
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
             <img src={image} className="image-control" alt="Logo" />
-            <FaArrowAltCircleLeft className = "w-20 icon-control back-arrow" onClick={() => handleClickBack()}/>
-            <FaHome className = "w-20 icon-control login-or-account" onClick={() => handleClickSettings()}/>
+            <BackButton to='/priceCheck'/>
+            <HomeButton/>
                 <>
                     {/* <Card className = "card-control">
                         <Card.Body> */}
