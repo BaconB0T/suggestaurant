@@ -141,6 +141,7 @@ class Recommendations extends React.Component {
     return await updateGroupHost(this.state.groupCode, 'decision', obj);
   }
 
+
   navToMap({setGlobalState, business_id}) {
     setGlobalState({ business_id: business_id });
     this.setState(prevState => {
