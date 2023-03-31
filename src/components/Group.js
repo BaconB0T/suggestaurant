@@ -29,7 +29,8 @@ const Member = ({globalState, setGlobalState}) => {
           // Then join it.
           joinGroup(code, getAuth().currentUser).then(joined => {
             if(joined) {
-              setGlobalState({...globalState, showGroupJoinPopup: true});
+              setCookie('groupCode', code, { path: '/' });
+              joinGroup(code, getAuth().currentUser); 
               navigate("/dietaryRestrictions");
             } else {
               setError('Failed to join group!');
@@ -62,12 +63,6 @@ const Member = ({globalState, setGlobalState}) => {
     return true;
   }
 
-  function confirmGroup() {
-    setCookie('groupCode', groupCodeRef.current.value, { path: '/' });
-    joinGroup(groupCode, getAuth().currentUser); 
-    navigate("/dietaryRestrictions");
-  }
-
   function handleChange(event) {
     const value = event.target.value;
     setGroupCode(value);
@@ -89,16 +84,6 @@ const Member = ({globalState, setGlobalState}) => {
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
-            {/* <CustomAlert
-            alertHeading="Join Group"
-            alertMessage={`You're about to join group ${groupCode}. Click 'Join' to confirm.`}
-            alertVariant='info'
-            show={show}
-            setShow={setShow}
-            buttons={[['danger-outline', () => {}, 'Cancel'],
-             ['outline-success', confirmGroup, 'Join']]}
-            /> */}
-            
             <h2 className="text-center mb-4">Join Group</h2>
             {error && <Alert variant={variant || "danger"}>{error}</Alert>}
             <Form onSubmit={handleSubmit}>
@@ -154,8 +139,8 @@ const Host = ({ setGlobalState }) => {
             if (group === null) {
               setError('Failed to create the Group, please try again later.');
             } else {
-              // Confirmation popup??
               setCookie('groupCode', code, { path: '/' });
+              joinGroup(code, getAuth().currentUser); 
               navigate("/location");
             }
           });
