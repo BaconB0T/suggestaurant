@@ -88,7 +88,7 @@ const PriceGrab = ({ globalState, setGlobalState }) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            {showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} onClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }); }} />}
+            {showGroupPopup && <TimedPopup content={<b>Group Successfully Joined!</b>} onClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }); }} />}
 
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
                 {/* <Card className="card-control w-75 center">
