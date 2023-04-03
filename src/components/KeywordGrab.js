@@ -130,13 +130,13 @@ const KeywordGrab = ({setGlobalState}) => {
                 <>
                     {/* <Card className = "card-control">
                         <Card.Body> */}
-                            <h3 className="text-center mb-4">Enter some keywords!</h3>
+                            <h3 className="text-center mb-4">Tell us what <br></br> you're looking for!</h3>
                             {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit} className="w-75 center">
                                 <Form.Group id="keywords" className="mb-2" controlId="exampleForm.ControlTextarea1">
                                     <Form.Control ref={keywordRef} required
-                                        defaultValue={cookies["keywords"]}
                                         as="textarea" 
+                                        placeholder="Examples: spicy local italian wine deserts"
                                         rows={3}/>
                                 </Form.Group>
                                 <Button className="w-75 mt-10 button-control" type="submit">
