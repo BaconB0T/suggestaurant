@@ -129,7 +129,7 @@ const DietCheck = ({ user, globalState, setGlobalState }) => {
             style={{ minHeight: "100vh" }}
         >
             <div className="w-100" style={{ maxWidth: "400px" }}>
-                {!check && showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} handleClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }) }} />}
+                {!check && showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} onClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }) }} />}
 
                 <BackButton to='/location' />
                 <HomeButton />

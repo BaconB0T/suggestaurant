@@ -1,33 +1,44 @@
 import React, { useEffect } from "react";
- 
+import './PopupStyling.css';
+
 const Popup = props => {
+
+  function closePopup() {
+    const onClose = props.onClose;
+    document.getElementById('popup').classList.add('closed');
+    onClose && onClose();
+  }
+
   return (
-    <div className="popup-box">
-      <div className="box">
-        <span className="close-icon" onClick={props.handleClose}>x</span>
+    <div id='popup' className="popup-box" onClick={() => console.log("clicked background")}>
+      <div className="box" onClick={() => console.log("clicked popup")}>
         {props.content}
+        <div className="close-icon" onClick={closePopup}>x</div>
       </div>
     </div>
   );
 };
 
-export const TimedPopup = ({content, handleClose}) => {
+export const TimedPopup = props => {
+  const { content } = props;
+
   function closePopup() {
     document.getElementById('timed-popup').classList.add('fade-out');
   }
 
-  function callHandleClose() {
+  function closePopupCallback() {
+    const onClose = props.onClose;
     closePopup();
-    handleClose();
+    onClose && onClose();
   }
 
   useEffect(() => {
-    setTimeout(callHandleClose, 1_000);
+    setTimeout(closePopupCallback, 2_000);
   }, []);
 
   return (
     <div id='timed-popup' className='timed-popup'>
-      <Popup content={content} handleClose={callHandleClose}/>
+      <Popup content={content} onClose={closePopupCallback}/>
     </div>
   );
 }

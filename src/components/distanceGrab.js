@@ -77,7 +77,7 @@ const DistanceGrab = ({ user }) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            {showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} handleClose={() => { setGroupPopup(false) }} />}
+            {showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} onClose={() => { setGroupPopup(false) }} />}
             <BackButton to='/' />
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
                 <img src={car} className="image-control" alt="Logo" />

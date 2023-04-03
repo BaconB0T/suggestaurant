@@ -3,7 +3,6 @@ import { Container, Button } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import Popup from './Popup';
-import './PopupStyling.css';
 import { getLastVisitedRestaurant, rateRestaurant, setLastVisitedRestaurant } from "../firestore.js";
 import logo from './../images/logo.png'; // Tell webpack this JS file uses this image
 import { AccountOrLoginButton, SettingsButton } from './Buttons';
@@ -66,7 +65,7 @@ const HomePage = ({ bob }) => {
 
     };
 
-    const closePopup = () => {
+    const onPopupClose = () => {
         console.log("CLOSE POPUP")
         setLastVisitedRestaurant(bob.uid, null)
     };
@@ -84,13 +83,13 @@ const HomePage = ({ bob }) => {
 
                     {lastVisitedRestaurant && <Popup
                         content={<>
-                            <b>How was {lastVisitedRestaurant ? lastVisitedRestaurant.name : "YOU SHOULD NEVER SEE THIS"}?</b>
+                            <b>How was {lastVisitedRestaurant.name}?</b>
                             <br></br>
                             <br></br>
                             <button onClick={() => addRestToHistory(1)}>👍</button>  <button onClick={() => addRestToHistory(-1)}>👎</button>
 
                         </>}
-                        handleClose={closePopup}
+                        onClose={onPopupClose}
                     />}
                 </div>
                 <>
