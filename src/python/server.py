@@ -80,6 +80,18 @@ input.close()
 collection = db.collection('restaurants').get(retry=Retry())
 collection = [x.to_dict() for x in collection]
 
+# data cleaning, remove all but necessary data
+for x in collection:
+	acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
+	for a in list(x.keys()):
+		if a not in acceptedKeys:
+			x.pop(a)
+	if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
+		x["attributes"] = None
+	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
+		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
+
+
 # Initializing flask app
 app = Flask(__name__)
 
@@ -108,34 +120,12 @@ def keywords():
 	# load keywords from website data
 	words = req["keywords"]
 
-	#load restaurants
-	id_list = copy.deepcopy(collection)
-
-	# more timing for test purposes
-	end = t.time()
-	print("deepcopy time: " + str(end - start))
-
-	# data cleaning, remove all but necessary data
-	for x in id_list:
-		acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
-		for a in list(x.keys()):
-			if a not in acceptedKeys:
-				x.pop(a)
-		if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
-			x["attributes"] = None
-		if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
-			x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
-
-	# more timing for testing purposes
-	end = t.time()
-	print("cleaning time: " + str(end - start))
-
 	# user location data
 	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
 
-	print("Restaurants before Distance Culling: " + str(len(id_list)))
+	print("Restaurants before Distance Culling: " + str(len(collection)))
 
-	id_list = distanceHandlerParallel(user_loc, req, id_list)
+	id_list = distanceHandlerParallel(user_loc, req, collection)
 
 	print("Restaurants after Distance Culling: " + str(len(id_list)))
 	
@@ -153,7 +143,7 @@ def keywords():
 
 	print("Restaurants after No-Price replacement: " + str(len(id_list)))
 
-	time = int(str(req["time"].replace(':', '')))
+	time = int(str(req["time"]).replace(':', ''))
 	
 	id_list = timeHandlerParallel(time, id_list)
 
