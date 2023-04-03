@@ -8,7 +8,7 @@ import car from './../images/Transportation.png'; // Tell webpack this JS file u
 import Popup, {TimedPopup} from './Popup';
 import { BackButton } from './Buttons';
 
-const DistanceGrab = ({ user }) => {
+const DistanceGrab = ({ user, setGlobalState, globalState }) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const latRef = useRef()
@@ -61,7 +61,7 @@ const DistanceGrab = ({ user }) => {
     }
 
     useEffect(() => {
-        if (cookies['host'] === 'true') {
+        if (globalState.showGroupHostPopup) {
             setGroupPopup(true);
         }
     }, []);
@@ -77,7 +77,7 @@ const DistanceGrab = ({ user }) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            {showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} onClose={() => { setGroupPopup(false) }} />}
+            {showGroupPopup && <TimedPopup content={<b>Group Successfully Created!</b>} onClose={() => { setGroupPopup(false); setGlobalState({...globalState, showGroupHostPopup: false}); }} />}
             <BackButton to='/' />
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
                 <img src={car} className="image-control" alt="Logo" />
