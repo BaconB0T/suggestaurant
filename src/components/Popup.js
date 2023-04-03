@@ -3,15 +3,16 @@ import './PopupStyling.css';
 
 const Popup = props => {
 
-  function closePopup() {
+  function closePopup(e) {
+    e.stopPropagation();
     const onClose = props.onClose;
     document.getElementById('popup').classList.add('closed');
     onClose && onClose();
   }
 
   return (
-    <div id='popup' className="popup-box" onClick={() => console.log("clicked background")}>
-      <div className="box" onClick={() => console.log("clicked popup")}>
+    <div id='popup' className="popup-box" onClick={closePopup}>
+      <div className="box" onClick={e => e.stopPropagation()}>
         {props.content}
         <div className="close-icon" onClick={closePopup}>x</div>
       </div>
