@@ -9,7 +9,7 @@ import { BsGearFill } from "react-icons/bs";
 import image from './../images/Restaurant.png'; // Tell webpack this JS file uses this image
 
 
-const KeywordGrab = ({setGlobalState}) => {
+const KeywordGrab = ({setGlobalState, globalState}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const keywordRef = useRef()
@@ -85,6 +85,7 @@ const KeywordGrab = ({setGlobalState}) => {
         try {
             setError("")
             setCookie('keywords', keywordRef.current.value, { path: '/' });
+            
             // setGlobalState({'businesslist': keywordRef.current.value});
             const jsonData = {
                 keywords: keywordRef.current.value,
@@ -95,6 +96,7 @@ const KeywordGrab = ({setGlobalState}) => {
                 groupCode: cookies["groupCode"],
                 host: cookies["host"]
             }
+            setGlobalState({...globalState,jsonData: jsonData});
 
             // object for storing and using data
             // Using useEffect for single rendering
@@ -104,42 +106,41 @@ const KeywordGrab = ({setGlobalState}) => {
             if (cookies["groupCode"] != 0)
             {
                 updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
-            }
-            if (cookies['groupCode'] != 0)
-            {
-                //  && cookies["host"] != 'true'
                 navigate("/group/waiting")
+            }else {
+                navigate("/waiting")
                 return
             }
 
-            //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
-            fetch("http://localhost:5000/data", {
-                method:"POST",
-                cache: "no-cache",
-                headers:{
-                    "content_type":"application/json",
-                    'Access-Control-Allow-Origin':'*'
-                },
-                body:JSON.stringify(
-                        jsonData
-                    )
-                }
-            ).then(response => {
-                return response.json();
-            })
-            .then(json => {
-                setCookie("businesslist", json, { path: '/' });
-                setGlobalState({'businesslist': json});
 
-                if (json.length == 0)
-                {
-                    navigate("/expandRadius");
-                }
-                else
-                {
-                    navigate("/recommendations");
-                }
-            })
+            //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
+            // fetch("http://localhost:5000/data", {
+            //     method:"POST",
+            //     cache: "no-cache",
+            //     headers:{
+            //         "content_type":"application/json",
+            //         'Access-Control-Allow-Origin':'*'
+            //     },
+            //     body:JSON.stringify(
+            //             jsonData
+            //         )
+            //     }
+            // ).then(response => {
+            //     return response.json();
+            // })
+            // .then(json => {
+            //     setCookie("businesslist", json, { path: '/' });
+            //     setGlobalState({'businesslist': json});
+
+            //     if (json.length == 0)
+            //     {
+            //         navigate("/expandRadius");
+            //     }
+            //     else
+            //     {
+            //         navigate("/recommendations");
+            //     }
+            // })
         } catch (e) {
             // else set an error
             console.error(e);
