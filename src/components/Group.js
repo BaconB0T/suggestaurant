@@ -5,9 +5,11 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { groupExists, createGroup, getCode, joinGroup } from '../firestore';
 import { BackButton } from "./Buttons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCopy } from '@fortawesome/fontawesome-free-solid'
 
 
-const Member = ({globalState, setGlobalState}) => {
+const Member = ({ globalState, setGlobalState }) => {
   const groupCodeRef = useRef();
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -28,8 +30,8 @@ const Member = ({globalState, setGlobalState}) => {
           // Group exists, confirmation popup.
           // Then join it.
           joinGroup(code, getAuth().currentUser).then(joined => {
-            if(joined) {
-              setGlobalState({...globalState, showGroupJoinPopup: true});
+            if (joined) {
+              setGlobalState({ ...globalState, showGroupJoinPopup: true });
               navigate("/dietaryRestrictions");
             } else {
               setError('Failed to join group!');
@@ -50,12 +52,12 @@ const Member = ({globalState, setGlobalState}) => {
     const code = codeField.value;
     const missingCode = code === '' || code === null;
 
-    if(missingCode) {
+    if (missingCode) {
       setError('You must include a code.');
       return false;
     }
 
-    if(code.length !== 6) {
+    if (code.length !== 6) {
       setError('Code must be 6 digits long.');
       return false;
     }
@@ -64,14 +66,14 @@ const Member = ({globalState, setGlobalState}) => {
 
   function confirmGroup() {
     setCookie('groupCode', groupCodeRef.current.value, { path: '/' });
-    joinGroup(groupCode, getAuth().currentUser); 
+    joinGroup(groupCode, getAuth().currentUser);
     navigate("/dietaryRestrictions");
   }
 
   function handleChange(event) {
     const value = event.target.value;
     setGroupCode(value);
-    if(value.length !== 6) {
+    if (value.length !== 6) {
       setVariant('warning');
       setError('Code must be 6 digits long.')
     } else {
@@ -85,7 +87,7 @@ const Member = ({globalState, setGlobalState}) => {
       className="d-flex align-items-center justify-content-center"
       style={{ minHeight: "100vh" }}
     >
-      <BackButton to='/'/>
+      <BackButton to='/' />
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
@@ -98,15 +100,15 @@ const Member = ({globalState, setGlobalState}) => {
             buttons={[['danger-outline', () => {}, 'Cancel'],
              ['outline-success', confirmGroup, 'Join']]}
             /> */}
-            
+
             <h2 className="text-center mb-4">Join Group</h2>
             {error && <Alert variant={variant || "danger"}>{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
                 <Form.Label>Group Code</Form.Label>
-                <Form.Control name='code' ref={groupCodeRef} 
-                  onChange={handleChange} minLength="6" maxLength="6" 
-                  placeholder='Group code' required 
+                <Form.Control name='code' ref={groupCodeRef}
+                  onChange={handleChange} minLength="6" maxLength="6"
+                  placeholder='Group code' required
                 />
               </Form.Group>
               <Button className="w-40 mt-10" type="submit">Go</Button>
@@ -136,6 +138,13 @@ const Host = ({ setGlobalState }) => {
       groupCodeRef.current = code;
     });
   }, []);
+
+  function clipboardCode() {
+    // const code = state.getCode()
+    navigator.clipboard.writeText(code).then(() => {
+      console.log(`Copied addres to clipboard`);
+    });
+  }
 
   async function handleSubmit(e) {
     console.log(cookies);
@@ -187,12 +196,15 @@ const Host = ({ setGlobalState }) => {
       className="d-flex align-items-center justify-content-center"
       style={{ minHeight: "100vh" }}
     >
-      <BackButton to={-1}/>
+      <BackButton to={-1} />
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
             <h2 className="text-center mb-4">Host Group</h2>
             {error && <Alert variant="danger">{error}</Alert>}
+            <button onClick={() => { navigator.clipboard.writeText(code) }} className="btn btn-secondary">
+              <FontAwesomeIcon icon={faCopy} color="white" size="2x" />
+            </button>
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
                 <Form.Label>Group Code</Form.Label>
@@ -202,6 +214,7 @@ const Host = ({ setGlobalState }) => {
                 Create Group
               </Button>
             </Form>
+
           </Card.Body>
         </Card>
       </div>
