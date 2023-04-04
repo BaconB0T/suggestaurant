@@ -1,17 +1,11 @@
-# Import flask and datetime module for showing date and time
-from flask import Flask, jsonify
-from flask import request
+# Imports
+from flask import Flask, jsonify, request
 from flask_cors import CORS
-import json, os
+import json, os, sys
 import firebase_admin
 from firebase_admin import firestore
-from geopy.distance import geodesic
 from dotenv import load_dotenv;
-import sys
 from google.api_core.retry import Retry
-
-
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -20,17 +14,23 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords 
 from nltk.tokenize import WordPunctTokenizer
-from datetime import datetime
-
+from parallelizer import *
 import nltk
-from nltk.corpus import stopwords
+import pickle
+import string
+import time as t
+import copy
+
+# load environment for map
 load_dotenv()
 
+# map API prep
 GOOGLE_MAPS_KEY=os.getenv("GOOGLE_MAPS_API_KEY")
 API_KEY=os.getenv("API_KEY")
 MESSAGING_SENDER_ID=os.getenv("MESSAGING_SENDER_ID")
 APP_ID=os.getenv("APP_ID")
 
+# map API config
 config = {
   "apiKey": API_KEY,
   "authDomain": "suggestaurant-873aa.firebaseapp.com",
@@ -42,18 +42,14 @@ config = {
   "serviceAccount": "./suggestaurant-873aa-d6566e2cfc10.json"
 }
 
-nltk.download('stopwords')
-stopwords = stopwords.words('english')
-df_business = pd.read_json('restaurants.json')
-
-import string
-from nltk.corpus import stopwords
+# prep algorithm parser
 stop = []
 for word in stopwords.words('english'):
     s = [char for char in word if char not in string.punctuation]
     stop.append(''.join(s))
 
 
+# text processor for algorithm
 def text_process(mess):
     # Check characters to see if they are in punctuation
     nopunc = [char for char in mess if char not in string.punctuation]
@@ -63,31 +59,26 @@ def text_process(mess):
     # Now just remove any stopwords
     return " ".join([word for word in nopunc.split() if word.lower() not in stop])
 
+# database connection initialization
 cred_obj = firebase_admin.credentials.Certificate(config['serviceAccount'])
 default_app = firebase_admin.initialize_app(cred_obj, config)
 
-
+# database object
 db = firestore.client()
 
-import pickle
+# import user vectorizer for model
 input = open('userid_vectorizer.pkl', 'rb')
-
 userid_vectorizer = pickle.load(input)
-
 input.close()
 
+# import model
 input = open('Q.pkl', 'rb')
-
 Q = pickle.load(input)
-
 input.close()
 
+# initialize restaurant collection
 collection = db.collection('restaurants').get(retry=Retry())
-
-# collection = [x.to_dict() for x in collection]
-
-# with open('parrot.pkl', 'wb') as f:
-# 	pickle.dump(collection, f)
+collection = [x.to_dict() for x in collection]
 
 # Initializing flask app
 app = Flask(__name__)
@@ -95,6 +86,7 @@ app = Flask(__name__)
 # deal with CORS security issues
 CORS(app)
 
+# this uploads restaurants to group DB object for group mode
 def insert_restaurants_as_suggestions(ids_list, group_id):
 	groupDocRef = db.document('groups', group_id)
 	groupDoc = groupDocRef.get().to_dict()
@@ -103,109 +95,81 @@ def insert_restaurants_as_suggestions(ids_list, group_id):
 		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
 	groupDocRef.update({'suggestions': suggestion_data})
 
-
-# Route for seeing a data
+# route for running algorithm model
 @app.route('/data', methods=['POST'])
-def keywords():	
+def keywords():
+
+	# timer for testing purposes
+	start = t.time()
+
+	# load data from website
 	req = json.loads(request.data)
 
-	print(int(req["latlong"]["distance"]))
-	print(float(req["latlong"]["latitude"]))
-	print(int(req["price"]))
-
-	dt = datetime.now()
-
+	# load keywords from website data
 	words = req["keywords"]
 
-	id_list = [x.to_dict() for x in collection]
+	#load restaurants
+	id_list = copy.deepcopy(collection)
 
-	print(len(id_list))
+	# more timing for test purposes
+	end = t.time()
+	print("deepcopy time: " + str(end - start))
 
+	# data cleaning, remove all but necessary data
+	for x in id_list:
+		acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
+		for a in list(x.keys()):
+			if a not in acceptedKeys:
+				x.pop(a)
+		if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
+			x["attributes"] = None
+		if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
+			x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
+
+	# more timing for testing purposes
+	end = t.time()
+	print("cleaning time: " + str(end - start))
+
+	# user location data
 	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
+
+	print("Restaurants before Distance Culling: " + str(len(id_list)))
+
+	id_list = distanceHandlerParallel(user_loc, req, id_list)
+
+	print("Restaurants after Distance Culling: " + str(len(id_list)))
 	
-	print(user_loc)
-
-	# for x in id_list: 
-	# 	if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles <  int(req["latlong"]["distance"]):
-	# 		print("check\n")
-
-	id_list = [x for x in id_list if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles < int(req["latlong"]["distance"])]
-
-	print(len(id_list))
-
 	none_list = [x for x in id_list if x["attributes"] is None]
 
 	id_list = [x for x in id_list if x["attributes"] is not None]
-
-	print(len(id_list))
-
-	priced_list = []
-
-	for x in id_list:
-		if "RestaurantsPriceRange2" in x["attributes"] and x["attributes"]["RestaurantsPriceRange2"] is not None:
-			priced_list.append(x)
 	
-	priced_list = [y for y in priced_list if y["attributes"]["RestaurantsPriceRange2"] > float(req["price"])]
+	print("Price:" + str(req["price"]))
 
-	print(len(id_list))
+	id_list = [x for x in id_list if x["attributes"] < float(req["price"])]
 
-	for x in priced_list:
-		id_list.remove(x)
-
-	print(len(id_list))
-
-	if req["groupCode"] == 0:
-		time = int(req["time"].replace(':', ''))
-	else:
-		time = req["time"]
+	print("Restaurants after Price Culling: " + str(len(id_list)))
 	
-	dayList = []
+	id_list = id_list + none_list
 
-	for x in id_list:
-		if x["hours"] is not None:
-			if dt.strftime('%a') in x["hours"]:
-				dayList.append(x)
+	print("Restaurants after No-Price replacement: " + str(len(id_list)))
 
-	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["end"] <= time]
-	dayList = [x for x in dayList if x["hours"][dt.strftime('%A')]["start"] >= time]
-
-	for x in dayList:
-		id_list.remove(x)
-
-	diet_list = []
-
-	for x in id_list:
-		if x["dietaryRestrictions"] is not None:
-			if x["dietaryRestrictions"]["true"] is not None:
-				diet_list.append(x)
-
-	diet_list = [x for x in diet_list if req['diet']["Halal"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req['diet']["Vegan"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req['diet']["Dairy-free"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req['diet']["Gluten-free"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req['diet']["Kosher"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req['diet']["Vegetarian"] in x["dietaryRestrictions"]["true"]]
-	diet_list = [x for x in diet_list if req['diet']["Soy-free"] in x["dietaryRestrictions"]["true"]]
+	time = int(str(req["time"].replace(':', '')))
 	
-	# businesslist = [doc["business_id"] for doc in id_list]
+	id_list = timeHandlerParallel(time, id_list)
 
-	# print(businesslist, file=sys.stderr)
+	print("Restaurants after Time-Based Culling: " + str(len(id_list)))
 
-	# business_2 = df_business[df_business['business_id'].isin(businesslist)]
+	id_list = allergyHandlerParallel(req, id_list)
 
-	# def filter_func(id, row1, row2):
-	# 	if (geodesic(user_loc,(row1, row2)).miles < float(req["latlong"]["distance"])):
-	# 		businesslist_final.append(id)
-	# 		return True
-	# 	else:
-	# 		return False
-
-	# business_2.apply(lambda x: filter_func(x['business_id'], x['latitude'], x['longitude']), axis=1)
-
+	print("Restaurants after Allergy-Based Culling: " + str(len(id_list)))
+	
+	# final list of restaurant ids for processing
 	businesslist_final = [x["business_id"] for x in id_list]
 
+	# cull model to just usable restaurant ids
 	Q2 = Q[Q.columns.intersection(businesslist_final)]
 
+	# run the model
 	test_df= pd.DataFrame([words], columns=['text'])
 	test_df['text'] = test_df['text'].apply(text_process)
 	test_vectors = userid_vectorizer.transform(test_df['text'])
@@ -217,44 +181,16 @@ def keywords():
 
 	if str(req['groupCode']) != '0':
 		insert_restaurants_as_suggestions(topRecommendations.index.values.tolist(), req['groupCode'])
+	
+	end = t.time()
+	print("Total time: " + str(end - start))
 
 	return topRecommendations.index.values.tolist()
 
-
+# map function
 @app.route('/google-maps-key', methods=['GET'])
 def google_maps_key():
 	return jsonify(key=GOOGLE_MAPS_KEY)
-
-
-# This code was rendered irrelevant by handling group quiz data updates in react
-# @app.route('/groupMode', methods=['POST'])
-# def setGroupData():
-# 	req = json.loads(request.data)
-# 	group_ref = db.collection(u"groups").document(req["groupCode"])
-
-# 	group_get = group_ref.get().to_dict()
-
-# 	group_keywords = group_get["keywords"] +  " " + req["keywords"]
-
-# 	group_price = group_get["price"].append(req["price"])
-
-# 	# Atomically add a new region to the 'keywords' array field.
-# 	group_ref.update({u'keywords': group_keywords})
-# 	group_ref.update({u'price'}, group_price)
-# 	group_ref.update({u'halal'}, req["halal"])
-# 	group_ref.update({u'vegan'}, req["vegan"])
-# 	group_ref.update({u'veggie'}, req["veggie"])
-# 	group_ref.update({u'gluten'}, req["gluten"])
-# 	group_ref.update({u'kosher'}, req["kosher"])
-# 	group_ref.update({u'soy'}, req["soy"])
-# 	group_ref.update({u'dairy'}, req["soy"])
-
-# 	if req["host"] == 1:
-# 		group_ref.update({u'latlong'}, req["latlong"])
-# 		group_ref.update({u'time'}, req["time"])
-
-# 	return 0
-
 	
 # Running app
 if __name__ == '__main__':
