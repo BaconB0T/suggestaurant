@@ -40,6 +40,7 @@ class Recommendations extends React.Component {
       restIds: restIds,
       index: props.indexNum || restIds.length - 1,
       setGlobalState: props.setGlobalState,
+      globalState: props.globalState,
       // need to memoize the VALUE, not a component. useMemo lets us do that,
       // but only in a function...
       childRefs: memoize(() => restIds.map((i) => React.createRef())),
@@ -143,7 +144,11 @@ class Recommendations extends React.Component {
 
 
   navToMap({setGlobalState, business_id}) {
-    setGlobalState({ business_id: business_id });
+    setGlobalState({
+      ...this.state.globalState, 
+      business_id: business_id
+    });
+    
     this.setState(prevState => {
       return {
         ...prevState,
