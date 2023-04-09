@@ -2,12 +2,12 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
-import { updateGroupMember, getGroup } from '../firestore'
+import { updateGroupMember, getGroup, getFilters } from '../firestore'
 import image from './../images/Restaurant.png'; // Tell webpack this JS file uses this image
 import { BackButton, HomeButton } from './Buttons';
 
 
-const KeywordGrab = ({setGlobalState}) => {
+const KeywordGrab = ({setGlobalState, user}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const keywordRef = useRef()
@@ -55,7 +55,18 @@ const KeywordGrab = ({setGlobalState}) => {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
+
+            const filterInfo = getFilters(user.isAnonymous ? null : user.uid).filters
+
             setCookie('keywords', keywordRef.current.value, { path: '/' });
+            const userinfo = user.isAnonymous ? false : {
+                fastFood: filterInfo.preferences.includeFastFood,
+                exclude: filterInfo.excludedCuisines,
+                includeHistory: !filterInfo.preferences.includeHistory ? false : Object.keys(filterInfo.history),
+                minRating: filterInfo.preferences.minimumRating,
+                familyFriendly: filterInfo.preferences.requireFamilyFriendly
+            }
+
             // setGlobalState({'businesslist': keywordRef.current.value});
             const jsonData = {
                 keywords: keywordRef.current.value,
@@ -64,7 +75,8 @@ const KeywordGrab = ({setGlobalState}) => {
                 diet: cookies["diet"],
                 latlong: cookies["latlong"] || null,
                 groupCode: cookies["groupCode"],
-                host: cookies["host"]
+                host: cookies["host"],
+                userinfo: userinfo
             }
 
             // object for storing and using data
