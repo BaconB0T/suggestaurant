@@ -76,7 +76,7 @@ function App() {
         <Route path="/recommendations" element={<Recommendations recommendationIds={state.businesslist || cookies["businesslist"]} setGlobalState={setState} />} />
         {/* <Route path="/recommendations" element={<Recommendations recommendationIds={[testRestauarantId]} setGlobalState={setState} />} /> */}
         <Route path="/recommendations/map" element={<RecommendationMap business_id={query.get('business_id')} globalState={state} />} />
-        <Route path="/" element={<HomePage bob={user} />} />
+        <Route path="/" element={<HomePage setGlobalState={setState} globalState={state} bob={user} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={<Account user={user} />} />
         <Route path="/change-password" element={<ChangePassword />} />
@@ -100,7 +100,7 @@ function App() {
         <Route path='/group/host' element={<Group isHost={true} />} />
         <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState} />} />
         <Route path='/recommendations/waiting' element={<WaitingForRecommendation setGlobalState={setState} />} />
-        <Route path='/waiting/' element={<UserWaiting globalState={state} />} />
+        <Route path='/waiting/' element={<UserWaiting setGlobalState={setState} globalState={state} />} />
       </Routes>
     </div>
   )
