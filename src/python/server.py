@@ -20,6 +20,7 @@ import pickle
 import string
 import time as t
 import copy
+import random
 
 # load environment for map
 load_dotenv()
@@ -107,6 +108,16 @@ def insert_restaurants_as_suggestions(ids_list, group_id):
 		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
 	groupDocRef.update({'suggestions': suggestion_data})
 
+def getRandomRestaurants(collection):
+	"""Returns a set of 7 unique restaurants randomly chosen."""
+	suggestions = set()
+
+	while len(collection) >= 7 and len(suggestions) != 7:
+		s = collection[int(random.random() * len(collection))]
+		suggestions.add(s)
+	print(list(suggestions))
+	return list(suggestions)
+
 # route for running algorithm model
 @app.route('/data', methods=['POST'])
 def keywords():
@@ -156,6 +167,9 @@ def keywords():
 	# final list of restaurant ids for processing
 	businesslist_final = [x["business_id"] for x in id_list]
 
+	if 'random' in req.keys() and req['random']:
+		return getRandomRestaurants(businesslist_final)
+	
 	# cull model to just usable restaurant ids
 	Q2 = Q[Q.columns.intersection(businesslist_final)]
 
