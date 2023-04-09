@@ -44,6 +44,17 @@ const PriceGrab = ({ globalState, setGlobalState }) => {
     }
 
     useEffect(() => {
+        // default price - this is from the handleStarClick() method
+        let index = 2
+        let clickStates = [...clicked];
+        for (let i = 0; i < 5; i++) {
+            if (i <= index) clickStates[i] = true;
+            else clickStates[i] = false;
+        }
+
+        setClicked(clickStates);
+        setPrice(index)
+        
         if (globalState.showGroupJoinPopup) {
             setGroupPopup(true);
         }
