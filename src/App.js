@@ -89,7 +89,7 @@ function App() {
         <Route path="/priceCheck"element={<PriceGrab globalState={state} setGlobalState={setState}/>}/>
         <Route path="/timeGrab"element={<TimeGrab/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck user={user} globalState={state} setGlobalState={setState}/>}/>
-        <Route path="/location"element={<DistanceGrab user={user}/>}/>
+        <Route path="/location" element={<DistanceGrab user={user} setGlobalState={setState} globalState={state}/>}/>
         <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated} />}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user} setGlobalState={setState}/>} />
