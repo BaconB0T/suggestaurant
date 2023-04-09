@@ -50,7 +50,7 @@ const TimeGrab = () => {
                 <BackButton to='/dietaryRestrictions' />
                 <HomeButton />
                 <>
-                    <h3>Select a time!</h3>
+                    <h3>Select a time to eat!</h3>
                     <br></br>
                     <Card className="card-control">
                         <Card.Body>

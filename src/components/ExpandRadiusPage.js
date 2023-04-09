@@ -46,14 +46,14 @@ const ExpandRadius = () => {
                             {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="distance" className="mb-2">
-                                    <Form.Label>Distance</Form.Label>
+                                    <Form.Label>Increase Your Distance</Form.Label>
                                     <Form.Control 
                                         ref={distRef} required
                                         defaultValue={cookies["latlong"]["distance"]}
                                     />
                                 </Form.Group>
                                 <Button className="w-40 mt-10" type="submit">
-                                    Expand Radius?
+                                    Expand Radius
                                 </Button>
                             </Form>
                         </Card.Body>
