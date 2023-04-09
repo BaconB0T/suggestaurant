@@ -140,7 +140,7 @@ const KeywordGrab = ({setGlobalState}) => {
                                         rows={3}/>
                                 </Form.Group>
                                 <Button className="w-75 mt-10 button-control" type="submit">
-                                    Go
+                                    Find Restaurant
                                 </Button>
                             </Form>
                         {/* </Card.Body>

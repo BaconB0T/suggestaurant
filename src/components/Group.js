@@ -92,13 +92,13 @@ const Member = ({globalState, setGlobalState}) => {
             {error && <Alert variant={variant || "danger"}>{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
-                <Form.Label>Group Code</Form.Label>
+                <Form.Label>Enter Group Code</Form.Label>
                 <Form.Control name='code' ref={groupCodeRef} 
                   onChange={handleChange} minLength="6" maxLength="6" 
                   placeholder='Group code' required 
                 />
               </Form.Group>
-              <Button className="w-40 mt-10" type="submit">Go</Button>
+              <Button className="w-40 mt-10" type="submit">Join</Button>
             </Form>
           </Card.Body>
         </Card>
@@ -184,7 +184,7 @@ const Host = ({ setGlobalState }) => {
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
-                <Form.Label>Group Code</Form.Label>
+                <Form.Label>Share this Code with your Friends!</Form.Label>
                 <Form.Control name='code' defaultValue={code} required disabled readOnly />
               </Form.Group>
               <Button className="w-40 mt-10" type="submit">

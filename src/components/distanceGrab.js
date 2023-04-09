@@ -123,7 +123,7 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
                                                 </Form.FloatingLabel>
                                             </Form.Group>
                                             <Button className="w-75 button-control" type="submit">
-                                                Go
+                                                Next
                                             </Button>
                                         </Form>
                                     </div>
