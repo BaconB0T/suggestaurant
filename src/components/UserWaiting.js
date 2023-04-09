@@ -7,7 +7,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import styles from '../styles/new.module.scss';
 
 
-const UserWaiting = ({ globalState }) => {
+const UserWaiting = ({ globalState, setGlobalState }) => {
     // const [numUsers, setNumUsers] = useState(-1);
     // const [numUsersReady, setNumUsersReady] = useState(0);
     const [cookies, setCookie] = useCookies(['user']);
@@ -53,6 +53,7 @@ const UserWaiting = ({ globalState }) => {
     }, [])
 
     async function runAlgorithm(e) {
+        console.log(globalState.jsonData);
         //this is fetch code block from keywords
         fetch("http://localhost:5000/data", {
             method: "POST",
@@ -70,7 +71,7 @@ const UserWaiting = ({ globalState }) => {
         })
             .then(json => {
                 setCookie("businesslist", json, { path: '/' });
-                // setGlobalState({ 'businesslist': json });
+                setGlobalState({...globalState, businesslist: json });
 
                 if (json.length == 0) {
                     navigate("/expandRadius");
