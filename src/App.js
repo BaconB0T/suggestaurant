@@ -36,6 +36,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { BsGearFill } from "react-icons/bs";
 import WaitingForRecommendation from './components/WaitingForRecommendation';
 import UserWaiting from './components/UserWaiting';
+import ChangeLocation from './components/changeLocation';
 
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy, BsGearFill);
@@ -101,6 +102,7 @@ function App() {
         <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState} />} />
         <Route path='/recommendations/waiting' element={<WaitingForRecommendation setGlobalState={setState} />} />
         <Route path='/waiting/' element={<UserWaiting setGlobalState={setState} globalState={state} />} />
+        <Route path = '/changeLocation' element = {<ChangeLocation/>}/>
       </Routes>
     </div>
   )

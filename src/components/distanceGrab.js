@@ -25,6 +25,11 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
             userDecisionTimeout: 5000,
         });
 
+    async function changeLocation()
+    {
+        navigate("/changeLocation");
+    }
+
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
@@ -126,6 +131,10 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
                                                 Next
                                             </Button>
                                         </Form>
+                                        <br></br>
+                                        <Button className="w-75 button-control" onClick={() => changeLocation()}>
+                                                Change Location
+                                        </Button>
                                     </div>
                                 ) : (
                                     <h1>Getting the location data...</h1>
