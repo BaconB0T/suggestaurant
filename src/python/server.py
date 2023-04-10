@@ -20,6 +20,7 @@ import pickle
 import string
 import time as t
 import copy
+import random
 
 # load environment for map
 load_dotenv()
@@ -80,6 +81,18 @@ input.close()
 collection = db.collection('restaurants').get(retry=Retry())
 collection = [x.to_dict() for x in collection]
 
+# data cleaning, remove all but necessary data
+for x in collection:
+	acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
+	for a in list(x.keys()):
+		if a not in acceptedKeys:
+			x.pop(a)
+	if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
+		x["attributes"] = None
+	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
+		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
+
+
 # Initializing flask app
 app = Flask(__name__)
 
@@ -95,6 +108,16 @@ def insert_restaurants_as_suggestions(ids_list, group_id):
 		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
 	groupDocRef.update({'suggestions': suggestion_data})
 
+def getRandomRestaurants(collection):
+	"""Returns a set of 7 unique restaurants randomly chosen."""
+	suggestions = set()
+
+	while len(collection) >= 7 and len(suggestions) != 7:
+		s = collection[int(random.random() * len(collection))]
+		suggestions.add(s)
+	print(list(suggestions))
+	return list(suggestions)
+
 # route for running algorithm model
 @app.route('/data', methods=['POST'])
 def keywords():
@@ -108,34 +131,12 @@ def keywords():
 	# load keywords from website data
 	words = req["keywords"]
 
-	#load restaurants
-	id_list = copy.deepcopy(collection)
-
-	# more timing for test purposes
-	end = t.time()
-	print("deepcopy time: " + str(end - start))
-
-	# data cleaning, remove all but necessary data
-	for x in id_list:
-		acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
-		for a in list(x.keys()):
-			if a not in acceptedKeys:
-				x.pop(a)
-		if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
-			x["attributes"] = None
-		if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
-			x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
-
-	# more timing for testing purposes
-	end = t.time()
-	print("cleaning time: " + str(end - start))
-
 	# user location data
 	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
 
-	print("Restaurants before Distance Culling: " + str(len(id_list)))
+	print("Restaurants before Distance Culling: " + str(len(collection)))
 
-	id_list = distanceHandlerParallel(user_loc, req, id_list)
+	id_list = distanceHandlerParallel(user_loc, req, collection)
 
 	print("Restaurants after Distance Culling: " + str(len(id_list)))
 	
@@ -153,7 +154,7 @@ def keywords():
 
 	print("Restaurants after No-Price replacement: " + str(len(id_list)))
 
-	time = int(str(req["time"].replace(':', '')))
+	time = int(str(req["time"]).replace(':', ''))
 	
 	id_list = timeHandlerParallel(time, id_list)
 
@@ -166,6 +167,9 @@ def keywords():
 	# final list of restaurant ids for processing
 	businesslist_final = [x["business_id"] for x in id_list]
 
+	if 'random' in req.keys() and req['random']:
+		return getRandomRestaurants(businesslist_final)
+	
 	# cull model to just usable restaurant ids
 	Q2 = Q[Q.columns.intersection(businesslist_final)]
 

@@ -22,8 +22,8 @@ class Recommendations extends React.Component {
     if (props.allCookies['groupCode'] != 0) {
       // in a group, insert groupDecision cards between each restaurant.
       const newRestIds = [];
-      for (let i = 0; i < restIds.length*2; ++i) {
-        i % 2 == 0 ? newRestIds.push(restIds[Math.trunc(i/2)]) : newRestIds.push(`groupDecision-${restIds.length*2-i}`);
+      for (let i = 0; i < restIds.length * 2; ++i) {
+        i % 2 == 0 ? newRestIds.push(restIds[Math.trunc(i / 2)]) : newRestIds.push(`groupDecision-${restIds.length * 2 - i}`);
       }
       restIds = newRestIds.reverse();
       // console.log(restIds);
@@ -62,18 +62,18 @@ class Recommendations extends React.Component {
     const onGroupDecision = this.state.restIds[this.state.index].includes('groupDecision');
     let acceptedOrRejected;
     // If index > 0 and (if i'm not on groupDecision or (I am the host and am on groupDecision))
-    if(onGroupDecision) {
+    if (onGroupDecision) {
       // undefined if no decision. True for accepted, false for rejected;
-      const restId = this.state.restIds[this.state.index+1];
+      const restId = this.state.restIds[this.state.index + 1];
       acceptedOrRejected = this.state.group['suggestions'][restId]['decision'];
     }
     // Can swipe if there are cards remaining to swipe and
     // either I'm not on a group decision, OR if i AM on groupDecision
     // then I am either the host or there has been a decision made. 
-    const canSwipe = 
-      this.state.index >= 0 
-      && (!onGroupDecision 
-        || (onGroupDecision 
+    const canSwipe =
+      this.state.index >= 0
+      && (!onGroupDecision
+        || (onGroupDecision
           && (this.state.host === 'true' || acceptedOrRejected !== undefined)
         )
       )
@@ -81,33 +81,42 @@ class Recommendations extends React.Component {
     // return this.state.index < this.state.restIds.length;
   }
 
+  //FUNCTION NOT NEEDED
+  // displayBackButton(state) {
+  //   if (state.groupCode == 0) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
+
   swiped(direction, nameToDelete, index, state) {
     this.updateIndex(index - 1);
     if (state.groupCode != 0) {
       // in group
-      if(!nameToDelete.includes('groupDecision')) {
+      if (!nameToDelete.includes('groupDecision')) {
         // Regular card, host and member vote on suggestion.
-        this.memberAction(direction === 'right'); 
+        this.memberAction(direction === 'right');
       } else {
         // After vote, Host must decide
         console.log(direction);
         console.log(state.host);
-        if(state.host === 'true') {
+        if (state.host === 'true') {
           // Host decides for the group.
-          this.hostAction(this.state.restIds[index+1], (direction === 'right')).then((v) => {
-            if(direction === 'right') {
-              this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index+1]});
+          this.hostAction(this.state.restIds[index + 1], (direction === 'right')).then((v) => {
+            if (direction === 'right') {
+              this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
             }
           });
-        } else if(direction === 'right') {
-          this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index+1]});
+        } else if (direction === 'right') {
+          this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
         }
       }
     } else {
       // Not in a group.
-      if(direction === 'right') {
+      if (direction === 'right') {
         // Go to next recommendation.
-        this.navToMap({setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index]})
+        this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index] })
       }
     }
   }
@@ -137,11 +146,10 @@ class Recommendations extends React.Component {
   }
 
   async hostAction(business_id, decision) {
-    const obj={};
+    const obj = {};
     obj[business_id] = decision;
     return await updateGroupHost(this.state.groupCode, 'decision', obj);
   }
-
 
   navToMap({setGlobalState, business_id}) {
     setGlobalState({
@@ -168,17 +176,17 @@ class Recommendations extends React.Component {
       }
     });
     // If in group and current card is the groupDecision card:
-    if(this.state.groupCode != 0) {
+    if (this.state.groupCode != 0) {
       // group decision card indices are +1  relative to their 
       // corresponding restaurant card.
       const currCardId = this.state.restIds[this.state.index];
-      const currRestId = this.state.restIds[this.state.index+1];
-      if(currCardId.includes('groupDecision')) {
+      const currRestId = this.state.restIds[this.state.index + 1];
+      if (currCardId.includes('groupDecision')) {
         const hostDecision = group['suggestions'][currRestId]['decision'];
-        if(hostDecision !== undefined) {
+        if (hostDecision !== undefined) {
           // a decision was made. Decision value is 
           // True for accepted, false for rejected
-          if(this.state.host !== 'true') this.swipe(hostDecision ? 'right' : 'left');
+          if (this.state.host !== 'true') this.swipe(hostDecision ? 'right' : 'left');
         }
         // else no decision was made, keep waiting.
       }
@@ -186,7 +194,7 @@ class Recommendations extends React.Component {
   }
 
   componentDidMount() {
-    if(this.state.groupCode != 0) {
+    if (this.state.groupCode != 0) {
       const newIntervalId = setInterval(() => {
         this.updateGroup();
       }, this.MINUTE_MS);
@@ -202,7 +210,7 @@ class Recommendations extends React.Component {
   componentWillUnmount() {
     console.log("Component unmounting!");
     // Exists only if the interval is created
-    if(this.state.intervalId) {
+    if (this.state.intervalId) {
       clearInterval(this.state.intervalId);
     }
   }
@@ -216,10 +224,11 @@ class Recommendations extends React.Component {
 
     return (
       <div className="recommendations">
-        {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`}/>)}
+        {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`} />)}
         <div id='enjoy' style={{ display: this.state.showMap ? 'auto' : 'none' }}>Enjoy!</div>
         <div className="recommendation--cards" style={{ display: this.state.showMap ? 'none' : 'auto' }}>
-          <BackButton to='/keywordGrab'/>
+          {this.state.groupCode == 0 && (<BackButton to='/keywordGrab' />)}
+
           <HomeButton />
           {this.state.restIds.map((id, index) => (!id.includes('groupDecision')) ? (
             <Recommendation
@@ -235,11 +244,11 @@ class Recommendations extends React.Component {
               passRef={this.state.childRefs()[index]}
               onSwipe={(dir) => this.swiped(dir, id, index, this.state)}
               onCardLeftScreen={(dir) => this.outOfFrame(dir, id, index)}
-              restId={this.state.restIds[index+1]}
+              restId={this.state.restIds[index + 1]}
               key={id}
               id={id}
-              numAccepted={this.state.group && this.state.group['suggestions'][this.state.restIds[index+1]].numAccepted}
-              numRejected={this.state.group && this.state.group['suggestions'][this.state.restIds[index+1]].numRejected}
+              numAccepted={this.state.group && this.state.group['suggestions'][this.state.restIds[index + 1]].numAccepted}
+              numRejected={this.state.group && this.state.group['suggestions'][this.state.restIds[index + 1]].numRejected}
               isHost={this.state.host}
             />
           ))}
@@ -376,10 +385,10 @@ const GroupDecision = (props) => {
     setRes();
   }, [props.restId]);
   const preventSwipeList = ['up', 'down'];
-  const concatToPreventSwipeList = 
-    (isHost !== 'true' || numAccepted === undefined || numRejected === undefined) 
-    ? ['left', 'right'] : []
-  
+  const concatToPreventSwipeList =
+    (isHost !== 'true' || numAccepted === undefined || numRejected === undefined)
+      ? ['left', 'right'] : []
+
   concatToPreventSwipeList.forEach((value) => preventSwipeList.push(value));
   return (
     <div id={id} className='swipe recommendation--card'>
@@ -389,18 +398,18 @@ const GroupDecision = (props) => {
         onSwipe={onSwipe}
         onCardLeftScreen={onCardLeftScreen}
         preventSwipe={preventSwipeList}>
-      {isHost !== 'true' 
-        ? (<>Waiting for host...</>) 
-        : ((numAccepted === undefined || numRejected === undefined ) ? (<>Loading...</>) : 
-          <>
-          <h1>{restaurant.name}</h1>
-          <div>Make a decision!</div>
-          <div className='votes'>
-            <div className='rejected'>Rejected: <span className='numRejected'>{numRejected}</span></div>
-            <div className='accepted'>Accepted: <span className='numAccepted'>{numAccepted}</span></div>
-          </div>
-          </>
-      )}
+        {isHost !== 'true'
+          ? (<>Waiting for host...</>)
+          : ((numAccepted === undefined || numRejected === undefined) ? (<>Loading...</>) :
+            <>
+              <h1>{restaurant.name}</h1>
+              <div>Make a decision!</div>
+              <div className='votes'>
+                <div className='rejected'>Rejected: <span className='numRejected'>{numRejected}</span></div>
+                <div className='accepted'>Accepted: <span className='numAccepted'>{numAccepted}</span></div>
+              </div>
+            </>
+          )}
       </TinderCard>
     </div>
   )
