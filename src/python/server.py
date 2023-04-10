@@ -86,11 +86,19 @@ for x in collection:
 	for a in list(x.keys()):
 		if a not in acceptedKeys:
 			x.pop(a)
+
+	if x["attributes"] is None:
+		x["GoodForKids"] = False
+	if x["attributes"] is not None and "GoodForKids" in x["attributes"]:
+		x["GoodForKids"] = x["attributes"]["GoodForKids"]
+	if x["attributes"] is not None and "GoodForKids" not in x["attributes"]:
+		x["GoodForKids"] = False
+	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
+		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
 	if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
 		# CONSIDER USING TEMP VALUE HERE TO MAINTAIN STRUCTURE
 		x["attributes"] = None
-	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
-		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
+
 
 # Initializing flask app
 app = Flask(__name__)
@@ -115,7 +123,8 @@ def userHandler(req, id_list):
 	if req["userinfo"]["minRating"]:
 		ret_list = [x for x in ret_list if x["stars"] >= req["userinfo"]["minRating"]]
 
-	#  I'm leaving family friendly out for now because it would take so much refactoring to make it work
+	if req["userinfo"]["familyFriendly"]:
+		ret_list = [x for x in ret_list if x["GoodForKids"] is True]
 	
 	return ret_list
 
