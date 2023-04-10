@@ -93,7 +93,7 @@ function App() {
         <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated} />}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user} setGlobalState={setState}/>} />
-        <Route path='/expandRadius' element={<ExpandRadius />} />
+        <Route path='/expandRadius' element={<ExpandRadius globalState={state}/>} />
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
         <Route path='/group/join' element={<Group isHost={false} globalState={state} setGlobalState={setState}/>}/>
         <Route path='/group/host' element={<Group isHost={true}/>}/>

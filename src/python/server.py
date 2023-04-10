@@ -148,6 +148,9 @@ def keywords():
 	print("Restaurants before Distance Culling: " + str(len(id_list)))
 
 	id_list = distanceHandlerParallel(user_loc, req, collection)
+	
+	if(len(id_list)) == 0:
+		return 1
 
 	print("Restaurants after Distance Culling: " + str(len(id_list)))
 	
@@ -155,11 +158,12 @@ def keywords():
 
 	id_list = [x for x in id_list if x["attributes"] is not None]
 	
-	print("Price:" + str(req["price"]))
-
 	id_list = [x for x in id_list if x["attributes"] < float(req["price"])]
 
 	print("Restaurants after Price Culling: " + str(len(id_list)))
+
+	if(len(id_list)) == 0:
+		return 2
 	
 	id_list = id_list + none_list
 
@@ -171,12 +175,21 @@ def keywords():
 
 	print("Restaurants after Time-Based Culling: " + str(len(id_list)))
 
+	if(len(id_list)) == 0:
+		return 3
+
 	id_list = allergyHandlerParallel(req, id_list)
 
 	print("Restaurants after Allergy-Based Culling: " + str(len(id_list)))
 
+	if(len(id_list)) == 0:
+		return 4
+
 	if(req.user):
 		id_list = userHandler(req, id_list)
+
+	if(len(id_list)) == 0:
+		return 5
 	
 	# final list of restaurant ids for processing
 	businesslist_final = [x["business_id"] for x in id_list]

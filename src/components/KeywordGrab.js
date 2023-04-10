@@ -111,15 +111,15 @@ const KeywordGrab = ({setGlobalState, user}) => {
                 return response.json();
             })
             .then(json => {
-                setCookie("businesslist", json, { path: '/' });
-                setGlobalState({'businesslist': json});
-
-                if (json.length == 0)
+                if (typeof json == "number")
                 {
+                    setGlobalState("failedToFind", json)
                     navigate("/expandRadius");
                 }
                 else
                 {
+                    setCookie("businesslist", json, { path: '/' });
+                    setGlobalState({'businesslist': json});    
                     navigate("/recommendations");
                 }
             })
