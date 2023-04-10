@@ -9,10 +9,9 @@ import Geocode from "react-geocode";
 import Autocomplete from "react-google-autocomplete";
 import validateJSON from '../security/web';
 
-const ChangeLocation = ({ user, setGlobalState, globalState }) => {
+const ChangeLocation = () => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
-    const [showGroupPopup, setGroupPopup] = useState(false);    
     const getenv = require('getenv')
     const [apiKey, setApiKey] = useState('');
 
@@ -22,15 +21,16 @@ const ChangeLocation = ({ user, setGlobalState, globalState }) => {
             .then(validateJSON)
             .then((json) => {
                 setApiKey(json.key);
+                console.log(apiKey)
+                Geocode.setApiKey(json.key);
+                Geocode.setLanguage("en");
+                Geocode.enableDebug();
+                Geocode.setLocationType("ROOFTOP");
             });
     }, []);
 
-    Geocode.setApiKey(apiKey);
-    Geocode.setLanguage("en");
-    Geocode.enableDebug();
-    Geocode.setLocationType("ROOFTOP");
-
     async function handleSubmit(place) {
+        console.log(place)
         try {
             Geocode.fromAddress(place).then(
                 (response) => {
@@ -64,6 +64,17 @@ const ChangeLocation = ({ user, setGlobalState, globalState }) => {
         );
     }
 
+    if(apiKey === '' || apiKey === null) {
+        // restaurant has not been fetched yet.
+        // console.log('loading')
+        return (
+            <>
+                <p className='loading-animation'>Loading...</p>
+            </>
+        );
+        // apiKey !== '' && apiKey !== null &&
+    }
+
     return (
         <Container
             className="d-flex align-items-center justify-content-center"
@@ -76,14 +87,12 @@ const ChangeLocation = ({ user, setGlobalState, globalState }) => {
                 <Autocomplete
                     apiKey={apiKey}
                     onPlaceSelected={(place) => {
+                        console.log(place)
                         handleSubmit(place);
                     }}
                 />;
                 <br></br>
                 <br></br>
-                <Button className="w-75 button-control" type="submit">
-                    Next
-                </Button>
             </div>
         </Container >
     );
