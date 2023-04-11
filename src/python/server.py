@@ -107,26 +107,24 @@ app = Flask(__name__)
 CORS(app)
 
 def userHandler(req, id_list):
-	ret_list = [x for x in id_list]
-
 	if req["userinfo"]["fastFood"]:
-		ret_list = [s for x in ret_list if "Fast Food" not in x["categories"]]
+		id_list = [s for x in id_list if "Fast Food" not in x["categories"]]
 
 	if req["userinfo"]["exclude"]:
 		for y in req["userinfo"]["exclude"]:
-			ret_list = [x for x in ret_list if y not in x["categories"]]
+			id_list = [x for x in id_list if y not in x["categories"]]
 
 	if req["userinfo"]["includeHistory"]:
 		for y in req["userinfo"]["includeHistory"]:
-			ret_list = [x for x in ret_list if x["business_id"] == y]
+			id_list = [x for x in id_list if x["business_id"] == y]
 			
 	if req["userinfo"]["minRating"]:
-		ret_list = [x for x in ret_list if x["stars"] >= req["userinfo"]["minRating"]]
+		id_list = [x for x in id_list if x["stars"] >= req["userinfo"]["minRating"]]
 
 	if req["userinfo"]["familyFriendly"]:
-		ret_list = [x for x in ret_list if x["GoodForKids"] is True]
+		id_list = [x for x in id_list if x["GoodForKids"] is True]
 	
-	return ret_list
+	return id_list
 
 
 # this uploads restaurants to group DB object for group mode

@@ -56,7 +56,7 @@ const KeywordGrab = ({setGlobalState, user}) => {
         try {
             setError("")
 
-            const filterInfo = getFilters(user.isAnonymous ? null : user.uid).filters
+            const filterInfo = user.isAnonymous ? null : getFilters(user.uid).filters
 
             setCookie('keywords', keywordRef.current.value, { path: '/' });
             const userinfo = user.isAnonymous ? false : {
