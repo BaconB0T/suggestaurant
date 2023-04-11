@@ -30,14 +30,12 @@ const Member = ({ globalState, setGlobalState }) => {
           // Group exists, confirmation popup.
           // Then join it.
           joinGroup(code, getAuth().currentUser).then(joined => {
-
             if(joined) {
               setGlobalState({
                 ...globalState,
                 showGroupJoinPopup: true
-              })
+              });
               setCookie('groupCode', code, { path: '/' });
-              joinGroup(code, getAuth().currentUser); 
               navigate("/dietaryRestrictions");
             } else {
               setError('Failed to join group!');
