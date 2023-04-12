@@ -109,7 +109,7 @@ const KeywordGrab = ({setGlobalState, user}) => {
                     if (typeof json != "object")
                     {
                         console.log(json)
-                        setGlobalState("failedToFind", json)
+                        setGlobalState({"failedToFind": json})
                         navigate("/expandRadius");
                     }
                     else
