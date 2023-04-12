@@ -131,8 +131,8 @@ function Preferences({ user, setGlobalState, updated }) {
 
 
                             <div className='oneline'>
-                                <div className="test">Preselect Cuisines</div>
-                                <div className="but"><button><Link to='/selectCuisine'>Select Cuisine</Link></button></div>
+                                <div className="test">Exclude Cuisines</div>
+                                <div className="but"><button><Link to='/selectCuisine'>Select Cuisines</Link></button></div>
                             </div>
                         </Card.Body>
                     </Card>

@@ -55,31 +55,36 @@ const UserWaiting = ({ globalState, setGlobalState }) => {
     async function runAlgorithm(e) {
         console.log(globalState.jsonData);
         //this is fetch code block from keywords
-        fetch("http://localhost:5000/data", {
-            method: "POST",
-            cache: "no-cache",
-            headers: {
-                "content_type": "application/json",
-                'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify(
+       //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
+       fetch("http://localhost:5000/data", {
+        method: "POST",
+        cache: "no-cache",
+        headers: {
+            "content_type": "application/json",
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(
                 globalState.jsonData
             )
         }
-        ).then(response => {
-            return response.json();
-        })
-            .then(json => {
-                setCookie("businesslist", json, { path: '/' });
-                setGlobalState({...globalState, businesslist: json });
-
-                if (json.length == 0) {
-                    navigate("/expandRadius");
-                }
-                else {
-                    navigate("/recommendations");
-                }
-            })
+    ).then(response => {
+        return response.json();
+    })
+    .then(json => {
+        if (typeof json != "object")
+        {
+            console.log(json)
+            setGlobalState({...globalState, "failedToFind": json})
+            navigate("/expandRadius");
+        }
+        else
+        {
+            setCookie("businesslist", json, { path: '/' });
+            setGlobalState({...globalState, 'businesslist': json});
+            setGlobalState({...globalState, "failedToFind": false})
+            navigate("/recommendations");
+        }
+    })
     }
 
     // useEffect(() => {

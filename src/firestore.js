@@ -471,6 +471,7 @@ async function getGroupInfo(groupID) {
     host: (data['host'] === getAuth().currentUser.uid),
     numUsers: data['numUsers'],
     numUsersReady: data['numUsersReady'],
+    userinfo: false
   }
   return jsonData
 }
@@ -596,9 +597,7 @@ async function historyItem(historyDoc) {
 
 
 async function getFilters(user) {
-  const userCol = collection(db, 'users');
   const que = await getDoc(doc(db, 'users', user));
-
   return que.data();
 }
 

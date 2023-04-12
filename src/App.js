@@ -86,7 +86,7 @@ function App() {
         {/* should /historySearch be blocked to anon users? */}
         <Route path="/historySearch" element={<HistorySearch />}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
-        <Route path="/keywordGrab"element={<KeywordGrab setGlobalState={setState}/>}/>
+        <Route path="/keywordGrab"element={<KeywordGrab setGlobalState={setState} user = {user}/>}/>
         <Route path="/priceCheck"element={<PriceGrab globalState={state} setGlobalState={setState}/>}/>
         <Route path="/timeGrab"element={<TimeGrab/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck user={user} globalState={state} setGlobalState={setState}/>}/>
@@ -94,7 +94,7 @@ function App() {
         <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated} />}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user} setGlobalState={setState}/>} />
-        <Route path='/expandRadius' element={<ExpandRadius />} />
+        <Route path='/expandRadius' element={<ExpandRadius globalState={state}/>} />
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
         <Route path='/group/join' element={<Group isHost={false} globalState={state} setGlobalState={setState} />} />
         <Route path='/group/host' element={<Group isHost={true} />} />

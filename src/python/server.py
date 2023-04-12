@@ -83,11 +83,18 @@ collection = [x.to_dict() for x in collection]
 
 # data cleaning, remove all but necessary data
 for x in collection:
-	acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
+	acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location", "categories", "stars"]
 	for a in list(x.keys()):
 		if a not in acceptedKeys:
 			x.pop(a)
+	if x["attributes"] is None:
+		x["GoodForKids"] = False
+	if x["attributes"] is not None and "GoodForKids" in x["attributes"]:
+		x["GoodForKids"] = x["attributes"]["GoodForKids"]
+	if x["attributes"] is not None and "GoodForKids" not in x["attributes"]:
+		x["GoodForKids"] = False
 	if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
+		# CONSIDER USING TEMP VALUE HERE TO MAINTAIN STRUCTURE
 		x["attributes"] = None
 	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
 		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
@@ -98,6 +105,27 @@ app = Flask(__name__)
 
 # deal with CORS security issues
 CORS(app)
+
+def userHandler(req, id_list):
+	if req["userinfo"]["fastFood"]:
+		id_list = [s for x in id_list if "Fast Food" not in x["categories"]]
+
+	if req["userinfo"]["exclude"]:
+		for y in req["userinfo"]["exclude"]:
+			id_list = [x for x in id_list if y not in x["categories"]]
+
+	if req["userinfo"]["includeHistory"]:
+		for y in req["userinfo"]["includeHistory"]:
+			id_list = [x for x in id_list if x["business_id"] == y]
+			
+	if req["userinfo"]["minRating"]:
+		id_list = [x for x in id_list if x["stars"] >= req["userinfo"]["minRating"]]
+
+	if req["userinfo"]["familyFriendly"]:
+		id_list = [x for x in id_list if x["GoodForKids"] is True]
+	
+	return id_list
+
 
 # this uploads restaurants to group DB object for group mode
 def insert_restaurants_as_suggestions(ids_list, group_id):
@@ -137,6 +165,9 @@ def keywords():
 	print("Restaurants before Distance Culling: " + str(len(collection)))
 
 	id_list = distanceHandlerParallel(user_loc, req, collection)
+	
+	if(len(id_list)) == 0:
+		return "1"
 
 	print("Restaurants after Distance Culling: " + str(len(id_list)))
 	
@@ -144,11 +175,12 @@ def keywords():
 
 	id_list = [x for x in id_list if x["attributes"] is not None]
 	
-	print("Price:" + str(req["price"]))
-
 	id_list = [x for x in id_list if x["attributes"] < float(req["price"])]
 
 	print("Restaurants after Price Culling: " + str(len(id_list)))
+
+	if(len(id_list)) == 0:
+		return "2"
 	
 	id_list = id_list + none_list
 
@@ -160,9 +192,21 @@ def keywords():
 
 	print("Restaurants after Time-Based Culling: " + str(len(id_list)))
 
+	if(len(id_list)) == 0:
+		return "3"
+
 	id_list = allergyHandlerParallel(req, id_list)
 
 	print("Restaurants after Allergy-Based Culling: " + str(len(id_list)))
+
+	if(len(id_list)) == 0:
+		return "4"
+
+	if(req["userinfo"] and req["groupCode"] == 0):
+		id_list = userHandler(req, id_list)
+
+	if(len(id_list)) == 0:
+		return "5"
 	
 	# final list of restaurant ids for processing
 	businesslist_final = [x["business_id"] for x in id_list]
