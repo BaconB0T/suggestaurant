@@ -4,9 +4,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import { groupExists, createGroup, getCode, joinGroup } from '../firestore';
-import { BackButton } from "./Buttons";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCopy } from '@fortawesome/fontawesome-free-solid'
+import { BackButton, CopyButton } from "./Buttons";
 
 
 const Member = ({ globalState, setGlobalState }) => {
@@ -192,9 +190,7 @@ const Host = ({ setGlobalState }) => {
           <Card.Body>
             <h2 className="text-center mb-4">Host Group</h2>
             {error && <Alert variant="danger">{error}</Alert>}
-            <button onClick={() => { navigator.clipboard.writeText(code) }} className="btn btn-secondary">
-              <FontAwesomeIcon icon={faCopy} color="white" size="2x" />
-            </button>
+            <CopyButton textToCopy={code}/>
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
                 <Form.Label>Share this Code with your Friends!</Form.Label>
