@@ -91,6 +91,7 @@ const DietCheck = ({ user, globalState, setGlobalState }) => {
 
     useEffect(() => {
         async function beegFunction() {
+            // TODO: Bug. hasDietaryRestrictions is async, must await here.
             if (!(user.isAnonymous) && hasDietaryRestrictions(user.uid)) {
                 async function goGoGroupModeDiet() {
                     const doc = await getFilters(user.uid)

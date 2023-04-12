@@ -3,12 +3,13 @@ import { Container, Button } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import Popup from './Popup';
-import { getLastVisitedRestaurant, rateRestaurant, setLastVisitedRestaurant } from "../firestore.js";
+import { getFilters, getLastVisitedRestaurant, hasDietaryRestrictions, rateRestaurant, setLastVisitedRestaurant } from "../firestore.js";
 import logo from './../images/logo.png'; // Tell webpack this JS file uses this image
 import { AccountOrLoginButton, SettingsButton } from './Buttons';
+import { useGeolocated } from "react-geolocated";
 
 
-const HomePage = ({ bob }) => {
+const HomePage = ({ bob, setGlobalState, globalState }) => {
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
@@ -17,14 +18,27 @@ const HomePage = ({ bob }) => {
 
     const [lastVisitedRestaurant, setStateLastVisitedRestaurant] = useState(null);
 
+    // For "I'm Feeling Lucky!"
+    const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: false,
+            },
+            userDecisionTimeout: 5000,
+        });
+
     useEffect(() => {
         setLoginOrAccount(<AccountOrLoginButton isAnonymous={bob.isAnonymous} />)
     }, [bob]);
 
+    function notInGroup() {
+        setCookie('groupCode', 0, { path: '/' });
+        setCookie('host', false, { path: '/' });
+    }
+
     async function handleClickQuiz() {
         try {
-            setCookie('groupCode', 0, { path: '/' });
-            setCookie('host', false, { path: '/' });
+            notInGroup();
             navigate("/location");
         } catch (e) {
             // else set an error
@@ -70,6 +84,67 @@ const HomePage = ({ bob }) => {
         setLastVisitedRestaurant(bob.uid, null)
     };
 
+    async function randomSuggestion() {
+        if (!isGeolocationAvailable) {
+            console.error("Failed to get current location: Location not available!");
+            return;
+        }
+        if (!isGeolocationEnabled) {
+            console.error("Failed to get current location: Location disabled!");
+            return;
+        }
+        if(!coords) {
+            console.error("Failed to get current location: Coordinates unavailable!");
+            return;
+        }
+        
+        notInGroup();
+        const jsonData = makeJSONData(await getFilters(bob.uid));
+
+        setGlobalState({...globalState, jsonData: jsonData});
+        navigate('/waiting');
+    }
+
+    function makeJSONData(userData) {
+        const latlong = {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            distance: 250,
+        }
+        let dietData = {
+            'Dairy-free':  '',
+            'Gluten-free': '',
+            'Halal':       '',
+            'Kosher':      '',
+            'Soy-free':    '',
+            'Vegan':       '',
+            'Vegetarian':  ''
+        };
+        if(userData && userData['filters']['dietaryRestrictions'].length !== 0) {
+            const diet = dietData['filters']['dietaryRestrictions'];
+            dietData = {
+                'Dairy-free':   !diet.includes("Dairy-free")    ? "" : "dairy",
+                'Gluten-free':  !diet.includes("Gluten-free")   ? "" : "gluten",
+                'Halal':        !diet.includes("Halal")         ? "" : "halal",
+                'Kosher':       !diet.includes("Kosher")        ? "" : "kosher",
+                'Soy-free':     !diet.includes("Soy-free")      ? "" : "soy",
+                'Vegan':        !diet.includes("Vegan")         ? "" : "vegan",
+                'Vegetarian':   !diet.includes("Vegetarian")    ? "" : "veggie"
+            }
+        }
+        const currentDate = new Date();
+        const zeroFilledHours = ('00'+currentDate.getHours()).slice(-2);
+        const zeroFilledMinutes = ('00'+currentDate.getMinutes()).slice(-2);
+        return {
+            random: true,
+            time: `${zeroFilledHours}:${zeroFilledMinutes}`,
+            price: 5,
+            diet: dietData,
+            latlong: latlong,
+            keywords: "" // Required for the server, not for random suggestions.
+        }
+    }
+
     return (
         <Container
             className="d-flex align-items-center justify-content-center"
@@ -110,8 +185,11 @@ const HomePage = ({ bob }) => {
                     <Button className="w-75 button-control" onClick={() => handleClickQuiz3()}>
                         Join Group Quiz
                     </Button>
-                    {/* </Card.Body>
-                    </Card> */}
+                    <br></br>
+                    <br></br>
+                    <Button className="w-75 button-control" onClick={() => randomSuggestion()}>
+                        I'm Feeling Lucky!
+                    </Button>
                 </>
 
             </div>

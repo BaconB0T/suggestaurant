@@ -7,7 +7,7 @@ import image from './../images/Restaurant.png'; // Tell webpack this JS file use
 import { BackButton, HomeButton } from './Buttons';
 
 
-const KeywordGrab = ({setGlobalState, user}) => {
+const KeywordGrab = ({setGlobalState, user, globalState}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const keywordRef = useRef()
@@ -49,6 +49,11 @@ const KeywordGrab = ({setGlobalState, user}) => {
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
     }, [])
 
+    async function lmao()
+    {
+        console.log("Can't believe this works.")
+    }
+
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
@@ -56,17 +61,29 @@ const KeywordGrab = ({setGlobalState, user}) => {
             if (cookies["groupCode"] != 0)
             {
                 updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
-            }
-            if (cookies['groupCode'] != 0)
-            {
-                //  && cookies["host"] != 'true'
                 navigate("/group/waiting")
+            }else {
+                navigate("/waiting")
                 return
             }
 
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
-            const check = user.isAnonymous ? null : getFilters(user.uid).then(val => {
+            const check = user.isAnonymous ? lmao().then(e => {
+                
+                const jsonData = {
+                    keywords: keywordRef.current.value,
+                    time: cookies["time"],
+                    price: cookies["price"],
+                    diet: cookies["diet"],
+                    latlong: cookies["latlong"] || null,
+                    groupCode: cookies["groupCode"],
+                    host: cookies["host"],
+                    userinfo: false
+                }
+                setGlobalState({...globalState,jsonData: jsonData});
+
+            }) : getFilters(user.uid).then(val => {
 
                 const filterInfo = val.filters
 
@@ -88,37 +105,9 @@ const KeywordGrab = ({setGlobalState, user}) => {
                     host: cookies["host"],
                     userinfo: userinfo
                 }
-    
-    
-                //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
-                fetch("http://localhost:5000/data", {
-                    method:"POST",
-                    cache: "no-cache",
-                    headers:{
-                        "content_type":"application/json",
-                        'Access-Control-Allow-Origin':'*'
-                    },
-                    body:JSON.stringify(
-                            jsonData
-                        )
-                    }
-                ).then(response => {
-                    return response.json();
-                })
-                .then(json => {
-                    if (typeof json != "object")
-                    {
-                        console.log(json)
-                        setGlobalState({"failedToFind": json})
-                        navigate("/expandRadius");
-                    }
-                    else
-                    {
-                        setCookie("businesslist", json, { path: '/' });
-                        setGlobalState({'businesslist': json});    
-                        navigate("/recommendations");
-                    }
-                })
+
+                setGlobalState({...globalState,jsonData: jsonData});
+
             })
     
         } catch (e) {
@@ -150,7 +139,7 @@ const KeywordGrab = ({setGlobalState, user}) => {
                                         rows={3}/>
                                 </Form.Group>
                                 <Button className="w-75 mt-10 button-control" type="submit">
-                                    Go
+                                    Find Restaurant
                                 </Button>
                             </Form>
                         {/* </Card.Body>
