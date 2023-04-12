@@ -471,6 +471,7 @@ async function getGroupInfo(groupID) {
     host: (data['host'] === getAuth().currentUser.uid),
     numUsers: data['numUsers'],
     numUsersReady: data['numUsersReady'],
+    userinfo: false
   }
   return jsonData
 }
