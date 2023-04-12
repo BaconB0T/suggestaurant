@@ -52,25 +52,18 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
     async function lmao()
     {
         console.log("Can't believe this works.")
+        return 0
     }
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-            if (cookies["groupCode"] != 0)
-            {
-                updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
-                navigate("/group/waiting")
-            }else {
-                navigate("/waiting")
-                return
-            }
 
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
             const check = user.isAnonymous ? lmao().then(e => {
-                
+                console.log("Check123")
                 const jsonData = {
                     keywords: keywordRef.current.value,
                     time: cookies["time"],
@@ -82,9 +75,19 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
                     userinfo: false
                 }
                 setGlobalState({...globalState,jsonData: jsonData});
+                
+                if (cookies["groupCode"] != 0)
+                {
+                    updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
+                    navigate("/group/waiting")
+                }else {
+                    navigate("/waiting")
+                    return
+                }
 
             }) : getFilters(user.uid).then(val => {
 
+                console.log("Check123")
                 const filterInfo = val.filters
 
                 const userinfo = user.isAnonymous ? false : {
@@ -107,6 +110,15 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
                 }
 
                 setGlobalState({...globalState,jsonData: jsonData});
+
+                if (cookies["groupCode"] != 0)
+                {
+                    updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
+                    navigate("/group/waiting")
+                }else {
+                    navigate("/waiting")
+                    return
+                }
 
             })
     

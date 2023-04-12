@@ -34,20 +34,27 @@ const ExpandRadius = ({globalState}) => {
 
     function renderSwitch() 
     {
-        console.log(globalState.failedToFind)
-        switch(globalState.failedToFind){
-            case "1":
-                return (<h2 className="text-center mb-4">No Matches In Your Area!</h2>)
-            case "2":
-                return (<h2 className="text-center mb-4">No Matches At Your Price!</h2>)
-            case "3":
-                return (<h2 className="text-center mb-4">No Matches At Your Times!</h2>)
-            case "4":
-                return (<h2 className="text-center mb-4">No Matches<br></br>With Your Allergy Restrictions!</h2>)
-            case "5":
-                return (<h2 className="text-center mb-4">No Matches<br></br>With Your Preferences!</h2>)
-            default:
-                return (<h2 className="text-center mb-4">No Matches In Your Area!</h2>)
+        if (globalState.failedToFind != false)
+        {
+            console.log(globalState.failedToFind)
+            switch(globalState.failedToFind){
+                case "1":
+                    return (<h2 className="text-center mb-4">No Matches In Your Area!</h2>)
+                case "2":
+                    return (<h2 className="text-center mb-4">No Matches At Your Price!</h2>)
+                case "3":
+                    return (<h2 className="text-center mb-4">No Matches At Your Times!</h2>)
+                case "4":
+                    return (<h2 className="text-center mb-4">No Matches<br></br>With Your Allergy Restrictions!</h2>)
+                case "5":
+                    return (<h2 className="text-center mb-4">No Matches<br></br>With Your Preferences!</h2>)
+                default:
+                    return (<h2 className="text-center mb-4">No Matches In Your Area!</h2>)
+            }
+        }
+        else
+        {
+            return (<></>)
         }
     }
     
