@@ -87,7 +87,6 @@ for x in collection:
 	for a in list(x.keys()):
 		if a not in acceptedKeys:
 			x.pop(a)
-
 	if x["attributes"] is None:
 		x["GoodForKids"] = False
 	if x["attributes"] is not None and "GoodForKids" in x["attributes"]:
