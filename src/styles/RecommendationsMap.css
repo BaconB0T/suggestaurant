@@ -1,0 +1,55 @@
+.in-app-button-container {
+  margin: 1rem 0 1rem 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.custom-card {
+  width: 50em;
+  max-width: 95%;
+}
+
+.icons-div {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.icons-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+.in-app-button {
+  width: fit-content;
+}
+
+.main-content {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.address {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+/* Medium and smaller screens. */
+@media only screen and (max-width: 768px) {
+  .main-content {
+    display: flex;
+    justify-content: start;
+    margin-top: 100px;
+  }
+  
+  .in-app-button {
+    min-width: 15em;
+    width: fit-content;
+  }
+}
