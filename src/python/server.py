@@ -192,7 +192,7 @@ def keywords():
 	if(len(id_list)) == 0:
 		return "4"
 
-	if(req["userinfo"] and req["groupcode"] is 0):
+	if(req["userinfo"] and req["groupCode"] == 0):
 		id_list = userHandler(req, id_list)
 
 	if(len(id_list)) == 0:
