@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
-import { updateGroupMember, getGroup, getFilters } from '../firestore'
+import { updateGroupMember, getGroup, getFilters, getHistory } from '../firestore'
 import image from './../images/Restaurant.png'; // Tell webpack this JS file uses this image
 import { BackButton, HomeButton } from './Buttons';
 
@@ -12,8 +12,6 @@ const KeywordGrab = ({setGlobalState, user}) => {
     const navigate = useNavigate();
     const keywordRef = useRef()
     const [error, setError] = useState("")
-    const [urlString, setURL] = useState("")
-    const [loginOrAccount, setLoginOrAccount] = useState("Login")
     const MINUTE_MS = 1000;
 
     async function idk() {
@@ -55,35 +53,6 @@ const KeywordGrab = ({setGlobalState, user}) => {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-
-            const filterInfo = user.isAnonymous ? null : getFilters(user.uid).filters
-
-            setCookie('keywords', keywordRef.current.value, { path: '/' });
-            const userinfo = user.isAnonymous ? false : {
-                fastFood: filterInfo.preferences.includeFastFood,
-                exclude: filterInfo.excludedCuisines,
-                includeHistory: !filterInfo.preferences.includeHistory ? false : Object.keys(filterInfo.history),
-                minRating: filterInfo.preferences.minimumRating,
-                familyFriendly: filterInfo.preferences.requireFamilyFriendly
-            }
-
-            // setGlobalState({'businesslist': keywordRef.current.value});
-            const jsonData = {
-                keywords: keywordRef.current.value,
-                time: cookies["time"],
-                price: cookies["price"],
-                diet: cookies["diet"],
-                latlong: cookies["latlong"] || null,
-                groupCode: cookies["groupCode"],
-                host: cookies["host"],
-                userinfo: userinfo
-            }
-
-            // object for storing and using data
-            // Using useEffect for single rendering
-            // Using fetch to fetch the api from
-            // flask server it will be redirected to proxy
-            let url = '';
             if (cookies["groupCode"] != 0)
             {
                 updateGroupMember(cookies['groupCode'], 'keywords', keywordRef.current.value);
@@ -95,34 +64,63 @@ const KeywordGrab = ({setGlobalState, user}) => {
                 return
             }
 
-            //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
-            fetch("http://localhost:5000/data", {
-                method:"POST",
-                cache: "no-cache",
-                headers:{
-                    "content_type":"application/json",
-                    'Access-Control-Allow-Origin':'*'
-                },
-                body:JSON.stringify(
-                        jsonData
-                    )
+            setCookie('keywords', keywordRef.current.value, { path: '/' });
+
+            const check = user.isAnonymous ? null : getFilters(user.uid).then(val => {
+
+                const filterInfo = val.filters
+
+                const userinfo = user.isAnonymous ? false : {
+                    fastFood: filterInfo.preferences.includeFastFood,
+                    exclude: filterInfo.excludedCuisines,
+                    includeHistory: !filterInfo.preferences.includeHistory ? false : Object.keys(getHistory(val)),
+                    minRating: filterInfo.preferences.minimumRating,
+                    familyFriendly: filterInfo.preferences.requireFamilyFriendly
                 }
-            ).then(response => {
-                return response.json();
+                
+                const jsonData = {
+                    keywords: keywordRef.current.value,
+                    time: cookies["time"],
+                    price: cookies["price"],
+                    diet: cookies["diet"],
+                    latlong: cookies["latlong"] || null,
+                    groupCode: cookies["groupCode"],
+                    host: cookies["host"],
+                    userinfo: userinfo
+                }
+    
+    
+                //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
+                fetch("http://localhost:5000/data", {
+                    method:"POST",
+                    cache: "no-cache",
+                    headers:{
+                        "content_type":"application/json",
+                        'Access-Control-Allow-Origin':'*'
+                    },
+                    body:JSON.stringify(
+                            jsonData
+                        )
+                    }
+                ).then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if (typeof json != "object")
+                    {
+                        console.log(json)
+                        setGlobalState("failedToFind", json)
+                        navigate("/expandRadius");
+                    }
+                    else
+                    {
+                        setCookie("businesslist", json, { path: '/' });
+                        setGlobalState({'businesslist': json});    
+                        navigate("/recommendations");
+                    }
+                })
             })
-            .then(json => {
-                if (typeof json == "number")
-                {
-                    setGlobalState("failedToFind", json)
-                    navigate("/expandRadius");
-                }
-                else
-                {
-                    setCookie("businesslist", json, { path: '/' });
-                    setGlobalState({'businesslist': json});    
-                    navigate("/recommendations");
-                }
-            })
+    
         } catch (e) {
             // else set an error
             console.error(e);

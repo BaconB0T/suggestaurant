@@ -596,9 +596,7 @@ async function historyItem(historyDoc) {
 
 
 async function getFilters(user) {
-  const userCol = collection(db, 'users');
   const que = await getDoc(doc(db, 'users', user));
-
   return que.data();
 }
 

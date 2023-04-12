@@ -93,11 +93,11 @@ for x in collection:
 		x["GoodForKids"] = x["attributes"]["GoodForKids"]
 	if x["attributes"] is not None and "GoodForKids" not in x["attributes"]:
 		x["GoodForKids"] = False
-	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
-		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
 	if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
 		# CONSIDER USING TEMP VALUE HERE TO MAINTAIN STRUCTURE
 		x["attributes"] = None
+	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
+		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
 
 
 # Initializing flask app
@@ -152,12 +152,12 @@ def keywords():
 	# user location data
 	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
 
-	print("Restaurants before Distance Culling: " + str(len(id_list)))
+	print("Restaurants before Distance Culling: " + str(len(collection)))
 
 	id_list = distanceHandlerParallel(user_loc, req, collection)
 	
 	if(len(id_list)) == 0:
-		return 1
+		return "1"
 
 	print("Restaurants after Distance Culling: " + str(len(id_list)))
 	
@@ -170,7 +170,7 @@ def keywords():
 	print("Restaurants after Price Culling: " + str(len(id_list)))
 
 	if(len(id_list)) == 0:
-		return 2
+		return "2"
 	
 	id_list = id_list + none_list
 
@@ -183,20 +183,20 @@ def keywords():
 	print("Restaurants after Time-Based Culling: " + str(len(id_list)))
 
 	if(len(id_list)) == 0:
-		return 3
+		return "3"
 
 	id_list = allergyHandlerParallel(req, id_list)
 
 	print("Restaurants after Allergy-Based Culling: " + str(len(id_list)))
 
 	if(len(id_list)) == 0:
-		return 4
+		return "4"
 
-	if(req["userinfo"]):
+	if(req["userinfo"] and req["groupcode"] is 0):
 		id_list = userHandler(req, id_list)
 
 	if(len(id_list)) == 0:
-		return 5
+		return "5"
 	
 	# final list of restaurant ids for processing
 	businesslist_final = [x["business_id"] for x in id_list]
