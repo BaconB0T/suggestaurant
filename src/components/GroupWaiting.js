@@ -14,28 +14,24 @@ const GroupWaiting = ({setGlobalState}) => {
     const navigate = useNavigate();
 
     async function updateVars() {
-        const groupCode = cookies["groupCode"]
-        const group = await getGroup(groupCode)
-        async function idk() {
-            setNumUsers(group.numUsers)
-            setNumUsersReady(group.numUsersReady)
-            return (group.hostReady) || (group.numUsers == group.numUsersRead);
+        const groupCode = cookies["groupCode"];
+        const group = await getGroup(groupCode);
+        async function detectGroupDone() {
+            setNumUsers(group.numUsers);
+            setNumUsersReady(group.numUsersReady);
+            return (group.hostReady) || (group.numUsers == group.numUsersReady);
         }
-        console.log('inside use effect')
-        console.log(group.numUsers)
-        console.log(group.numUsersReady)
-        idk().then((retVal) => {
-            if (group.numUsers == group.numUsers || retVal == true) {
-                const isHost = cookies["host"] // 'true', 'false'
-                console.log(isHost)
+        detectGroupDone().then((groupReady) => {
+            if (groupReady) {
+                const isHost = cookies["host"]; // 'true', 'false'
                 if(!(isHost == 'true'))
                 {
-                    navigate("/recommendations/waiting")
-                    return
+                    navigate("/recommendations/waiting");
+                    return;
                 }
-                runAlgorithm()
+                runAlgorithm();
             }
-        })
+        });
     }
     const MINUTE_MS = 1000;
 
@@ -50,13 +46,10 @@ const GroupWaiting = ({setGlobalState}) => {
 
     async function runAlgorithm(e) {
         e && e.preventDefault();
-        console.log("WE ARE RUNNING THE ALGORITHM")
         navigate("/recommendations/waiting")
         const groupCode = cookies["groupCode"]
         updateGroupHost(groupCode, "hostReady", true)
-        console.log(groupCode)
         const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
-        console.log("GOT GROUP INFO")
         try {
             console.log('inside try catch');
             fetch("http://localhost:5000/data", {
