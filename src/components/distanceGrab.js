@@ -27,6 +27,16 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
 
     async function changeLocation()
     {
+        const latlong = {
+            latitude: latRef.current.value,
+            longitude: longRef.current.value,
+            distance: distRef.current.value
+        }
+
+        setCookie('latlong', latlong, { path: '/' });
+        if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
+            updateGroupHost(cookies['groupCode'], 'latlong', latlong);
+        }
         navigate("/changeLocation");
     }
 

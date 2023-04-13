@@ -32,7 +32,7 @@ const ChangeLocation = () => {
     async function handleSubmit(place) {
         console.log(place)
         try {
-            Geocode.fromAddress(place).then(
+            Geocode.fromAddress(place.formatted_address).then(
                 (response) => {
                     const { lat, lng } = response.results[0].geometry.location;
                     console.log(lat, lng);
