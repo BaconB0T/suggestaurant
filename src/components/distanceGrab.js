@@ -25,6 +25,21 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
             userDecisionTimeout: 5000,
         });
 
+    async function changeLocation()
+    {
+        const latlong = {
+            latitude: latRef.current.value,
+            longitude: longRef.current.value,
+            distance: distRef.current.value
+        }
+
+        setCookie('latlong', latlong, { path: '/' });
+        if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
+            updateGroupHost(cookies['groupCode'], 'latlong', latlong);
+        }
+        navigate("/changeLocation");
+    }
+
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
@@ -126,6 +141,10 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
                                                 Next
                                             </Button>
                                         </Form>
+                                        <br></br>
+                                        <Button className="w-75 button-control" onClick={() => changeLocation()}>
+                                                Change Location
+                                        </Button>
                                     </div>
                                 ) : (
                                     <h1>Getting the location data...</h1>
