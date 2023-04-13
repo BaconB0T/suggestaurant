@@ -1,4 +1,3 @@
-import validateJSON from '../security/web';
 import GoogleMapReact from 'google-map-react';
 import { useState, useEffect } from 'react';
 import { Button, Card } from 'react-bootstrap';
@@ -12,19 +11,14 @@ import '../styles/RecommendationsMap.css'
 
 const RecommendationMap = ({ globalState, business_id: id }) => {
     const zoomLevel = 15;
-    // console.log(globalState);
     const business_id = globalState.business_id || id;
-    const [apiKey, setApiKey] = useState('');
+    // TODO: source this from some config. At least don't hardcode it here.
+    const apiKey = 'AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I';
     const [res, setRes] = useState('');
 
     useEffect(() => {
         // get Maps API key
-        fetch('http://127.0.0.1:5000/google-maps-key')
-            .then(validateJSON)
-            .then((json) => {
-                setApiKey(json.key);
-            });
-        if (business_id !== undefined) {
+        if(business_id !== undefined) {
             getRestaurantById(business_id)
                 .then((doc) => {
                     setRes(doc);
@@ -50,47 +44,41 @@ const RecommendationMap = ({ globalState, business_id: id }) => {
     };
 
     function openInApp(restId, loc) {
-        // console.log("userID:")
-        // console.log(getAuth().currentUser)
-        // console.log("restID:")
-        // console.log(restId)
-        // console.log("getting restaurant from firestore!!!")
-        // console.log(getLastVisitedRestaurant(getAuth().currentUser.uid))
-        setLastVisitedRestaurant(getAuth().currentUser.uid, restId)
-        // console.log(loc);
-        window.open("https://www.google.com/maps/dir/?api=1&destination=" + loc.latitude + "," + loc.longitude);
+        setLastVisitedRestaurant(getAuth().currentUser.uid, restId);
+        window.open(google_maps_href(loc));
+    }
+    function google_maps_href(loc) {
+        return "https://www.google.com/maps/dir/?api=1&destination="+loc.latitude+","+loc.longitude;
     }
 
-    function shareIcons() {
+    function shareIcons(res, loc) {
+        console.log('loc');
+        console.log(loc);
+        console.log('res');
+        console.log(res);
         const supportedProviders = [
-            'Twitter',
-            'Email',
-            'Telegram',
-            'WhatsApp',
+            'Twitter', 
+            'Email', 
+            'https://t.me/share/url?url='+encodeURIComponent(google_maps_href(loc))+"&text=" + encodeURI(`Let's eat at ${res.name}!`), 
+            'WhatsApp', 
             'Facebook'
         ];
-        return supportedProviders.map((url, idx) => <SocialIcon key={idx} url={url} />);
+        return supportedProviders.map((url, idx) => {console.log(url); return (<SocialIcon key={idx} url={url} />)});
     }
 
     function clipboardAddress(res, loc) {
         const addr = `${res.name}, ${loc.streetAddress} ${loc.city}, ${loc.state} ${loc.postalCode}`;
-        // navigator.clipboard.writeText(addr).then(() => {
-        //     console.log(`Copied addres to clipboard`);
-        // });
         return addr;
     }
-    // console.log('res');
-    // console.log(res);
-    if (apiKey === '' || apiKey === null || res === '') {
+    
+    if(res === '') {
         // restaurant has not been fetched yet.
-        // console.log('loading')
         return (
             <>
                 <p className='loading-animation'>Loading...</p>
             </>
         );
-        // apiKey !== '' && apiKey !== null &&
-    } else if (res !== null) {
+    } else if(res !== null) {
         const googleLocation = {
             address: `${res.location.streetAddress}, ${res.location.city}, ${res.location.state}`,
             lat: res.location.latitude,
@@ -137,7 +125,7 @@ const RecommendationMap = ({ globalState, business_id: id }) => {
                         <div id='share-icons' className='icons-div'>
                             <div>Share with your friends by clicking the icons below!</div>
                             <div id='icons-list' className='icons-list'>
-                                {shareIcons()}
+                                {shareIcons(res, loc)}
                             </div>
                         </div>
                     </Card.Body>
