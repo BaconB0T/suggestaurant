@@ -52,7 +52,7 @@ const GroupWaiting = ({setGlobalState}) => {
         const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
         try {
             console.log('inside try catch');
-            fetch("http://localhost:5000/data", {
+            fetch("https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/data", {
                 method: "POST",
                 cache: "no-cache",
                 headers: {

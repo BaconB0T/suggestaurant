@@ -17,7 +17,7 @@ const ChangeLocation = () => {
 
     useEffect(() => {
         // get Maps API key
-        fetch('http://127.0.0.1:5000/google-maps-key')
+        fetch('https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/google-maps-key')
             .then(validateJSON)
             .then((json) => {
                 setApiKey(json.key);

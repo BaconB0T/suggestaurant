@@ -56,7 +56,7 @@ const UserWaiting = ({ globalState, setGlobalState }) => {
         console.log(globalState.jsonData);
         //this is fetch code block from keywords
        //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
-       fetch("http://localhost:5000/data", {
+       fetch("https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/data", {
         method: "POST",
         cache: "no-cache",
         headers: {

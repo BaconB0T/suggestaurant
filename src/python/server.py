@@ -43,6 +43,7 @@ config = {
   "serviceAccount": "./suggestaurant-873aa-d6566e2cfc10.json"
 }
 
+nltk.download('stopwords')
 # prep algorithm parser
 stop = []
 for word in stopwords.words('english'):
