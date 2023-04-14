@@ -56,14 +56,17 @@ const RecommendationMap = ({ globalState, business_id: id }) => {
         console.log(loc);
         console.log('res');
         console.log(res);
+        const url = google_maps_href(loc);
+        const message = `Let's eat at ${res.name}!`;
         const supportedProviders = [
-            'Twitter', 
-            'Email', 
-            'https://t.me/share/url?url='+encodeURIComponent(google_maps_href(loc))+"&text=" + encodeURI(`Let's eat at ${res.name}!`), 
-            'WhatsApp', 
-            'Facebook'
+            {network: 'twitter', url: 'https://twitter.com/intent/tweet?text='+encodeURIComponent(message)+'&url='+encodeURIComponent(url)}, 
+            // Can include subject for email by adding "subject=The subject here" to the URI as a query parameter
+            {network: 'email', url: 'mailto:?subject='+encodeURIComponent(message)+'&body='+encodeURIComponent(url+'\n'+message)}, 
+            {network: 'telegram', url: 'https://t.me/share/url?url='+encodeURIComponent(url)+"&text=" + encodeURIComponent(message)}, 
+            {network: 'whatsapp', url: 'https://wa.me/?text='+encodeURIComponent(url+'\n'+message)},
+            {network: 'facebook', url: 'https://www.facebook.com/sharer.php?u='+encodeURIComponent(url)+'&quote='+encodeURIComponent(message)}
         ];
-        return supportedProviders.map((url, idx) => {console.log(url); return (<SocialIcon key={idx} url={url} />)});
+        return supportedProviders.map(({network, url}, idx) => (<SocialIcon key={idx} network={network} url={url} />));
     }
 
     function clipboardAddress(res, loc) {
