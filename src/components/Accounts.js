@@ -55,25 +55,26 @@ const Account = ({ user }) => {
                   </CustomAlert>
                   <h1>Hello {getuname}</h1>
                   <div>Email: {user && user.email}</div>
+                  <br/>
 
-                  <div id = 'btn'>
-                    <Button><Link to='/account/allergies' id='button-info'>Allergies</Link></Button>
+                  <div className = 'account-btn'>
+                    <Button><Link to='/account/allergies' className='button-info'>Allergies</Link></Button>
                   </div>
-                  <div id = 'btn'>
-                    <Button><Link to='/account/filters' id='button-info'>Restaurant Preferences</Link></Button>
+                  <div className = 'account-btn'>
+                    <Button><Link to='/account/filters' className='button-info'>Restaurant Preferences</Link></Button>
                   </div>
-                  <div id = 'btn'>
-                    <Button><Link to='/history' id='button-info'>Restaurant History</Link></Button>
+                  <div className = 'account-btn'>
+                    <Button><Link to='/history' className='button-info'>Restaurant History</Link></Button>
                   </div>
-                  <div id = 'btn'>
+                  <div className = 'account-btn'>
                     <Button>
-                      <Link to='/change-password' id='button-info'>Change Password</Link>
+                      <Link to='/change-password' className='button-info'>Change Password</Link>
                     </Button>
                   </div>
-                  <div id = 'btn'>
-                    <Button id = 'btn' onClick={sOut}>Sign Out</Button>
+                  <div className = 'account-btn'>
+                    <Button onClick={sOut}>Sign Out</Button>
                   </div>
-                  <div id='btn'>
+                  <div className='account-btn'>
                     <Button id='del-btn' onClick={() => { setShow(true) }}>Delete Account</Button>
                   </div>
                 </Card.Body>
