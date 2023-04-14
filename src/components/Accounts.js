@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { signOutUser, deleteUser } from "../firestore";
+import { signOutUser, deleteUser, getFilters } from "../firestore";
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Container, Card, Alert, Button, Form } from "react-bootstrap";
@@ -11,6 +11,7 @@ const Account = ({ user }) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
+  const [getuname, setuname] = useState("");
 
   // redirect on anonymous user
   if (user === null || user.isAnonymous) {
@@ -27,20 +28,9 @@ const Account = ({ user }) => {
         }
       });
     }
-
-    async function handleSubmit(e) {
-      e.preventDefault(); // don't refresh the page
-      try {
-        setError("")
-
-        navigate("/");
-      } catch (e) {
-        // else set an error
-        setError(e)
-      }
-    }
-
-    console.log(user.username);
+    Promise.resolve(getFilters(user.uid)).then(val => {
+        setuname(val.username);
+    });
 
     return (
       <div display='block'>
@@ -63,7 +53,7 @@ const Account = ({ user }) => {
                     buttons={[['outline-danger', () => { deleteUser(); navigate('/login'); }, 'Delete'],
                               ['success-outline', () => {}, 'Cancel']]}>
                   </CustomAlert>
-                  <h1>Hello {user && user.username}</h1>
+                  <h1>Hello {getuname}</h1>
                   <div>Email: {user && user.email}</div>
 
                   <div id = 'btn'>
@@ -86,14 +76,6 @@ const Account = ({ user }) => {
                   <div id='btn'>
                     <Button id='del-btn' onClick={() => { setShow(true) }}>Delete Account</Button>
                   </div>
-                  <Form onSubmit={handleSubmit}>
-                    <div id='btn'>
-                      <Button className="w-40 mt-10" type="submit">
-                        Home
-                      </Button>
-                    </div>
-                  </Form>
-                  <br></br>
                 </Card.Body>
               </Card>
             </>
