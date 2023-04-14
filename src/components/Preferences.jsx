@@ -67,11 +67,9 @@ function Preferences({ user, setGlobalState, updated }) {
                 <div>
                     {updated && <Popup
                         content={<>
-                            <b>Cuisines Updated!</b>
-                            <br></br>
-                            <br></br>
+                            <div>Cuisines Updated!</div>
                         </>}
-                        handleClose={closePopup}
+                        onClose={closePopup}
                     />}
                     <h3>Preferences</h3>
                     <Card className="w-100">
@@ -133,8 +131,8 @@ function Preferences({ user, setGlobalState, updated }) {
 
 
                             <div className='oneline'>
-                                <div className="test">Preselect Cuisines</div>
-                                <div className="but"><button><Link to='/selectCuisine'>Select Cuisine</Link></button></div>
+                                <div className="test">Exclude Cuisines</div>
+                                <div className="but"><button><Link to='/selectCuisine'>Select Cuisines</Link></button></div>
                             </div>
                         </Card.Body>
                     </Card>

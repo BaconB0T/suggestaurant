@@ -20,6 +20,7 @@ import pickle
 import string
 import time as t
 import copy
+import random
 
 # load environment for map
 load_dotenv()
@@ -80,11 +81,51 @@ input.close()
 collection = db.collection('restaurants').get(retry=Retry())
 collection = [x.to_dict() for x in collection]
 
+# data cleaning, remove all but necessary data
+for x in collection:
+	acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location", "categories", "stars"]
+	for a in list(x.keys()):
+		if a not in acceptedKeys:
+			x.pop(a)
+	if x["attributes"] is None:
+		x["GoodForKids"] = False
+	if x["attributes"] is not None and "GoodForKids" in x["attributes"]:
+		x["GoodForKids"] = x["attributes"]["GoodForKids"]
+	if x["attributes"] is not None and "GoodForKids" not in x["attributes"]:
+		x["GoodForKids"] = False
+	if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
+		# CONSIDER USING TEMP VALUE HERE TO MAINTAIN STRUCTURE
+		x["attributes"] = None
+	if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
+		x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
+
+
 # Initializing flask app
 app = Flask(__name__)
 
 # deal with CORS security issues
 CORS(app)
+
+def userHandler(req, id_list):
+	if req["userinfo"]["fastFood"]:
+		id_list = [s for x in id_list if "Fast Food" not in x["categories"]]
+
+	if req["userinfo"]["exclude"]:
+		for y in req["userinfo"]["exclude"]:
+			id_list = [x for x in id_list if y not in x["categories"]]
+
+	if req["userinfo"]["includeHistory"]:
+		for y in req["userinfo"]["includeHistory"]:
+			id_list = [x for x in id_list if x["business_id"] == y]
+			
+	if req["userinfo"]["minRating"]:
+		id_list = [x for x in id_list if x["stars"] >= req["userinfo"]["minRating"]]
+
+	if req["userinfo"]["familyFriendly"]:
+		id_list = [x for x in id_list if x["GoodForKids"] is True]
+	
+	return id_list
+
 
 # this uploads restaurants to group DB object for group mode
 def insert_restaurants_as_suggestions(ids_list, group_id):
@@ -94,6 +135,16 @@ def insert_restaurants_as_suggestions(ids_list, group_id):
 	for rest_id in ids_list:
 		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
 	groupDocRef.update({'suggestions': suggestion_data})
+
+def getRandomRestaurants(collection):
+	"""Returns a set of 7 unique restaurants randomly chosen."""
+	suggestions = set()
+
+	while len(collection) >= 7 and len(suggestions) != 7:
+		s = collection[int(random.random() * len(collection))]
+		suggestions.add(s)
+	print(list(suggestions))
+	return list(suggestions)
 
 # route for running algorithm model
 @app.route('/data', methods=['POST'])
@@ -108,34 +159,15 @@ def keywords():
 	# load keywords from website data
 	words = req["keywords"]
 
-	#load restaurants
-	id_list = copy.deepcopy(collection)
-
-	# more timing for test purposes
-	end = t.time()
-	print("deepcopy time: " + str(end - start))
-
-	# data cleaning, remove all but necessary data
-	for x in id_list:
-		acceptedKeys = ["attributes", "hours", "dietaryRestrictions", "business_id", "location"]
-		for a in list(x.keys()):
-			if a not in acceptedKeys:
-				x.pop(a)
-		if x["attributes"] is not None and "RestaurantsPriceRange2" not in x["attributes"]:
-			x["attributes"] = None
-		if x["attributes"] is not None and "RestaurantsPriceRange2" in x["attributes"]:
-			x["attributes"] = x["attributes"]["RestaurantsPriceRange2"]
-
-	# more timing for testing purposes
-	end = t.time()
-	print("cleaning time: " + str(end - start))
-
 	# user location data
 	user_loc = (req["latlong"]["latitude"], req["latlong"]["longitude"])
 
-	print("Restaurants before Distance Culling: " + str(len(id_list)))
+	print("Restaurants before Distance Culling: " + str(len(collection)))
 
-	id_list = distanceHandlerParallel(user_loc, req, id_list)
+	id_list = distanceHandlerParallel(user_loc, req, collection)
+	
+	if(len(id_list)) == 0:
+		return "1"
 
 	print("Restaurants after Distance Culling: " + str(len(id_list)))
 	
@@ -143,29 +175,45 @@ def keywords():
 
 	id_list = [x for x in id_list if x["attributes"] is not None]
 	
-	print("Price:" + str(req["price"]))
-
 	id_list = [x for x in id_list if x["attributes"] < float(req["price"])]
 
 	print("Restaurants after Price Culling: " + str(len(id_list)))
+
+	if(len(id_list)) == 0:
+		return "2"
 	
 	id_list = id_list + none_list
 
 	print("Restaurants after No-Price replacement: " + str(len(id_list)))
 
-	time = int(str(req["time"].replace(':', '')))
+	time = int(str(req["time"]).replace(':', ''))
 	
 	id_list = timeHandlerParallel(time, id_list)
 
 	print("Restaurants after Time-Based Culling: " + str(len(id_list)))
 
+	if(len(id_list)) == 0:
+		return "3"
+
 	id_list = allergyHandlerParallel(req, id_list)
 
 	print("Restaurants after Allergy-Based Culling: " + str(len(id_list)))
+
+	if(len(id_list)) == 0:
+		return "4"
+
+	if(req["userinfo"] and req["groupCode"] == 0):
+		id_list = userHandler(req, id_list)
+
+	if(len(id_list)) == 0:
+		return "5"
 	
 	# final list of restaurant ids for processing
 	businesslist_final = [x["business_id"] for x in id_list]
 
+	if 'random' in req.keys() and req['random']:
+		return getRandomRestaurants(businesslist_final)
+	
 	# cull model to just usable restaurant ids
 	Q2 = Q[Q.columns.intersection(businesslist_final)]
 

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { updateGroupMember, hasDietaryRestrictions, getFilters, getGroup } from '../firestore';
 import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft } from 'react-icons/fa';
 import { BsGearFill } from "react-icons/bs";
-import Popup from './Popup';
+import Popup, {TimedPopup} from './Popup';
 import { BackButton, HomeButton } from './Buttons';
 
 const DietCheck = ({ user, globalState, setGlobalState }) => {
@@ -91,6 +91,7 @@ const DietCheck = ({ user, globalState, setGlobalState }) => {
 
     useEffect(() => {
         async function beegFunction() {
+            // TODO: Bug. hasDietaryRestrictions is async, must await here.
             if (!(user.isAnonymous) && hasDietaryRestrictions(user.uid)) {
                 async function goGoGroupModeDiet() {
                     const doc = await getFilters(user.uid)
@@ -129,7 +130,7 @@ const DietCheck = ({ user, globalState, setGlobalState }) => {
             style={{ minHeight: "100vh" }}
         >
             <div className="w-100" style={{ maxWidth: "400px" }}>
-                {!check && showGroupPopup && <Popup content={<b>Group Successfully Created!</b>} handleClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }) }} />}
+                {!check && showGroupPopup && <TimedPopup content={<b>Group Successfully Joined!</b>} onClose={() => { setGroupPopup(false); setGlobalState({ ...globalState, showGroupJoinPopup: false }) }} />}
 
                 <BackButton to='/location' />
                 <HomeButton />

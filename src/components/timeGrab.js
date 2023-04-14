@@ -17,7 +17,12 @@ const TimeGrab = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const [price, setPrice] = useState("")
-    const [value, onChange] = useState('10:00');
+    
+    const currentDate = new Date();
+    const zeroFilledHours = ('00'+currentDate.getHours()).slice(-2);
+    const zeroFilledMinutes = ('00'+currentDate.getMinutes()).slice(-2);
+
+    const [value, onChange] = useState(zeroFilledHours + ":" + zeroFilledMinutes);
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
@@ -50,7 +55,7 @@ const TimeGrab = () => {
                 <BackButton to='/dietaryRestrictions' />
                 <HomeButton />
                 <>
-                    <h3>Select a time!</h3>
+                    <h3>Select a time to eat!</h3>
                     <br></br>
                     <Card className="card-control">
                         <Card.Body>
