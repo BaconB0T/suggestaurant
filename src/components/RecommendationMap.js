@@ -66,7 +66,7 @@ const RecommendationMap = ({ globalState, business_id: id }) => {
             {network: 'whatsapp', url: 'https://wa.me/?text='+encodeURIComponent(url+'\n'+message)},
             {network: 'facebook', url: 'https://www.facebook.com/sharer.php?u='+encodeURIComponent(url)+'&quote='+encodeURIComponent(message)}
         ];
-        return supportedProviders.map(({network, url}, idx) => (<SocialIcon key={idx} network={network} url={url} />));
+        return supportedProviders.map(({network, url}, idx) => (<SocialIcon target='_blank' key={idx} network={network} url={url} />));
     }
 
     function clipboardAddress(res, loc) {
