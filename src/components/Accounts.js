@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { signOutUser, deleteUser } from "../firestore";
+import { signOutUser, deleteUser, getFilters } from "../firestore";
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Container, Card, Alert, Button, Form } from "react-bootstrap";
 import CustomAlert from "./CustomAlert";
 import { BackButton } from './Buttons';
+import '../styles/Accounts.css';
 
 const Account = ({ user }) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
+  const [getuname, setuname] = useState("");
 
   // redirect on anonymous user
   if (user === null || user.isAnonymous) {
@@ -26,18 +28,9 @@ const Account = ({ user }) => {
         }
       });
     }
-
-    async function handleSubmit(e) {
-      e.preventDefault(); // don't refresh the page
-      try {
-        setError("")
-
-        navigate("/");
-      } catch (e) {
-        // else set an error
-        setError(e)
-      }
-    }
+    Promise.resolve(getFilters(user.uid)).then(val => {
+        setuname(val.username);
+    });
 
     return (
       <div display='block'>
@@ -60,27 +53,30 @@ const Account = ({ user }) => {
                     buttons={[['outline-danger', () => { deleteUser(); navigate('/login'); }, 'Delete'],
                               ['success-outline', () => {}, 'Cancel']]}>
                   </CustomAlert>
-                  <h1>Hello {user && user.username}</h1>
+                  <h1>Hello {getuname}</h1>
                   <div>Email: {user && user.email}</div>
-                  <Link to='/account/allergies'>Allergies</Link>
-                  <br></br>
-                  <Link to='/account/filters'>Restaurant Preferences</Link>
-                  <br></br>
-                  <Link to='/history'>Restaurant History</Link>
-                  <br></br>
-                  <button>
-                    <Link to='/change-password'>Change Password</Link>
-                  </button>
-                  <br></br>
-                  <button onClick={sOut}>Sign Out</button>
-                  <br></br>
-                  <button onClick={() => { setShow(true) }}>Delete Account</button>
-                  <Form onSubmit={handleSubmit}>
-                    <Button className="w-40 mt-10" type="submit">
-                      Home
+                  <br/>
+
+                  <div className = 'account-btn'>
+                    <Button><Link to='/account/allergies' className='button-info'>Allergies</Link></Button>
+                  </div>
+                  <div className = 'account-btn'>
+                    <Button><Link to='/account/filters' className='button-info'>Restaurant Preferences</Link></Button>
+                  </div>
+                  <div className = 'account-btn'>
+                    <Button><Link to='/history' className='button-info'>Restaurant History</Link></Button>
+                  </div>
+                  <div className = 'account-btn'>
+                    <Button>
+                      <Link to='/change-password' className='button-info'>Change Password</Link>
                     </Button>
-                  </Form>
-                  <br></br>
+                  </div>
+                  <div className = 'account-btn'>
+                    <Button onClick={sOut}>Sign Out</Button>
+                  </div>
+                  <div className='account-btn'>
+                    <Button id='del-btn' onClick={() => { setShow(true) }}>Delete Account</Button>
+                  </div>
                 </Card.Body>
               </Card>
             </>
