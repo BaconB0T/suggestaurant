@@ -5,6 +5,7 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { Container, Card, Alert, Button, Form } from "react-bootstrap";
 import CustomAlert from "./CustomAlert";
 import { BackButton } from './Buttons';
+import '../styles/Accounts.css';
 
 const Account = ({ user }) => {
   const navigate = useNavigate();
@@ -39,6 +40,8 @@ const Account = ({ user }) => {
       }
     }
 
+    console.log(user.username);
+
     return (
       <div display='block'>
         <Container
@@ -62,23 +65,33 @@ const Account = ({ user }) => {
                   </CustomAlert>
                   <h1>Hello {user && user.username}</h1>
                   <div>Email: {user && user.email}</div>
-                  <Link to='/account/allergies'>Allergies</Link>
-                  <br></br>
-                  <Link to='/account/filters'>Restaurant Preferences</Link>
-                  <br></br>
-                  <Link to='/history'>Restaurant History</Link>
-                  <br></br>
-                  <button>
-                    <Link to='/change-password'>Change Password</Link>
-                  </button>
-                  <br></br>
-                  <button onClick={sOut}>Sign Out</button>
-                  <br></br>
-                  <button onClick={() => { setShow(true) }}>Delete Account</button>
-                  <Form onSubmit={handleSubmit}>
-                    <Button className="w-40 mt-10" type="submit">
-                      Home
+
+                  <div id = 'btn'>
+                    <Button><Link to='/account/allergies' id='button-info'>Allergies</Link></Button>
+                  </div>
+                  <div id = 'btn'>
+                    <Button><Link to='/account/filters' id='button-info'>Restaurant Preferences</Link></Button>
+                  </div>
+                  <div id = 'btn'>
+                    <Button><Link to='/history' id='button-info'>Restaurant History</Link></Button>
+                  </div>
+                  <div id = 'btn'>
+                    <Button>
+                      <Link to='/change-password' id='button-info'>Change Password</Link>
                     </Button>
+                  </div>
+                  <div id = 'btn'>
+                    <Button id = 'btn' onClick={sOut}>Sign Out</Button>
+                  </div>
+                  <div id='btn'>
+                    <Button id='del-btn' onClick={() => { setShow(true) }}>Delete Account</Button>
+                  </div>
+                  <Form onSubmit={handleSubmit}>
+                    <div id='btn'>
+                      <Button className="w-40 mt-10" type="submit">
+                        Home
+                      </Button>
+                    </div>
                   </Form>
                   <br></br>
                 </Card.Body>
