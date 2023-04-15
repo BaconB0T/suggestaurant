@@ -130,14 +130,13 @@ function History({ user }) {
     >
       <BackButton to='/account' />
       <HomeButton />
-      <div>
+      <div id = "hist-cont">
         <h3>History</h3>
         <div>
           <h4>Add To History</h4>
           <button><Link to='/search'>Select Restaurants</Link></button>
         </div>
         <ol id="history-list">{historyComponents}</ol>
-
       </div>
     </Container>
   )
