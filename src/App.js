@@ -99,7 +99,7 @@ function App() {
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
         <Route path='/group/join' element={<Group isHost={false} globalState={state} setGlobalState={setState} />} />
         <Route path='/group/host' element={<Group isHost={true} />} />
-        <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState} />} />
+        <Route path='/group/waiting' element={<GroupWaiting globalState={state} setGlobalState={setState} />} />
         <Route path='/recommendations/waiting' element={<WaitingForRecommendation setGlobalState={setState} />} />
         <Route path='/waiting/' element={<UserWaiting setGlobalState={setState} globalState={state} />} />
         <Route path = '/changeLocation' element = {<ChangeLocation/>}/>

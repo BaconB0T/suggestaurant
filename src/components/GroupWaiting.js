@@ -7,7 +7,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import styles from '../styles/new.module.scss';
 
 
-const GroupWaiting = ({setGlobalState}) => {
+const GroupWaiting = ({globalState, setGlobalState}) => {
     const [numUsers, setNumUsers] = useState(-1);
     const [numUsersReady, setNumUsersReady] = useState(0);
     const [cookies, setCookie] = useCookies(['user']);
@@ -66,15 +66,19 @@ const GroupWaiting = ({setGlobalState}) => {
             ).then(response => {
                 return response.json();
             }).then(json => {
-                    json.sort();
-                    setCookie("businesslist", json, { path: '/' })
-                    setGlobalState({businesslist: json});
-                    if (json.length == 0) {
-                        navigate("/expandRadius");
-                    }
-                    else {
-                        navigate("/recommendations");
-                    }
+                if (typeof json != "object")
+                {
+                    console.log(json)
+                    setGlobalState({...globalState, "failedToFind": json})
+                    navigate("/expandRadius");
+                }
+                else
+                {
+                    setCookie("businesslist", json, { path: '/' });
+                    setGlobalState({...globalState, 'businesslist': json});
+                    setGlobalState({...globalState, "failedToFind": false})
+                    navigate("/recommendations");
+                }
                 })
         } catch (e) {
             // else set an error

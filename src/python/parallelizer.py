@@ -39,10 +39,14 @@ def timeFilter(time, x):
 def distanceHandlerParallel(user_loc, req, id_list):
     try:
         cpus = multiprocessing.cpu_count()
+        print(cpus)
     except NotImplementedError:
         cpus = 2   # arbitrary default
+    print("Check 1 2")
     pool = multiprocessing.Pool(processes=cpus)
+    print("Check 1 2")
     parallelized = pool.map(partial(distanceFilter, user_loc, req["latlong"]["distance"]), id_list)
+    print("Check 1 2")
     ret_list = [x for x in parallelized if x]
     return ret_list
 
