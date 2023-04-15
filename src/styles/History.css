@@ -1,3 +1,10 @@
+#hist-cont{
+  position: absolute;
+  top: 100px;
+  overflow: hidden;
+  scrollbar-width: 0px;
+}
+
 #history-list{
   padding-left:0;
 }
