@@ -3,7 +3,7 @@ import { Container, Button } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import Popup from './Popup';
-import { getFilters, getLastVisitedRestaurant, hasDietaryRestrictions, rateRestaurant, setLastVisitedRestaurant } from "../firestore.js";
+import { getFilters, getHistory, getLastVisitedRestaurant, hasDietaryRestrictions, rateRestaurant, setLastVisitedRestaurant } from "../firestore.js";
 import logo from './../images/logo.png'; // Tell webpack this JS file uses this image
 import { AccountOrLoginButton, SettingsButton } from './Buttons';
 import { useGeolocated } from "react-geolocated";
@@ -99,13 +99,14 @@ const HomePage = ({ bob, setGlobalState, globalState }) => {
         }
         
         notInGroup();
-        const jsonData = makeJSONData(await getFilters(bob.uid));
+        console.log(JSON.stringify(await makeJSONData(await getFilters(bob.uid))));
+        const jsonData = await makeJSONData(await getFilters(bob.uid));
 
         setGlobalState({...globalState, jsonData: jsonData});
         navigate('/waiting');
     }
 
-    function makeJSONData(userData) {
+    async function makeJSONData(userData) {
         const latlong = {
             latitude: coords.latitude,
             longitude: coords.longitude,
@@ -135,12 +136,22 @@ const HomePage = ({ bob, setGlobalState, globalState }) => {
         const currentDate = new Date();
         const zeroFilledHours = ('00'+currentDate.getHours()).slice(-2);
         const zeroFilledMinutes = ('00'+currentDate.getMinutes()).slice(-2);
+
+        const filterInfo = bob.isAnonymous ? false : await getFilters(bob.uid).filters;
+        const userInfo =  filterInfo === false ? false : {
+            fastFood: filterInfo.preferences.includeFastFood,
+            exclude: filterInfo.excludedCuisines,
+            includeHistory: !filterInfo.preferences.includeHistory ? false : Object.keys(getHistory(filterInfo)),
+            minRating: filterInfo.preferences.minimumRating,
+            familyFriendly: filterInfo.preferences.requireFamilyFriendly
+        };
         return {
             random: true,
             time: `${zeroFilledHours}:${zeroFilledMinutes}`,
             price: 5,
             diet: dietData,
             latlong: latlong,
+            userinfo: userInfo,
             keywords: "" // Required for the server, not for random suggestions.
         }
     }
