@@ -66,15 +66,19 @@ const GroupWaiting = ({setGlobalState}) => {
             ).then(response => {
                 return response.json();
             }).then(json => {
-                    json.sort();
-                    setCookie("businesslist", json, { path: '/' })
-                    setGlobalState({businesslist: json});
-                    if (json.length == 0) {
-                        navigate("/expandRadius");
-                    }
-                    else {
-                        navigate("/recommendations");
-                    }
+                if (typeof json != "object")
+                {
+                    console.log(json)
+                    setGlobalState({...globalState, "failedToFind": json})
+                    navigate("/expandRadius");
+                }
+                else
+                {
+                    setCookie("businesslist", json, { path: '/' });
+                    setGlobalState({...globalState, 'businesslist': json});
+                    setGlobalState({...globalState, "failedToFind": false})
+                    navigate("/recommendations");
+                }
                 })
         } catch (e) {
             // else set an error
