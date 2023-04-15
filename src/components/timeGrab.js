@@ -17,7 +17,12 @@ const TimeGrab = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const [price, setPrice] = useState("")
-    const [value, onChange] = useState('10:00');
+    
+    const currentDate = new Date();
+    const zeroFilledHours = ('00'+currentDate.getHours()).slice(-2);
+    const zeroFilledMinutes = ('00'+currentDate.getMinutes()).slice(-2);
+
+    const [value, onChange] = useState(zeroFilledHours + ":" + zeroFilledMinutes);
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
