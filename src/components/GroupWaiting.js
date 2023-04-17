@@ -48,8 +48,10 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
         e && e.preventDefault();
         navigate("/recommendations/waiting")
         const groupCode = cookies["groupCode"]
-        // updateGroupHost(groupCode, "hostReady", true)
+        updateGroupHost(groupCode, "hostReady", true)
         const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
+        jsonData['latlong'] = cookies['latlong'];
+        console.log(jsonData);
         try {
             console.log('inside try catch');
             fetch("http://localhost:5000/data", {

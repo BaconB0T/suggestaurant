@@ -36,8 +36,12 @@ const ExpandRadius = ({globalState, setGlobalState}) => {
                 longitude: cookies["latlong"]["longitude"],
                 distance: distRef.current.value
             }
-            console.log("check2")
+
             setCookie('latlong', latlong, { path: '/' });
+            if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
+                updateGroupHost(cookies['groupCode'], 'latlong', latlong);
+            }
+
             // They've submitted the form, allow decNumUsersReady again.
             setGlobalState({
                 ...globalState,
@@ -82,7 +86,7 @@ const ExpandRadius = ({globalState, setGlobalState}) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            <BackButton to='/location'/>
+            <BackButton to='/keywordGrab'/>
             <HomeButton/>
             <div className="w-100" style={{ maxWidth: "400px" }}>
                 <>
