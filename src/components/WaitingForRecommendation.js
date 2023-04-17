@@ -46,7 +46,7 @@ const WaitingForRecommendation = (props) => {
 
     async function checkGroupDone() {
         await idk().then((group) => {
-            // If the host ain't ready, go back! 
+            // if Not skipped and group not all ready, go back.
             if (group && (!group['hostReady'] && group['numUsers'] !== group['numUsersReady'])) {
                 console.log(group);
                 updateGroupMember(group['groupCode'], 'numUsersReady', null);
