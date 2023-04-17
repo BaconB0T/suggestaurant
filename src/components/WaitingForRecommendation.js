@@ -1,11 +1,13 @@
-import { getGroup } from "../firestore";
+import { getGroup, updateGroupMember } from "../firestore";
 import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom'
 import Spinner from 'react-bootstrap/Spinner';
 import { Container } from 'react-bootstrap'
 
-const WaitingForRecommendation = ({setGlobalState}) => {
+const WaitingForRecommendation = (props) => {
+    const { setGlobalState, globalState } = props;
+    const message = props.message ? props.message : "Retrieving Your Results!";
     const [numUsers, setNumUsers] = useState(-1);
     const [numUsersReady, setNumUsersReady] = useState(0);
     const [cookies, setCookie] = useCookies(['user']);
@@ -44,14 +46,19 @@ const WaitingForRecommendation = ({setGlobalState}) => {
 
     async function checkGroupDone() {
         await idk().then((group) => {
-            if (group && group["suggestions"] !== undefined) {
+            // If the host ain't ready, go back! 
+            if (group && (!group['hostReady'] && group['numUsers'] !== group['numUsersReady'])) {
+                console.log(group);
+                updateGroupMember(group['groupCode'], 'numUsersReady', null);
+                navigate('/keywordGrab');
+            } else if (group && group["suggestions"] !== undefined) {
                 // console.log(typeof group.suggestions);
                 // console.log(Object.keys(group.suggestions));
                 let suggestions = Object.keys(group.suggestions);
                 suggestions.sort();
                 console.log(suggestions);
                 setCookie('businesslist', suggestions, { path: '/' });
-                setGlobalState({businesslist: suggestions});
+                setGlobalState({...globalState, businesslist: suggestions});
                 navigate("/recommendations");
             }
         })
@@ -89,8 +96,7 @@ const WaitingForRecommendation = ({setGlobalState}) => {
 
                 <>
                     <div>
-                        <h3>Retrieving Your Results!
-                        </h3>
+                        <h3>{message}</h3>
                         <br></br>
                         <div>
                             <Spinner animation="border" role="status">

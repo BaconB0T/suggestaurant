@@ -3,14 +3,29 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import {BackButton, HomeButton } from './Buttons';
+import { updateGroupHost,updateGroupMember } from '../firestore';
+import { useEffect } from 'react';
 
-const ExpandRadius = ({globalState}) => {
+const ExpandRadius = ({globalState, setGlobalState}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const distRef = useRef()
     const [reason, setReason] = useState()
-
+    useEffect(() => {
+        const gc = cookies['groupCode'];
+        if (gc != '0') {
+            if (!globalState.groupExpandRadiusVisited) {
+                updateGroupMember(gc, 'numUsersReady', null);
+                // Prevents decrementing numUsersReady everytime the page reloads before they expand the search radius.
+                setGlobalState({
+                    ...globalState,
+                    groupExpandRadiusVisited: true
+                });
+            }
+            updateGroupHost(gc, 'hostReady', false);
+        }
+    }, []);
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
@@ -23,7 +38,11 @@ const ExpandRadius = ({globalState}) => {
             }
             console.log("check2")
             setCookie('latlong', latlong, { path: '/' });
-
+            // They've submitted the form, allow decNumUsersReady again.
+            setGlobalState({
+                ...globalState,
+                groupExpandRadiusVisited: false
+            });
             navigate("/keywordGrab");
 
         } catch (e) {
