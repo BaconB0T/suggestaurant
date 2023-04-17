@@ -21,7 +21,6 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
             const group = await getGroup(groupCode)
             if (group && group["hostReady"] != undefined)
             {
-                console.log(group.hostReady)
                 return group.hostReady
             }
             else

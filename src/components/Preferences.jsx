@@ -6,8 +6,8 @@ import { Container, Card } from "react-bootstrap";
 import Popup from './Popup';
 import { BackButton } from "./Buttons";
 
-function Preferences({ user, setGlobalState, updated }) {
-
+function Preferences({ user, setGlobalState, globalState }) {
+    const updated = globalState.updated;
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
     const [minRating, setMR] = useState(0);
@@ -53,7 +53,7 @@ function Preferences({ user, setGlobalState, updated }) {
     };
 
     const closePopup = () => {
-        setGlobalState({ "updated": false })
+        setGlobalState({...globalState, "updated": false })
         console.log("CLOSE POPUP")
     };
 

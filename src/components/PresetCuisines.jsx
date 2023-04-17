@@ -4,7 +4,7 @@ import { getCuisines, updateUserCuisine, getFilters } from '../firestore';
 import "../styles/presetCuis.css";
 import { BackButton } from './Buttons';
 
-function PreSetCuisines({ user, setGlobalState }) {
+function PreSetCuisines({ user, setGlobalState, globalState }) {
 
     const [listOfCuisines, setCuisineList] = useState([]);
     const [userCuisineList, setUserCuisine] = useState([]);
@@ -37,7 +37,7 @@ function PreSetCuisines({ user, setGlobalState }) {
 
     const handleCheck = (event) => {
         var updatedList = [...checked];
-        setGlobalState({ 'updated': true })
+        setGlobalState({...globalState, 'updated': true })
         if (event.target.checked) {
             updatedList = [...checked, event.target.value];
         } else {
