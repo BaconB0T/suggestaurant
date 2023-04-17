@@ -19,9 +19,11 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
         async function detectGroupDone() {
             setNumUsers(group.numUsers);
             setNumUsersReady(group.numUsersReady);
-            return (group.hostReady) || (group.numUsers == group.numUsersReady);
+            return (group.skip) || (group.numUsers == group.numUsersReady);
         }
         detectGroupDone().then((groupReady) => {
+            console.log('groupReady');
+            console.log(groupReady);
             if (groupReady) {
                 const isHost = cookies["host"]; // 'true', 'false'
                 if(!(isHost == 'true'))
@@ -46,12 +48,15 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
 
     async function runAlgorithm(e) {
         e && e.preventDefault();
-        navigate("/recommendations/waiting")
         const groupCode = cookies["groupCode"]
-        updateGroupHost(groupCode, "hostReady", true)
+        // Maybe move to last and put the try catch in a .then()
+        updateGroupHost(groupCode, "haveSuggestions", false);
+        
         const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
         jsonData['latlong'] = cookies['latlong'];
+        console.log('GroupWaiting jsonData');
         console.log(jsonData);
+        navigate("/recommendations/waiting");
         try {
             console.log('inside try catch');
             fetch("http://localhost:5000/data", {
@@ -76,12 +81,13 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
                 }
                 else
                 {
+                    updateGroupHost(groupCode, "haveSuggestions", true);
                     setCookie("businesslist", json, { path: '/' });
                     setGlobalState({...globalState, 'businesslist': json});
                     setGlobalState({...globalState, "failedToFind": false})
                     navigate("/recommendations");
                 }
-                })
+            })
         } catch (e) {
             // else set an error
             console.err(e)
@@ -94,7 +100,13 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
     //     }
     // }, [numUsersReady, numUsers])
 
-
+    function skipRemainingQuizzes(e) {
+        e.preventDefault();
+        updateGroupHost(cookies['groupCode'], 'skip', true).then((b) => {
+            setGlobalState({...globalState, skip: true});
+            runAlgorithm();
+        });
+    }
 
 
 
@@ -134,7 +146,7 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
                     <br></br>
                     
                     {(cookies["host"] === "true") ? 
-                        (<Form onSubmit={runAlgorithm}>  
+                        (<Form onSubmit={skipRemainingQuizzes}>  
                             <Button className="w-50 mt-10 button-control" type="submit">
                                 continue anyway
                             </Button>

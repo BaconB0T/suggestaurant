@@ -19,7 +19,7 @@ const UserWaiting = ({ globalState, setGlobalState }) => {
     //     async function idk() {
     //         // setNumUsers(group.numUsers)
     //         // setNumUsersReady(group.numUsersReady)
-    //         // return (group.hostReady) || (group.numUsers == group.numUsersRead);
+    //         // return (group.skip) || (group.numUsers == group.numUsersRead);
     //         return
     //     }
     //     // console.log('inside use effect')

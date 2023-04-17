@@ -20,7 +20,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 const supportedMemberGroupKeys = ['numUsersReady', 'diet', 'keywords', 'price', 'users', 'suggestions'];
-const supportedHostGroupKeys = supportedMemberGroupKeys.concat('latlong', 'time', 'hostReady', 'decision');
+const supportedHostGroupKeys = supportedMemberGroupKeys.concat('haveSuggestions', 'latlong', 'time', 'skip', 'decision');
 // document keys that require atomic read/write operations go in transactionKeys
 const transactionKeys = ['numUsersReady', 'keywords'];
 // localize OAuth flow to user's preferred language.
@@ -824,7 +824,7 @@ async function updateGroupMember(code, key, value) {
       return false;
   }
   try {
-    updateDoc(groupDocRef, groupDoc);
+    await updateDoc(groupDocRef, groupDoc);
     return true;
   } catch (e) {
     console.log("Failed to update group, see below reason:");
@@ -863,7 +863,7 @@ function updateGroupMemberTransaction(key, value, user, groupDocRef) {
         }
         break;
     }
-    transaction.update(groupDocRef, groupDoc);
+    await transaction.update(groupDocRef, groupDoc);
   }
 }
 
@@ -878,11 +878,12 @@ async function updateGroupHost(code, key, value) {
   }
 
   if (supportedMemberGroupKeys.includes(key)) {
-    return updateGroupMember(code, key, value);
+    return await updateGroupMember(code, key, value);
   }
 
   if (!supportedHostGroupKeys.includes(key)) {
     console.err(`Cannot update key ${key} in group ${code}!`);
+    return false;
   }
 
   const groupDocRef = doc(db, 'groups', code);
@@ -891,7 +892,8 @@ async function updateGroupHost(code, key, value) {
   switch (key) {
     case 'latlong':
     case 'time':
-    case 'hostReady':
+    case 'skip':
+    case 'haveSuggestions':
       groupDoc[key] = value;
       break;
     case 'decision':
@@ -905,6 +907,8 @@ async function updateGroupHost(code, key, value) {
   }
 
   try {
+    console.log('updated groupDoc');
+    console.log(groupDoc);
     await updateDoc(groupDocRef, groupDoc);
     return true;
   } catch (e) {

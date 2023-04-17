@@ -13,27 +13,6 @@ const WaitingForRecommendation = (props) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
 
-    // async function updateVars() {
-    //     const groupCode = cookies["groupCode"]
-    //     const group = await getGroup(groupCode)
-    //     // setNumUsers(group.numUsers)
-    //     // setNumUsersReady(group.numUsersReady)
-    //     if (group.suggestions != null) {
-    //         setCookie('businesslist', group.suggestions, { path: '/' });
-    //         navigate("/recommendations");
-    //     }
-    // }
-    // const MINUTE_MS = 1000;
-
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         updateVars()
-    //         console.log('Logs every second');
-    //     }, MINUTE_MS);
-
-    //     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-    // }, [])
-
     const MINUTE_MS = 1000;
 
     async function idk() {
@@ -47,13 +26,14 @@ const WaitingForRecommendation = (props) => {
     async function checkGroupDone() {
         await idk().then((group) => {
             // if Not skipped and group not all ready, go back.
-            if (group && (!group['hostReady'] && group['numUsers'] !== group['numUsersReady'])) {
+            const skipped = cookies['host'] === 'true' ? globalState.skip : group['skip']
+            if (group && (!skipped && group['numUsers'] !== group['numUsersReady'])) {
                 console.log(group);
-                updateGroupMember(group['groupCode'], 'numUsersReady', null);
-                navigate('/keywordGrab');
-            } else if (group && group["suggestions"] !== undefined) {
-                // console.log(typeof group.suggestions);
-                // console.log(Object.keys(group.suggestions));
+                updateGroupMember(group['groupCode'], 'numUsersReady', null).then((b) => {
+                    navigate('/keywordGrab');
+                });
+            } else if (group && group["haveSuggestions"]) {
+                // Host might be getting a new set of recommendations. Wait for those instead!
                 let suggestions = Object.keys(group.suggestions);
                 suggestions.sort();
                 console.log(suggestions);

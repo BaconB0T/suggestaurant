@@ -19,9 +19,9 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
         if (groupCode != 0)
         {
             const group = await getGroup(groupCode)
-            if (group && group["hostReady"] != undefined)
+            if (group && group["skip"] != undefined)
             {
-                return group.hostReady
+                return group.skip
             }
             else
             {
@@ -48,7 +48,7 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
     }, [])
 
-    async function lmao()
+    async function stub()
     {
         console.log("Can't believe this works.")
         return 0
@@ -61,7 +61,7 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
 
             setCookie('keywords', keywordRef.current.value, { path: '/' });
 
-            const check = user.isAnonymous ? lmao().then(e => {
+            const check = user.isAnonymous ? stub().then(e => {
                 console.log("Check123")
                 const jsonData = {
                     keywords: keywordRef.current.value,

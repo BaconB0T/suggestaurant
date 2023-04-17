@@ -107,17 +107,17 @@ class Recommendations extends React.Component {
           this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
         }
       }
-
-      if (this.state.index === this.state.childRefs.length) { // if there are no more recommendations
+      console.log('this.state.index');
+      console.log(this.state.index);
+      console.log('this.state.childRefs.length');
+      console.log(this.state.childRefs().length);
+      if (this.state.index < 0) { // if there are no more recommendations
         if (this.state.host === 'true') { // Navigate to increase radius if host.
-          updateGroupHost(state.groupCode, 'hostReady', false);
+          // *** host decrements numUsersReady in /expandRadius. ***
           this.state.showNoRecs = true;
         } else { // group members wait for host.
           console.log('Recommendations Member groupCode')
           console.log(state.groupCode);
-          // host also decrements but in /expandRadius. If no suggestions fit the query, it will still
-          // decrement, but we don't want to double decrement it if there are suggestions but all are 
-          // rejected 
           updateGroupMember(state.groupCode, 'numUsersReady', null);
           this.state.showNoRecsGroupMember = true
         }
@@ -236,7 +236,7 @@ class Recommendations extends React.Component {
     return (
       <div className="recommendations">
         {/* No recommendations, member */}
-        {this.state.showNoRecsGroupMember && (<Navigate to={'/recommendations/waiting'} />)}
+        {this.state.showNoRecsGroupMember && (<Navigate to={'/keywordGrab'} />)}
         {/* No recommendations solo or host */}
         {this.state.showNoRecs && (<Navigate to={'/expandRadius'} />)}
         {/* Accepted recommendation */}
