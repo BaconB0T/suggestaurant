@@ -10,26 +10,31 @@
 }
 
 .button-test{
-  display: flex;
+  display: inline-grid;
+  grid-template-columns: 90% auto;
   width: 100%;
   background: white;
   flex-direction: row;
   border: solid;
   border-width: thin;
   border-radius: 5px;
-  justify-content: flex-end;
+  justify-content: space-between;
+  padding: 10px;
 
 }
 
 #trash-button,.rest-but  {
-  grid-column: 1;
+  /* grid-column: 1; */
   grid-row: 1;
 }
 
 .rest-but{
+    display: grid;
     color: black;
     text-decoration: none;
     transition: 0.5s;
+    align-items: center;
+    grid-template-columns: 50% auto auto auto;
 }
 
 .rest-but:hover{
@@ -44,40 +49,44 @@
     /* margin-top: 10px;
     margin-left: 7%;
     margin-right: 10%; */
-    /* justify-content: center right; */
+    justify-content: space-between;
     align-items: center ;
     /* background-color: white; */
 }
 
-.res-element:hover{
+.button-test:hover{
     background-color: lightgrey;
     transition: 0.3s
 }
 
 #rest-title{
-  width: 80%;
+  width: 100%;
   background: transparent;
+  justify-content: right;
 }
 .spacing{
     font-size: medium;
     padding-right: 1%;
 }
 
-#liked{
-    justify-content: center;
+#liked , #disliked{
+    display: grid;
+    justify-content: left;
     align-items: center;
     /* padding-top: 5px; */
-    padding-left: 3px;
+    /* padding-left: 3px; */
     color: blue;
 }
 
-#disliked{
-    padding-top: 5px;
-    padding-left: 3px;
-    color: blue;
+#pop-up-liked, #pop-up-disliked{
+  justify-content: center;
+  align-items: center;
+  color: blue;
 }
 
-#test{
+
+
+#stars{
     display: flex;
 }
 
@@ -88,7 +97,7 @@
     color: #ccc;
 }
 
-#trash-button{
+.trash-button{
     place-self: center end;
     /* padding-top: 7px; */
     background-color: transparent;
@@ -96,7 +105,7 @@
     /* margin-right: 10%; */
 }
 
-#trash-button:hover{
+.trash-button:hover{
   color: lightcoral;
 }
 
@@ -117,20 +126,19 @@
   }
   
   .popup {
-    margin: 70px auto;
-    padding: 20px;
+    margin: 20% auto;
+    padding: 30px 20px 20px 20px;
     background: #fff;
     border-radius: 5px;
-    width: 30%;
+    width: 37%;
     position: relative;
-    transition: all 5s ease-in-out;
   }
   
  
   .popup .close {
     position: absolute;
-    top: 20px;
-    right: 30px;
+    top: -5px;
+    right: 10px;
     transition: all 200ms;
     font-size: 30px;
     font-weight: bold;
