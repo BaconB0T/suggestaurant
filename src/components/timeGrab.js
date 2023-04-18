@@ -11,7 +11,7 @@ function timeToInt(timeString) {
     return parseInt(timeString.replace(':', ''));
 }
 
-const TimeGrab = () => {
+const TimeGrab = ({ user }) => {
     const [clicked, setClicked] = useState([false, false, false, false, false]);
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
@@ -52,7 +52,7 @@ const TimeGrab = () => {
         >
             <div className="w-60" style={{ maxWidth: "400px" }}>
                 <img src={time} className="image-control" alt="Logo" />
-                <BackButton to='/dietaryRestrictions' />
+                <BackButton to={ (user === null || user.isAnonymous) ? '/dietaryRestrictions': '/location' }/>
                 <HomeButton />
                 <>
                     <h3>Select a time to eat!</h3>

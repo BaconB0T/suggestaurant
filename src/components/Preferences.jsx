@@ -7,7 +7,6 @@ import Popup from './Popup';
 import { BackButton } from "./Buttons";
 
 function Preferences({ user, setGlobalState, updated }) {
-
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
     const [minRating, setMR] = useState(0);
@@ -53,7 +52,7 @@ function Preferences({ user, setGlobalState, updated }) {
     };
 
     const closePopup = () => {
-        setGlobalState({ "updated": false })
+        setGlobalState(prevState => ({...prevState, "updated": false }))
         console.log("CLOSE POPUP")
     };
 

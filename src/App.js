@@ -89,18 +89,18 @@ function App() {
         <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab setGlobalState={setState} user = {user}/>}/>
         <Route path="/priceCheck"element={<PriceGrab globalState={state} setGlobalState={setState}/>}/>
-        <Route path="/timeGrab"element={<TimeGrab/>}/>
+        <Route path="/timeGrab"element={<TimeGrab user={user}/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck user={user} globalState={state} setGlobalState={setState}/>}/>
         <Route path="/location" element={<DistanceGrab user={user} setGlobalState={setState} globalState={state}/>}/>
-        <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated} />}/>
+        <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated}/>}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user} setGlobalState={setState}/>} />
-        <Route path='/expandRadius' element={<ExpandRadius globalState={state}/>} />
+        <Route path='/expandRadius' element={<ExpandRadius setGlobalState={setState} globalState={state}/>} />
         {/* <Route path='/generateCodePage' element={<GetCodePage />}/> */}
         <Route path='/group/join' element={<Group isHost={false} globalState={state} setGlobalState={setState} />} />
         <Route path='/group/host' element={<Group isHost={true} />} />
-        <Route path='/group/waiting' element={<GroupWaiting setGlobalState={setState} />} />
-        <Route path='/recommendations/waiting' element={<WaitingForRecommendation setGlobalState={setState} />} />
+        <Route path='/group/waiting' element={<GroupWaiting globalState={state} setGlobalState={setState} />} />
+        <Route path='/recommendations/waiting' element={<WaitingForRecommendation globalState={state} message={state.waitingMessage} setGlobalState={setState} />} />
         <Route path='/waiting/' element={<UserWaiting setGlobalState={setState} globalState={state} />} />
         <Route path = '/changeLocation' element = {<ChangeLocation/>}/>
       </Routes>

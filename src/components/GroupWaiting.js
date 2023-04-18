@@ -7,7 +7,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import styles from '../styles/new.module.scss';
 
 
-const GroupWaiting = ({setGlobalState}) => {
+const GroupWaiting = ({globalState, setGlobalState}) => {
     const [numUsers, setNumUsers] = useState(-1);
     const [numUsersReady, setNumUsersReady] = useState(0);
     const [cookies, setCookie] = useCookies(['user']);
@@ -19,7 +19,7 @@ const GroupWaiting = ({setGlobalState}) => {
         async function detectGroupDone() {
             setNumUsers(group.numUsers);
             setNumUsersReady(group.numUsersReady);
-            return (group.hostReady) || (group.numUsers == group.numUsersReady);
+            return (group.skip) || (group.numUsers == group.numUsersReady);
         }
         detectGroupDone().then((groupReady) => {
             if (groupReady) {
@@ -38,7 +38,6 @@ const GroupWaiting = ({setGlobalState}) => {
     useEffect(() => {
         const interval = setInterval(() => {
             updateVars()
-            // console.log('Logs every second');
         }, MINUTE_MS);
 
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
@@ -46,10 +45,13 @@ const GroupWaiting = ({setGlobalState}) => {
 
     async function runAlgorithm(e) {
         e && e.preventDefault();
-        navigate("/recommendations/waiting")
         const groupCode = cookies["groupCode"]
-        updateGroupHost(groupCode, "hostReady", true)
+        // Maybe move to last and put the try catch in a .then()
+        updateGroupHost(groupCode, "haveSuggestions", false);
+        
         const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
+        jsonData['latlong'] = cookies['latlong'];
+        navigate("/recommendations/waiting");
         try {
             console.log('inside try catch');
             fetch("https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/data", {
@@ -66,19 +68,30 @@ const GroupWaiting = ({setGlobalState}) => {
             ).then(response => {
                 return response.json();
             }).then(json => {
-                    json.sort();
-                    setCookie("businesslist", json, { path: '/' })
-                    setGlobalState({businesslist: json});
-                    if (json.length == 0) {
-                        navigate("/expandRadius");
-                    }
-                    else {
+                if (typeof json != "object")
+                {
+                    setGlobalState({...globalState, "failedToFind": json})
+                    navigate("/expandRadius");
+                }
+                else
+                {
+                    updateGroupHost(groupCode, "haveSuggestions", true)
+                    .then((b) => getGroup(groupCode))
+                    .then((group) => {
+                        const suggestions = Object.keys(group.suggestions);
+                        setCookie("businesslist", suggestions, { path: '/' });
+                        setGlobalState(prevState => ({
+                            ...prevState, 
+                            'businesslist': suggestions,
+                            "failedToFind": false
+                        }));
                         navigate("/recommendations");
-                    }
-                })
+                    });
+                }
+            });
         } catch (e) {
             // else set an error
-            console.err(e)
+            console.error(e)
         }
     }
 
@@ -88,7 +101,13 @@ const GroupWaiting = ({setGlobalState}) => {
     //     }
     // }, [numUsersReady, numUsers])
 
-
+    function skipRemainingQuizzes(e) {
+        e.preventDefault();
+        updateGroupHost(cookies['groupCode'], 'skip', true).then((b) => {
+            setGlobalState({...globalState, skip: true});
+            runAlgorithm();
+        });
+    }
 
 
 
@@ -128,7 +147,7 @@ const GroupWaiting = ({setGlobalState}) => {
                     <br></br>
                     
                     {(cookies["host"] === "true") ? 
-                        (<Form onSubmit={runAlgorithm}>  
+                        (<Form onSubmit={skipRemainingQuizzes}>  
                             <Button className="w-50 mt-10 button-control" type="submit">
                                 continue anyway
                             </Button>

@@ -3,14 +3,34 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import {BackButton, HomeButton } from './Buttons';
+import { updateGroupHost, updateGroupMember } from '../firestore';
+import { useEffect } from 'react';
 
-const ExpandRadius = ({globalState}) => {
+const ExpandRadius = ({globalState, setGlobalState}) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const [error, setError] = useState("")
     const distRef = useRef()
     const [reason, setReason] = useState()
-
+    useEffect(() => {
+        const gc = cookies['groupCode'];
+        if (gc != '0') {
+            let updatedSkip = false;
+            if (!globalState.groupExpandRadiusVisited) {
+                updateGroupMember(gc, 'numUsersReady', null).then((b) => updateGroupHost(gc, 'skip', false));
+                updatedSkip = true;
+                // Prevents decrementing numUsersReady everytime the page reloads before they expand the search radius.
+                setGlobalState({
+                    ...globalState,
+                    groupExpandRadiusVisited: true
+                });
+            }
+            if (!updatedSkip) { // avoid race condition
+                updateGroupHost(gc, 'skip', false);
+            }
+            setGlobalState({...globalState, skip: false});
+        }
+    }, []);
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
@@ -21,9 +41,17 @@ const ExpandRadius = ({globalState}) => {
                 longitude: cookies["latlong"]["longitude"],
                 distance: distRef.current.value
             }
-            console.log("check2")
-            setCookie('latlong', latlong, { path: '/' });
 
+            setCookie('latlong', latlong, { path: '/' });
+            if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
+                updateGroupHost(cookies['groupCode'], 'latlong', latlong);
+            }
+
+            // They've submitted the form, allow decNumUsersReady again.
+            setGlobalState({
+                ...globalState,
+                groupExpandRadiusVisited: false
+            });
             navigate("/keywordGrab");
 
         } catch (e) {

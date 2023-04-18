@@ -32,11 +32,9 @@ const DietCheck = ({ user, globalState, setGlobalState }) => {
         const groupCode = cookies["groupCode"]
         if (groupCode != 0) {
             const group = await getGroup(groupCode)
-            if (group && group["hostReady"] != undefined) {
-                console.log(group.hostReady)
-                return group.hostReady
-            }
-            else {
+            if (group && group["skip"] != undefined) {
+                return group.skip
+            } else {
                 return false
             }
         }

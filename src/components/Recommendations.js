@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
 import { withCookies, useCookies } from 'react-cookie';
 import { Navigate, useNavigate } from "react-router-dom";
-import { ConsoleView, isMobile } from 'react-device-detect';
 import TinderCard from 'react-tinder-card'
 import memoize from "memoize-one";
 // import { FaHome, FaRegUserCircle, FaArrowAltCircleLeft} from 'react-icons/fa';
@@ -15,9 +14,7 @@ import { BackButton, HomeButton } from "./Buttons";
 class Recommendations extends React.Component {
   constructor(props) {
     super(props);
-    // idk why this cookie keeps being assigned the name 'businesslist', it's
-    // driving me crazy.
-    var restIds = props.recommendationIds || props.allCookies['businesslist'] || props.allCookies['businesslist']; // .reverse()
+    var restIds = props.recommendationIds;
     restIds = restIds.sort();
     if (props.allCookies['groupCode'] != 0) {
       // in a group, insert groupDecision cards between each restaurant.
@@ -26,7 +23,6 @@ class Recommendations extends React.Component {
         i % 2 == 0 ? newRestIds.push(restIds[Math.trunc(i / 2)]) : newRestIds.push(`groupDecision-${restIds.length * 2 - i}`);
       }
       restIds = newRestIds.reverse();
-      // console.log(restIds);
     } else {
       const newRestIds = [];
       for (let i = 0; i < restIds.length; ++i) {
@@ -48,7 +44,9 @@ class Recommendations extends React.Component {
       host: props.allCookies['host'],
       groupCode: props.allCookies['groupCode'],
       showMap: false,
-      goBack: false
+      goBack: false,
+      showNoRecs: false,
+      showNoRecsGroupMember: false
     }
 
   }
@@ -92,31 +90,35 @@ class Recommendations extends React.Component {
 
   swiped(direction, nameToDelete, index, state) {
     this.updateIndex(index - 1);
-    if (state.groupCode != 0) {
-      // in group
-      if (!nameToDelete.includes('groupDecision')) {
-        // Regular card, host and member vote on suggestion.
+    if (state.groupCode != 0) { // in group
+      if (!nameToDelete.includes('groupDecision')) { // Regular card, host and member vote on suggestion.
         this.memberAction(direction === 'right');
-      } else {
-        // After vote, Host must decide
-        console.log(direction);
-        console.log(state.host);
-        if (state.host === 'true') {
-          // Host decides for the group.
+      } else {  // After vote, Host must decide
+        if (state.host === 'true') { // Host decides for the group.
           this.hostAction(this.state.restIds[index + 1], (direction === 'right')).then((v) => {
             if (direction === 'right') {
               this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
             }
           });
-        } else if (direction === 'right') {
+        } else if (direction === 'right') { // not the host, if accepted go to map
           this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
         }
       }
-    } else {
-      // Not in a group.
-      if (direction === 'right') {
-        // Go to next recommendation.
+      if (this.state.index < 0) { // if there are no more recommendations
+        if (this.state.host === 'true') { // Navigate to increase radius if host.
+          // *** host decrements numUsersReady in /expandRadius. ***
+          this.state.showNoRecs = true;
+        } else { // group members wait for host.
+          updateGroupMember(state.groupCode, 'numUsersReady', null);
+          this.state.showNoRecsGroupMember = true
+        }
+      }
+    } else { // Not in a group.
+      if (direction === 'right') { // Go to next recommendation.
         this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index] })
+      } // Navigate to increase radius if last recommendation is swiped.
+      if (this.state.index === this.state.childRefs.length) {
+        this.state.showNoRecs = true;
       }
     }
   }
@@ -224,6 +226,11 @@ class Recommendations extends React.Component {
 
     return (
       <div className="recommendations">
+        {/* No recommendations, member */}
+        {this.state.showNoRecsGroupMember && (<Navigate to={'/keywordGrab'} />)}
+        {/* No recommendations solo or host */}
+        {this.state.showNoRecs && (<Navigate to={'/expandRadius'} />)}
+        {/* Accepted recommendation */}
         {this.state.showMap && (<Navigate to={`/recommendations/map?business_id=${this.state.showMapBusinessId}`} />)}
         <div id='enjoy' style={{ display: this.state.showMap ? 'auto' : 'none' }}>Enjoy!</div>
         <div className="recommendation--cards" style={{ display: this.state.showMap ? 'none' : 'auto' }}>
@@ -253,7 +260,7 @@ class Recommendations extends React.Component {
             />
           ))}
         </div>
-        {!isMobile ? buttons : <></>}
+        {buttons}
       </div>
     );
   }
@@ -366,9 +373,6 @@ const GroupDecision = (props) => {
   const [restaurant, setRestaurant] = useState([]);
   const [group, setGroup] = useState({});
   // Update restaurant;
-  // console.log('passRef');
-  // console.log(passRef);
-  // console.log(props);
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurantById(restId);

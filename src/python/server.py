@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk.corpus import stopwords 
 from nltk.tokenize import WordPunctTokenizer
 from parallelizer import *
 import nltk
@@ -128,10 +127,11 @@ def userHandler(req, id_list):
 
 
 # this uploads restaurants to group DB object for group mode
+# Overwrites suggestion data since for subsequent runs, client doesn't
+# have a way to find the new list for group members. 
 def insert_restaurants_as_suggestions(ids_list, group_id):
 	groupDocRef = db.document('groups', group_id)
-	groupDoc = groupDocRef.get().to_dict()
-	suggestion_data = groupDoc['suggestions'] if 'suggestions' in groupDoc.keys() else dict()
+	suggestion_data = dict()
 	for rest_id in ids_list:
 		suggestion_data[rest_id] = dict(numAccepted=0, numRejected=0)
 	groupDocRef.update({'suggestions': suggestion_data})

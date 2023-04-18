@@ -37,7 +37,7 @@ function PreSetCuisines({ user, setGlobalState }) {
 
     const handleCheck = (event) => {
         var updatedList = [...checked];
-        setGlobalState({ 'updated': true })
+        setGlobalState(prevState => ({...prevState, 'updated': true }))
         if (event.target.checked) {
             updatedList = [...checked, event.target.value];
         } else {
