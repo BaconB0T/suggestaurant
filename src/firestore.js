@@ -780,10 +780,6 @@ async function joinGroup(code, user) {
  * @returns 
  */
 async function updateGroupMember(code, key, value) {
-  console.log('updateGroupMember')
-  console.log(code);
-  console.log(key);
-  console.log(value);
   if (!(await groupExists(code))) {
     return false;
   }
@@ -856,9 +852,9 @@ function updateGroupMemberTransaction(key, value, user, groupDocRef) {
         break;
       default:
         try {
-          console.err(`invalid atomic transaction key ${key}, must be one of: ['keywords', 'numUsersReady']`);
+          console.error(`invalid atomic transaction key ${key}, must be one of: ['keywords', 'numUsersReady']`);
         } catch(e) {
-          console.err('Invalid atomic transaction key:');
+          console.error('Invalid atomic transaction key:');
           console.print(key);
         }
         break;
@@ -868,10 +864,6 @@ function updateGroupMemberTransaction(key, value, user, groupDocRef) {
 }
 
 async function updateGroupHost(code, key, value) {
-  console.log('updateGroupHost');
-  console.log(code);
-  console.log(key);
-  console.log(value);
   if (!(await isHost(code, getAuth().currentUser))) {
     console.error("Not the group's host!");
     return false;
@@ -882,7 +874,7 @@ async function updateGroupHost(code, key, value) {
   }
 
   if (!supportedHostGroupKeys.includes(key)) {
-    console.err(`Cannot update key ${key} in group ${code}!`);
+    console.error(`Cannot update key ${key} in group ${code}!`);
     return false;
   }
 

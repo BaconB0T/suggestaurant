@@ -91,7 +91,7 @@ const ExpandRadius = ({globalState, setGlobalState}) => {
             className="d-flex align-items-center justify-content-center"
             style={{ minHeight: "100vh" }}
         >
-            <BackButton to='/keywordGrab'/>
+            <BackButton to='/location'/>
             <HomeButton/>
             <div className="w-100" style={{ maxWidth: "400px" }}>
                 <>

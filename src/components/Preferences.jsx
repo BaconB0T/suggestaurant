@@ -6,8 +6,7 @@ import { Container, Card } from "react-bootstrap";
 import Popup from './Popup';
 import { BackButton } from "./Buttons";
 
-function Preferences({ user, setGlobalState }) {
-    const updated = globalState.updated;
+function Preferences({ user, setGlobalState, updated }) {
     const [FamilyFriendly, setFF] = useState(false);
     const [includeHis, setHis] = useState(false);
     const [minRating, setMR] = useState(0);

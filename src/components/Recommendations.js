@@ -23,7 +23,6 @@ class Recommendations extends React.Component {
         i % 2 == 0 ? newRestIds.push(restIds[Math.trunc(i / 2)]) : newRestIds.push(`groupDecision-${restIds.length * 2 - i}`);
       }
       restIds = newRestIds.reverse();
-      // console.log(restIds);
     } else {
       const newRestIds = [];
       for (let i = 0; i < restIds.length; ++i) {
@@ -105,17 +104,11 @@ class Recommendations extends React.Component {
           this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
         }
       }
-      console.log('this.state.index');
-      console.log(this.state.index);
-      console.log('this.state.childRefs.length');
-      console.log(this.state.childRefs().length);
       if (this.state.index < 0) { // if there are no more recommendations
         if (this.state.host === 'true') { // Navigate to increase radius if host.
           // *** host decrements numUsersReady in /expandRadius. ***
           this.state.showNoRecs = true;
         } else { // group members wait for host.
-          console.log('Recommendations Member groupCode')
-          console.log(state.groupCode);
           updateGroupMember(state.groupCode, 'numUsersReady', null);
           this.state.showNoRecsGroupMember = true
         }
@@ -380,9 +373,6 @@ const GroupDecision = (props) => {
   const [restaurant, setRestaurant] = useState([]);
   const [group, setGroup] = useState({});
   // Update restaurant;
-  // console.log('passRef');
-  // console.log(passRef);
-  // console.log(props);
   useEffect(() => {
     async function setRes() {
       const rest = await getRestaurantById(restId);

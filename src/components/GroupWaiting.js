@@ -22,8 +22,6 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
             return (group.skip) || (group.numUsers == group.numUsersReady);
         }
         detectGroupDone().then((groupReady) => {
-            console.log('groupReady');
-            console.log(groupReady);
             if (groupReady) {
                 const isHost = cookies["host"]; // 'true', 'false'
                 if(!(isHost == 'true'))
@@ -40,7 +38,6 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
     useEffect(() => {
         const interval = setInterval(() => {
             updateVars()
-            // console.log('Logs every second');
         }, MINUTE_MS);
 
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
@@ -54,11 +51,8 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
         
         const jsonData = await getGroupInfo(groupCode)  //run recommendation algorithm and navigate to recommendations page
         jsonData['latlong'] = cookies['latlong'];
-        console.log('GroupWaiting jsonData');
-        console.log(jsonData);
         navigate("/recommendations/waiting");
         try {
-            console.log('inside try catch');
             fetch("http://localhost:5000/data", {
                 method: "POST",
                 cache: "no-cache",
@@ -75,7 +69,6 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
             }).then(json => {
                 if (typeof json != "object")
                 {
-                    console.log(json)
                     setGlobalState({...globalState, "failedToFind": json})
                     navigate("/expandRadius");
                 }
@@ -97,7 +90,7 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
             });
         } catch (e) {
             // else set an error
-            console.err(e)
+            console.error(e)
         }
     }
 
