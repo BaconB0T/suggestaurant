@@ -62,7 +62,7 @@ export default function HistorySearch() {
             <div className="dataResult">
               {filteredData.slice(0, 15).map((value, key) => {
                 return (
-                  <a className="dataItem" href = "http://localhost:3000/search" target="_self">
+                  <a className="dataItem" href = "https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/search" target="_self">
                     <p>{value.name} </p>
                   </a>
                 );
