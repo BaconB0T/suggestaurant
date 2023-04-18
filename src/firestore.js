@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously, sendPasswordResetEmail, updatePassword } from "firebase/auth"
 import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage"
-import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, updateDoc, query, where, limit, onSnapshot, getCountFromServer } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc, Timestamp, doc, setDoc, deleteDoc, updateDoc, query, where, limit, onSnapshot, getCountFromServer, runTransaction } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -19,9 +19,10 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-const supportedMemberGroupKeys = ['diet', 'keywords', 'price', 'users', 'suggestions'];
-const supportedHostGroupKeys = supportedMemberGroupKeys.concat('latlong', 'time');
-
+const supportedMemberGroupKeys = ['numUsersReady', 'diet', 'keywords', 'price', 'users', 'suggestions'];
+const supportedHostGroupKeys = supportedMemberGroupKeys.concat('haveSuggestions', 'latlong', 'time', 'skip', 'decision');
+// document keys that require atomic read/write operations go in transactionKeys
+const transactionKeys = ['numUsersReady', 'keywords'];
 // localize OAuth flow to user's preferred language.
 auth.languageCode = 'it';
 auth.useDeviceLanguage();
@@ -482,6 +483,9 @@ async function getGroup(groupId) {
 
 async function groupExists(groupId) {
   const docRef = await getDoc(doc(db, 'groups', String(groupId)));
+  if(!docRef.exists()) {
+    console.log(`Group ${groupId} doesn't exist`);
+  }
   return docRef.exists();
 }
 
@@ -761,7 +765,6 @@ function defaultGroupUserData(currentUser) {
 
 async function joinGroup(code, user) {
   if (!(await groupExists(code))) {
-    console.log("Group doesn't exist.");
     return null;
   }
 
@@ -778,27 +781,30 @@ async function joinGroup(code, user) {
  */
 async function updateGroupMember(code, key, value) {
   if (!(await groupExists(code))) {
-    console.log("Group doesn't exist.");
     return false;
   }
   const user = getAuth().currentUser;
   const groupDocRef = doc(db, 'groups', code);
+  // numUsersReady requires an atomic read/write because multiple users,
+  // might be trying to update that number at once (i.e. if multiple 
+  // users finish the quiz at the same time), so we have to use a
+  // transaction to avoid a race condition.
+  if (transactionKeys.includes(key)) {
+    runTransaction(db, updateGroupMemberTransaction(key, value, user, groupDocRef));
+    return true;
+  }
   const groupDoc = (await getDoc(groupDocRef)).data();
   const userData = groupDoc['data'][user.uid];
+
   switch (key) {
     case 'users':
       if (groupDoc.users.includes(value)) {
         console.log("Already in group");
         return true;
       }
-      // console.log(groupDoc[key]);
       groupDoc[key] = groupDoc[key].concat(value);
       groupDoc['numUsers'] = groupDoc[key].length;
       groupDoc['data'][user.uid] = defaultGroupUserData(user);
-      break;
-    case 'keywords':
-      userData[key] = value;
-      groupDoc['numUsersReady'] += 1;
       break;
     case 'price':
     case 'diet':
@@ -810,16 +816,50 @@ async function updateGroupMember(code, key, value) {
       groupDoc[key][acceptedRestaurantId][vk] += 1;
       break;
     default:
-      console.log(`Invalid update key: ${key}`);
-      return false
+      console.log(`Invalid group update key: ${key}`);
+      return false;
   }
   try {
-    updateDoc(groupDocRef, groupDoc);
+    await updateDoc(groupDocRef, groupDoc);
     return true;
   } catch (e) {
-    console.log("Failed to join group, see below reason:");
+    console.log("Failed to update group, see below reason:");
     console.error(e);
     return false;
+  }
+}
+
+function updateGroupMemberTransaction(key, value, user, groupDocRef) {
+  return async (transaction) => {
+    const groupDoc = (await transaction.get(groupDocRef)).data();
+    const userData = groupDoc['data'][user.uid];
+    // If updating numUsersReady, decrement numUsersReady unless we update keywords.
+    let decNumUsersReady = true;
+    switch (key) {
+      case 'keywords':
+        userData[key] = value;
+        // Increment numUsersReady
+        decNumUsersReady = false;
+        // intentional fall-through
+      case 'numUsersReady':
+        // Unless also ran keywords, decrement numUsersReady
+        // Don't let numUsersReady get larger than numUsers or smaller than 0.
+        if (decNumUsersReady) {
+          groupDoc['numUsersReady'] = Math.max(groupDoc['numUsersReady']-1,0);
+        } else {
+          groupDoc['numUsersReady'] = Math.min(groupDoc['numUsersReady']+1, groupDoc['numUsers']);
+        }
+        break;
+      default:
+        try {
+          console.error(`invalid atomic transaction key ${key}, must be one of: ['keywords', 'numUsersReady']`);
+        } catch(e) {
+          console.error('Invalid atomic transaction key:');
+          console.print(key);
+        }
+        break;
+    }
+    await transaction.update(groupDocRef, groupDoc);
   }
 }
 
@@ -830,7 +870,12 @@ async function updateGroupHost(code, key, value) {
   }
 
   if (supportedMemberGroupKeys.includes(key)) {
-    return updateGroupMember(code, key, value);
+    return await updateGroupMember(code, key, value);
+  }
+
+  if (!supportedHostGroupKeys.includes(key)) {
+    console.error(`Cannot update key ${key} in group ${code}!`);
+    return false;
   }
 
   const groupDocRef = doc(db, 'groups', code);
@@ -839,7 +884,8 @@ async function updateGroupHost(code, key, value) {
   switch (key) {
     case 'latlong':
     case 'time':
-    case 'hostReady':
+    case 'skip':
+    case 'haveSuggestions':
       groupDoc[key] = value;
       break;
     case 'decision':
@@ -853,6 +899,8 @@ async function updateGroupHost(code, key, value) {
   }
 
   try {
+    console.log('updated groupDoc');
+    console.log(groupDoc);
     await updateDoc(groupDocRef, groupDoc);
     return true;
   } catch (e) {

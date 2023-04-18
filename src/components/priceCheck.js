@@ -24,9 +24,9 @@ const PriceGrab = ({ globalState, setGlobalState }) => {
         const groupCode = cookies["groupCode"]
         if (groupCode != 0) {
             const group = await getGroup(groupCode)
-            if (group && group["hostReady"] != undefined) {
-                console.log(group.hostReady)
-                return group.hostReady
+            if (group && group["skip"] != undefined) {
+                console.log(group.skip)
+                return group.skip
             }
             else {
                 return false
