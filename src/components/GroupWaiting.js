@@ -81,13 +81,20 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
                 }
                 else
                 {
-                    updateGroupHost(groupCode, "haveSuggestions", true);
-                    setCookie("businesslist", json, { path: '/' });
-                    setGlobalState({...globalState, 'businesslist': json});
-                    setGlobalState({...globalState, "failedToFind": false})
-                    navigate("/recommendations");
+                    updateGroupHost(groupCode, "haveSuggestions", true)
+                    .then((b) => getGroup(groupCode))
+                    .then((group) => {
+                        const suggestions = Object.keys(group.suggestions);
+                        setCookie("businesslist", suggestions, { path: '/' });
+                        setGlobalState(prevState => ({
+                            ...prevState, 
+                            'businesslist': suggestions,
+                            "failedToFind": false
+                        }));
+                        navigate("/recommendations");
+                    });
                 }
-            })
+            });
         } catch (e) {
             // else set an error
             console.err(e)

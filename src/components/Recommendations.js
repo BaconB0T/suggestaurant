@@ -14,9 +14,7 @@ import { BackButton, HomeButton } from "./Buttons";
 class Recommendations extends React.Component {
   constructor(props) {
     super(props);
-    // idk why this cookie keeps being assigned the name 'businesslist', it's
-    // driving me crazy.
-    var restIds = props.recommendationIds || props.allCookies['businesslist'] || props.allCookies['businesslist']; // .reverse()
+    var restIds = props.recommendationIds;
     restIds = restIds.sort();
     if (props.allCookies['groupCode'] != 0) {
       // in a group, insert groupDecision cards between each restaurant.
