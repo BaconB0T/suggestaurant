@@ -5,6 +5,36 @@
   scrollbar-width: 0px;
 }
 
+#add-history{
+  display: flex;
+  justify-content: space-evenly;
+  padding: 10px;
+}
+
+#add-history-tag{
+  color: rgb(15, 169 , 1);
+  font-weight: bold;
+}
+
+#add-history-but{
+  background: white;
+  border: none;
+  padding: 7px;
+  border-radius: 5px;
+  transition: 0.5s;
+}
+
+#add-history-but:hover{
+  transition: 0.5s;
+  background: lightgray;
+}
+
+#add-history-link{
+  text-decoration: none;
+  color: black;
+  margin: 5px;
+}
+
 #history-list{
   padding-left:0;
 }

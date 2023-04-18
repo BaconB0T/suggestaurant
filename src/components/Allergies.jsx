@@ -3,7 +3,7 @@ import { getFilters, getDietRest, updateDietRestrictions} from "../firestore";
 import "../styles/Allergies.css";
 import { useNavigate,Navigate } from "react-router-dom";
 import { Container, Card } from "react-bootstrap";
-import { BackButton } from './Buttons';
+import { BackButton, HomeButton } from './Buttons';
 
 function Allergies({ user }){
 
@@ -54,6 +54,7 @@ function Allergies({ user }){
             style={{ minHeight: "100vh" }}
         >
         <BackButton to='/account'/>
+        <HomeButton/>
          <div className = "checkList">
             <h2> Allergies </h2>
             <Card className="card-control">

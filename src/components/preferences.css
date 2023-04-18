@@ -13,10 +13,6 @@
 .test{
   display: flex;
   font-size: medium;
-  /* position: absolute; */
-  /* margin-right: 40%; */
-  /* margin-left: 20%; */
-  
   justify-content: center;
 }
 
@@ -83,9 +79,8 @@
     transform: translateX(19px);
   }
   .star-rating{
-    /* position: absolute;
-    margin-left: 66.3%; */
-    /* background: red; */
+    display: flex;
+    align-items: center;
   }
 
  #starSelector {
