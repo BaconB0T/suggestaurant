@@ -80,8 +80,11 @@ const UserWaiting = ({ globalState, setGlobalState }) => {
         else
         {
             setCookie("businesslist", json, { path: '/' });
-            setGlobalState({...globalState, 'businesslist': json});
-            setGlobalState({...globalState, "failedToFind": false})
+            setGlobalState({
+                ...globalState, 
+                'businesslist': json,
+                'failtedToFind': false
+            });
             navigate("/recommendations");
         }
     })
