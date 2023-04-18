@@ -6,6 +6,9 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    background: white;
+    margin: 2%;
+    border-radius: 5px;
 }
 
 .tes{

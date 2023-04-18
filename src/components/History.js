@@ -134,9 +134,9 @@ function History({ user }) {
       <HomeButton />
       <div id = "hist-cont">
         <h3>History</h3>
-        <div>
-          <h4>Add To History</h4>
-          <button><Link to='/search'>Select Restaurants</Link></button>
+        <div id = 'add-history'>
+          <h4 id= 'add-history-tag'>Add To History</h4>
+          <button id = 'add-history-but'><Link to='/search' id = 'add-history-link'>Select Restaurants</Link></button>
         </div>
         <ol id="history-list">{historyComponents}</ol>
       </div>

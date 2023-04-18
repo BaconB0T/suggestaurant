@@ -2,9 +2,9 @@ import { useState } from "react";
 import { getFilters, setPreferences, db } from "../firestore";
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import "./preferences.css";
-import { Container, Card } from "react-bootstrap";
+import { Container, Card, Button } from "react-bootstrap";
 import Popup from './Popup';
-import { BackButton } from "./Buttons";
+import { BackButton, HomeButton } from "./Buttons";
 
 function Preferences({ user, setGlobalState, updated }) {
 
@@ -64,6 +64,7 @@ function Preferences({ user, setGlobalState, updated }) {
                 style={{ minHeight: "100vh" }}
             >
                 <BackButton to='/account' />
+                <HomeButton/>
                 <div>
                     {updated && <Popup
                         content={<>
@@ -123,16 +124,17 @@ function Preferences({ user, setGlobalState, updated }) {
                                                 onMouseLeave={() => { setHover(minRating); setT(true); }}
                                             >
                                                 <span className="star">&#9733;</span>
-                                            </button>
+                                            </button> 
                                         );
-                                    })}
+                                    })} 
+                                    <div>& Up</div>
                                 </div>
                             </div>
 
 
                             <div className='oneline'>
                                 <div className="test">Exclude Cuisines</div>
-                                <div className="but"><button><Link to='/selectCuisine'>Select Cuisines</Link></button></div>
+                                <div className="but"><Button><Link to='/selectCuisine' className='button-info'>Select Cuisines</Link></Button></div>
                             </div>
                         </Card.Body>
                     </Card>

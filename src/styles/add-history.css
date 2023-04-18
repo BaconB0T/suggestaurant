@@ -1,0 +1,43 @@
+#restaurant-container{
+    position: absolute;
+    top: 100px;
+    overflow: hidden;
+    scrollbar-width: none;
+}
+
+.rest-elem{
+    display: grid;
+    width: 100%;
+    background: white;
+    border: solid;
+    border-width: thin;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#rest-elem > div{
+    padding: 5px;
+}
+
+#stars{
+    display: flex;
+}
+
+.light-on{
+    color: #ffd700;
+}
+.light-off{
+    color: #ccc;
+}
+
+#button-container{
+    display: flex;
+    justify-content: center;
+}
+
+#liked , #disliked{
+    align-items: center;
+    color: blue;
+    background-color: transparent;
+    border: none;
+}
