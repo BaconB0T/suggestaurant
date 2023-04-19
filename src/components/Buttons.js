@@ -4,6 +4,8 @@ import { BsGearFill } from "react-icons/bs";
 import { useNavigate } from 'react-router-dom';
 import { faCopy } from '@fortawesome/fontawesome-free-solid'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { TimedPopup } from './Popup';
+import { useState } from 'react';
 
 export function BackButton(props) {
   const { to } = props;
@@ -48,9 +50,13 @@ export function SettingsButton() {
 }
 
 export function CopyButton({textToCopy}) {
+  const [showPopup, setShowPopup] = useState(false)
   return (
-    <button onClick={() => navigator.clipboard.writeText(textToCopy) } className="btn btn-secondary">
-      <FontAwesomeIcon icon={faCopy} color="white" size="2x" />
-    </button>
+    <div style={{display: "inline-block"}}>
+      {showPopup && <TimedPopup content={<b>Copied!</b>} onClose={() => {}} />}
+      <button onClick={() => {navigator.clipboard.writeText(textToCopy); setShowPopup(true)} } className="btn btn-secondary">
+        <FontAwesomeIcon icon={faCopy} color="white" size="2x" />
+      </button>
+    </div>
   )
 }
