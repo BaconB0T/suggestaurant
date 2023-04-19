@@ -54,7 +54,7 @@ export function CopyButton({textToCopy}) {
   return (
     <div style={{display: "inline-block"}}>
       {showPopup && <TimedPopup content={<b>Copied!</b>} onClose={() => {}} />}
-      <button onClick={() => {navigator.clipboard.writeText(textToCopy); setShowPopup(true)} } className="btn btn-secondary">
+      <button type="button" onClick={() => {navigator.clipboard.writeText(textToCopy); setShowPopup(true)} } className="btn btn-secondary">
         <FontAwesomeIcon icon={faCopy} color="white" size="2x" />
       </button>
     </div>
