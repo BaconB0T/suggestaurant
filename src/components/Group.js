@@ -114,7 +114,7 @@ const Host = ({ setGlobalState }) => {
   // const [group, setGroup] = useCookies(['group']);
   // const [host, setHost] = useCookies(['host']);
   const navigate = useNavigate();
-  const groupCodeRef = useRef();
+  const groupCodeRef = useRef("Waiting...");
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
 
@@ -133,12 +133,10 @@ const Host = ({ setGlobalState }) => {
   }
 
   async function handleSubmit(e) {
-    console.log(cookies);
     e.preventDefault(); // don't refresh the page
     setError('');
-    const code = e.target.querySelector('[name=code]').value;
     // errors are set inside of validateForm(e);
-    if (validateForm(e)) {
+    if (validateForm(code)) {
       groupExists(code).then((val) => {
         if (val) {
           console.log("Group code already taken");
@@ -148,9 +146,14 @@ const Host = ({ setGlobalState }) => {
           createGroup(code).then((group) => {
             if (group === null) {
               setError('Failed to create the Group, please try again later.');
+              console.error(`Failed to create group with code ${code}, received null. See above errors for more information.`);
             } else {
               setCookie('groupCode', code, { path: '/' });
               joinGroup(code, getAuth().currentUser); 
+              setGlobalState(prevState => ({
+                ...prevState,
+                showGroupHostPopup: true
+              }));
               navigate("/location");
             }
           });
@@ -159,10 +162,10 @@ const Host = ({ setGlobalState }) => {
     }
   }
 
-  function validateForm(event) {
+  function validateForm(code) {
     setError('');
-    const codeField = event.target.querySelector('[name=code]');
-    const code = codeField.value;
+    // const codeField = event.target.querySelector('[name=code]');
+    // const code = codeField.value;
     const missingCode = code === '' || code === null;
 
     if (missingCode) {
