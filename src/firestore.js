@@ -110,7 +110,7 @@ async function getRestaurant(docRef) {
  * Gets a document from firestore. Returns null on fail.
  * 
  * @param {reference} docRef 
- * @returns A document object with its `id`. 
+ * @returns A document object with its `id` or null.
  */
 async function getDocument(docRef) {
   try {
