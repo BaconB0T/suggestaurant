@@ -137,9 +137,6 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                                             </Button>
                                         </Form>
                                         <br></br>
-                                        <Button className="w-75 button-control" onClick={() => changeLocation()}>
-                                                Change Location
-                                        </Button>
                                     </div>
                                 ) : (
                                     <h1>Getting the location data...</h1>
@@ -154,6 +151,9 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                     {/* </Card.Body>
                     </Card> */}
                 </>
+                <Button className="w-75 button-control" onClick={() => changeLocation()}>
+                    Change Location
+                </Button>
             </div>
         </Container >
     );
