@@ -405,7 +405,7 @@ const GroupDecision = (props) => {
         onCardLeftScreen={onCardLeftScreen}
         preventSwipe={preventSwipeList}>
         {isHost !== 'true'
-          ? (<div className='group-decision--waiting'>Waiting for host...</div>)
+          ? (<div className='group-decision--waiting'>Waiting for the Host to make the final decision...</div>)
           : ((numAccepted === undefined || numRejected === undefined) ? (<>Loading...</>) :
             <div className='m-3 group-decision--body'>
               <div className='group-decision--header mb-4'>
