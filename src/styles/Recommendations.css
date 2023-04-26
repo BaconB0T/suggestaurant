@@ -194,6 +194,7 @@
   flex-direction: column;
   justify-content: center;
   font-size: larger;
+  height: 100%;
 }
 
 /* Small & smaller devices (portrait tablets and large phones, 600px and up) */
