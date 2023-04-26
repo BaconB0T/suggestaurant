@@ -331,6 +331,7 @@ const Recommendation = (props) => {
     <div id={id}
       className='swipe recommendation--card'>
       <TinderCard
+        className='tinder-card-height'
         ref={passRef}
         onSwipe={onSwipe}
         onCardLeftScreen={onCardLeftScreen}
@@ -398,21 +399,32 @@ const GroupDecision = (props) => {
     <div id={id} className='swipe recommendation--card'>
       {/* Guarantees the ref is tied to a tinder card, else we can never swipe the group decision card. */}
       <TinderCard
+        className='tinder-card-height'
         ref={passRef}
         onSwipe={onSwipe}
         onCardLeftScreen={onCardLeftScreen}
         preventSwipe={preventSwipeList}>
         {isHost !== 'true'
-          ? (<>Waiting for host...</>)
+          ? (<div className='group-decision--waiting'>Waiting for host...</div>)
           : ((numAccepted === undefined || numRejected === undefined) ? (<>Loading...</>) :
-            <>
-              <h1>{restaurant.name}</h1>
-              <div>Make a decision!</div>
-              <div className='votes'>
-                <div className='rejected'>Rejected: <span className='numRejected'>{numRejected}</span></div>
-                <div className='accepted'>Accepted: <span className='numAccepted'>{numAccepted}</span></div>
+            <div className='m-3 group-decision--body'>
+              <div className='group-decision--header mb-4'>
+                <h1>Restaurant: {restaurant.name}</h1>
+                <div>As the host, you make the final decision for the group based on the votes below:</div>
               </div>
-            </>
+              <div className='my-3 group-decision--votes-col'>
+                <div className='group-decision--votes-row'>
+                  <div className='group-decision--vote m-3'>
+                    <div className='group-decision--vote-label'>Number Rejected</div>
+                    <div className='group-decission--vote-count reject'>{numRejected}</div>
+                  </div>
+                  <div className='group-decision--vote m-3'>
+                    <div className='group-decision--vote-label'>Number Accepted</div>
+                    <div className='group-decission--vote-count accept'>{numAccepted}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
       </TinderCard>
     </div>
