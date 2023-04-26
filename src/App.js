@@ -37,7 +37,8 @@ import { BsGearFill } from "react-icons/bs";
 import WaitingForRecommendation from './components/WaitingForRecommendation';
 import UserWaiting from './components/UserWaiting';
 import ChangeLocation from './components/changeLocation';
-
+import { useGeolocated } from "react-geolocated";
+// import Settings from './components/Settings';
 
 library.add(faMoon, faRocket, faStar, faStarHalf, faCopy, BsGearFill);
 
@@ -53,6 +54,14 @@ function App() {
   const [state, setState] = useState({});
   const [user, setUser] = useState(null);
   const testRestauarantId = '---kPU91CF4Lq2-WlRu9Lw';
+  // For "I'm Feeling Lucky!"
+  const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+  useGeolocated({
+    positionOptions: {
+      enableHighAccuracy: false,
+    },
+    userDecisionTimeout: 5000,
+  });
 
   useEffect(() => {
     onAuthStateChanged(getAuth(), (userObj) => {
@@ -62,6 +71,14 @@ function App() {
         setUser(userObj);
       }
     });
+    setState(prevState => ({
+      ...prevState,
+      geo: {
+        coords,
+        isGeolocationAvailable,
+        isGeolocationEnabled
+      }
+    }));
   }, [user]);
   // const restaurant = {name: "Fake Restaurant!", location: {streetAddress: "4903 State Rd 54", state: "FL", city: "New Port Richey", postalCode: '16127', latitude: 28.2172884, longitude: -82.7333444}};
   // To get query parameters, use the line below and use the parameters name instead of paramName
@@ -84,6 +101,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/history" element={<History user={user} />} />
         <Route path="/search" element={<Search user={user} />} />
+        {/* <Route path='/settings' element={<Settings geo={state.geo} setGlobalState={setState}/>}/> */}
         {/* should /historySearch be blocked to anon users? */}
         <Route path="/historySearch" element={<HistorySearch />}/>
         <Route path="/displayTest"element={<DisplayTest/>}/>
@@ -91,7 +109,7 @@ function App() {
         <Route path="/priceCheck"element={<PriceGrab globalState={state} setGlobalState={setState}/>}/>
         <Route path="/timeGrab"element={<TimeGrab user={user}/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck user={user} globalState={state} setGlobalState={setState}/>}/>
-        <Route path="/location" element={<DistanceGrab setGlobalState={setState} globalState={state}/>}/>
+        <Route path="/location" element={<DistanceGrab setGlobalState={setState} globalState={state} geo={state.geo}/>}/>
         <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated}/>}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user} setGlobalState={setState}/>} />
