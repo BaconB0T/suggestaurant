@@ -146,42 +146,49 @@ const DietCheck = ({ user, globalState, setGlobalState }) => {
                                     id={`veganBox`}
                                     label={`Vegan`}
                                     ref={veganRef}
+                                    defaultChecked={cookies["diet"]["Vegan"] != "false" && cookies["diet"]["Vegan"] != "" ? true : false}
                                 />
                                 <Form.Check
                                     type="checkbox"
                                     id={`halalBox`}
                                     label={`Halal`}
                                     ref={halalRef}
+                                    defaultChecked={cookies["diet"]["Halal"] != "false" && cookies["diet"]["Halal"] != "" ? true : false}
                                 />
                                 <Form.Check
                                     type="checkbox"
                                     id={`dairyBox`}
                                     label={`Dairy`}
                                     ref={dairyRef}
+                                    defaultChecked={cookies["diet"]["Dairy-free"] != "false" && cookies["diet"]["Dairy-free"] != "" ? true : false}
                                 />
                                 <Form.Check
                                     type="checkbox"
                                     id={`soyBox`}
                                     label={`Soy`}
                                     ref={soyRef}
+                                    defaultChecked={cookies["diet"]["Soy-free"] != "false" && cookies["diet"]["Soy-free"] != "" ? true : false}
                                 />
                                 <Form.Check
                                     type="checkbox"
                                     id={`glutenBox`}
                                     label={`Gluten`}
                                     ref={glutenRef}
+                                    defaultChecked={cookies["diet"]["Gluten-free"] != "false" && cookies["diet"]["Gluten-free"] != "" ? true : false}
                                 />
                                 <Form.Check
                                     type="checkbox"
                                     id={`veggieBox`}
                                     label={`Vegetarian`}
                                     ref={veggieRef}
+                                    defaultChecked={cookies["diet"]["Vegetarian"] != "false" && cookies["diet"]["Halal"] != "" ? true : false}
                                 />
                                 <Form.Check
                                     type="checkbox"
                                     id={`KosherBox`}
                                     label={`Kosher`}
                                     ref={kosherRef}
+                                    defaultChecked={cookies["diet"]["Kosher"] != "false" && cookies["diet"]["Kosher"] != "" ? true : false}
                                 />
                                 {/* </div> */}
                             </Card.Body>

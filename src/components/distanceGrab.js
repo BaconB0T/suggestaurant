@@ -74,6 +74,8 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
         if (globalState.showGroupHostPopup) {
             setGroupPopup(true);
         }
+        console.log(cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25)
+        console.log(cookies["latlong"])
     }, []);
 
     if ((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
@@ -127,7 +129,7 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                                                 <Form.FloatingLabel label="Distance in Miles">
                                                     <Form.Control
                                                         ref={distRef} required
-                                                        defaultValue={25}
+                                                        defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25}
                                                         placeholder="Miles"
                                                     />
                                                 </Form.FloatingLabel>
@@ -137,9 +139,6 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                                             </Button>
                                         </Form>
                                         <br></br>
-                                        <Button className="w-75 button-control" onClick={() => changeLocation()}>
-                                                Change Location
-                                        </Button>
                                     </div>
                                 ) : (
                                     <h1>Getting the location data...</h1>
@@ -154,6 +153,9 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                     {/* </Card.Body>
                     </Card> */}
                 </>
+                <Button className="w-75 button-control" onClick={() => changeLocation()}>
+                    Change Location
+                </Button>
             </div>
         </Container >
     );

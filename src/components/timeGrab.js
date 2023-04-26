@@ -22,7 +22,7 @@ const TimeGrab = ({ user }) => {
     const zeroFilledHours = ('00'+currentDate.getHours()).slice(-2);
     const zeroFilledMinutes = ('00'+currentDate.getMinutes()).slice(-2);
 
-    const [value, onChange] = useState(zeroFilledHours + ":" + zeroFilledMinutes);
+    const [value, onChange] = useState(cookies["time"] != "false" ? cookies["time"] : zeroFilledHours + ":" + zeroFilledMinutes);
 
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
