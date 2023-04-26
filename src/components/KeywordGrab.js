@@ -147,6 +147,7 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
                                     <Form.Control ref={keywordRef} required
                                         as="textarea" 
                                         placeholder="Examples: spicy local italian wine deserts"
+                                        defaultValue={cookies["keywords"] != "false" ? cookies["keywords"] : null}
                                         rows={3}/>
                                 </Form.Group>
                                 <Button className="w-75 mt-10 button-control" type="submit">
