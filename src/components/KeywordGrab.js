@@ -146,7 +146,7 @@ const KeywordGrab = ({setGlobalState, user, globalState}) => {
                                 <Form.Group id="keywords" className="mb-2" controlId="exampleForm.ControlTextarea1">
                                     <Form.Control ref={keywordRef} required
                                         as="textarea" 
-                                        placeholder="Examples: spicy local italian wine deserts"
+                                        placeholder="Examples: spicy local italian wine desserts"
                                         defaultValue={cookies["keywords"] != "false" ? cookies["keywords"] : null}
                                         rows={3}/>
                                 </Form.Group>
