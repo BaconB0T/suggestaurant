@@ -13,26 +13,23 @@ const Member = ({ globalState, setGlobalState }) => {
   const [error, setError] = useState("");
   const [cookies, setCookie] = useCookies(['user']);
   const [variant, setVariant] = useState("danger");
-  const [show, setShow] = useState(false);
-  const [groupCode, setGroupCode] = useState('');
 
   async function handleSubmit(e) {
     e.preventDefault(); // don't refresh the page
     setError('');
-    const code = e.target.querySelector('[name=code]').value;
-    setGroupCode(code);
-    // errors are set inside of validateForm(e);
-    if (validateForm(e)) {
+    const code = groupCodeRef.current;
+    // errors are set inside of validateForm;
+    if (validateForm(code)) {
       groupExists(code).then((val) => {
         if (val) {
           // Group exists, confirmation popup.
           // Then join it.
           joinGroup(code, getAuth().currentUser).then(joined => {
             if(joined) {
-              setGlobalState({
-                ...globalState,
+              setGlobalState(prevState => ({
+                ...prevState,
                 showGroupJoinPopup: true
-              });
+              }));
               setCookie('groupCode', code, { path: '/' });
               navigate("/dietaryRestrictions");
             } else {
@@ -46,21 +43,12 @@ const Member = ({ globalState, setGlobalState }) => {
       });
     }
   }
-
-  function validateForm(event) {
+  
+  function validateForm(code) {
     setVariant('danger');
     setError('');
-    const codeField = event.target.querySelector('[name=code]');
-    const code = codeField.value;
-    const missingCode = code === '' || code === null;
-
-    if (missingCode) {
-      setError('You must include a code.');
-      return false;
-    }
-
-    if (code.length !== 6) {
-      setError('Code must be 6 digits long.');
+    if (typeof code != 'string' || code.match(/^[0-9]{6}$/) == null) {
+      setError(`Invalid code: ${code}. Code must have 6 digits and only contain numbers.`);
       return false;
     }
     return true;
@@ -111,10 +99,8 @@ const Member = ({ globalState, setGlobalState }) => {
 // confirmation for it.
 const Host = ({ setGlobalState }) => {
   const [cookies, setCookie] = useCookies(['user']);
-  // const [group, setGroup] = useCookies(['group']);
-  // const [host, setHost] = useCookies(['host']);
   const navigate = useNavigate();
-  const groupCodeRef = useRef();
+  const groupCodeRef = useRef("Waiting...");
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
 
@@ -125,20 +111,11 @@ const Host = ({ setGlobalState }) => {
     });
   }, []);
 
-  function clipboardCode() {
-    // const code = state.getCode()
-    navigator.clipboard.writeText(code).then(() => {
-      console.log(`Copied addres to clipboard`);
-    });
-  }
-
   async function handleSubmit(e) {
-    console.log(cookies);
     e.preventDefault(); // don't refresh the page
     setError('');
-    const code = e.target.querySelector('[name=code]').value;
-    // errors are set inside of validateForm(e);
-    if (validateForm(e)) {
+    // errors are set inside of validateForm;
+    if (validateForm(code)) {
       groupExists(code).then((val) => {
         if (val) {
           console.log("Group code already taken");
@@ -151,6 +128,10 @@ const Host = ({ setGlobalState }) => {
             } else {
               setCookie('groupCode', code, { path: '/' });
               joinGroup(code, getAuth().currentUser); 
+              setGlobalState(prevState => ({
+                ...prevState,
+                showGroupHostPopup: true
+              }));
               navigate("/location");
             }
           });
@@ -159,19 +140,10 @@ const Host = ({ setGlobalState }) => {
     }
   }
 
-  function validateForm(event) {
+  function validateForm(code) {
     setError('');
-    const codeField = event.target.querySelector('[name=code]');
-    const code = codeField.value;
-    const missingCode = code === '' || code === null;
-
-    if (missingCode) {
-      setError('You must include a code.');
-      return false;
-    }
-
-    if (code.length !== 6) {
-      setError('Code must be 6 digits long.');
+    if (typeof code != 'string' || code.match(/^[0-9]{6}$/) == null) {
+      setError(`Invalid code: ${code}. Code must have 6 digits and only contain numbers.`);
       return false;
     }
     return true;
