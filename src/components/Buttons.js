@@ -42,13 +42,6 @@ export function AccountOrLoginButton(props) {
   return (<FaRegUserCircle className = "w-20 icon-control login-or-account" onClick={() => navigate('/account')}/>);
 }
 
-export function SettingsButton() {
-  const navigate = useNavigate();
-  return (
-    <BsGearFill className = "w-20 icon-control settings" onClick={() => navigate('/settings')}/>
-  );
-}
-
 export function CopyButton({textToCopy}) {
   const [showPopup, setShowPopup] = useState(false)
   return (
