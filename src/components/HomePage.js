@@ -29,6 +29,20 @@ const HomePage = ({ bob, setGlobalState, globalState }) => {
 
     useEffect(() => {
         setLoginOrAccount(<AccountOrLoginButton isAnonymous={bob.isAnonymous} />)
+        setCookie("time", "false", { path: '/' })
+        setCookie("price", "false", { path: '/' })
+        const dietData = {
+            'Dairy-free': "false",
+            'Gluten-free': "false",
+            'Halal': "false",
+            'Kosher': "false",
+            'Soy-free': "false",
+            'Vegan': "false",
+            'Vegetarian': "false"
+        }
+        setCookie('diet', dietData, { path: '/' });
+        setCookie("latlong", "false", { path: '/' })
+        setCookie("keywords", "false", { path: '/' })
     }, [bob]);
 
     function notInGroup() {

@@ -16,7 +16,6 @@ import Signup from './components/Signup'
 import ChangePassword from './components/ChangePassword'
 import RecommendationMap from './components/RecommendationMap'
 import KeywordGrab from './components/KeywordGrab';
-import DisplayTest from './components/displayTest';
 import PriceGrab from './components/priceCheck';
 import TimeGrab from './components/timeGrab';
 import DietCheck from './components/dietCheck';
@@ -86,12 +85,11 @@ function App() {
         <Route path="/search" element={<Search user={user} />} />
         {/* should /historySearch be blocked to anon users? */}
         <Route path="/historySearch" element={<HistorySearch />}/>
-        <Route path="/displayTest"element={<DisplayTest/>}/>
         <Route path="/keywordGrab"element={<KeywordGrab setGlobalState={setState} user = {user}/>}/>
         <Route path="/priceCheck"element={<PriceGrab globalState={state} setGlobalState={setState}/>}/>
         <Route path="/timeGrab"element={<TimeGrab user={user}/>}/>
         <Route path="/dietaryRestrictions"element={<DietCheck user={user} globalState={state} setGlobalState={setState}/>}/>
-        <Route path="/location" element={<DistanceGrab user={user} setGlobalState={setState} globalState={state}/>}/>
+        <Route path="/location" element={<DistanceGrab setGlobalState={setState} globalState={state}/>}/>
         <Route path="/account/filters" element={<Preferences user={user} setGlobalState={setState} updated={state.updated}/>}/>
         <Route path="/account/allergies" element={<Allergies user={user}/>}/>
         <Route path='/selectCuisine' element={<Cuisine user={user} setGlobalState={setState}/>} />

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCuisines, updateUserCuisine, getFilters } from '../firestore';
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import "../styles/presetCuis.css";
-import { BackButton } from './Buttons';
+import { BackButton, HomeButton } from './Buttons';
 
 function PreSetCuisines({ user, setGlobalState }) {
 
@@ -73,8 +73,9 @@ function PreSetCuisines({ user, setGlobalState }) {
     return (
         <div>
             <BackButton to='/account/filters'/>
+            <HomeButton/>
             <div id='content-container'>
-                <h3>Select Some Cuisines</h3>
+                <h3>Exclude Some Cuisines</h3>
                 <input type='text' value={searchTerm} onChange={editSearchTerm} placeholder='Search for a cuisine' />
                 {dynamicSearch()}
             </div>

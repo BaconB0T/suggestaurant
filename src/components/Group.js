@@ -188,7 +188,6 @@ const Host = ({ setGlobalState }) => {
           <Card.Body>
             <h2 className="text-center mb-4">Host Group</h2>
             {error && <Alert variant="danger">{error}</Alert>}
-            <CopyButton textToCopy={code}/>
             <Form onSubmit={handleSubmit}>
               <Form.Group id="keywords" className="mb-2">
                 <Form.Label>Share this Code with your Friends!</Form.Label>
@@ -196,7 +195,7 @@ const Host = ({ setGlobalState }) => {
               </Form.Group>
               <Button className="w-40 mt-10" type="submit">
                 Create Group
-              </Button>
+              </Button> <CopyButton textToCopy={code}/>
             </Form>
 
           </Card.Body>

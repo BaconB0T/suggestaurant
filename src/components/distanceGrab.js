@@ -5,10 +5,10 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { useGeolocated } from "react-geolocated";
 import { updateGroupHost } from '../firestore';
 import car from './../images/Transportation.png'; // Tell webpack this JS file uses this image
-import Popup, {TimedPopup} from './Popup';
+import { TimedPopup } from './Popup';
 import { BackButton } from './Buttons';
 
-const DistanceGrab = ({ user, setGlobalState, globalState }) => {
+const DistanceGrab = ({ setGlobalState, globalState }) => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
     const latRef = useRef()
@@ -44,21 +44,16 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
         e.preventDefault(); // don't refresh the page
         try {
             setError("")
-
-            // // Get latitude & longitude from address.
-            // Geocode.fromAddress("Eiffel Tower").then(
-            //     (response) => {
-            //     const { lat, lng } = response.results[0].geometry.location;
-            //     console.log(lat, lng);
-            //     },
-            //     (error) => {
-            //     console.error(error);
-            //     }
-            // );
             const latlong = {
                 latitude: latRef.current.value,
                 longitude: longRef.current.value,
                 distance: distRef.current.value
+            }
+            if (latlong.distance < 1) {
+                throw new Error("Distance must be at least 1 mile.");
+            }
+            if (isNaN(latlong.distance)) {
+                throw new Error("Distance must be a number.");
             }
 
             setCookie('latlong', latlong, { path: '/' });
@@ -79,6 +74,8 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
         if (globalState.showGroupHostPopup) {
             setGroupPopup(true);
         }
+        console.log(cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25)
+        console.log(cookies["latlong"])
     }, []);
 
     if ((cookies['groupCode'] != 0) && cookies['host'] !== 'true') {
@@ -132,7 +129,7 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
                                                 <Form.FloatingLabel label="Distance in Miles">
                                                     <Form.Control
                                                         ref={distRef} required
-                                                        defaultValue={25}
+                                                        defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25}
                                                         placeholder="Miles"
                                                     />
                                                 </Form.FloatingLabel>
@@ -142,9 +139,6 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
                                             </Button>
                                         </Form>
                                         <br></br>
-                                        <Button className="w-75 button-control" onClick={() => changeLocation()}>
-                                                Change Location
-                                        </Button>
                                     </div>
                                 ) : (
                                     <h1>Getting the location data...</h1>
@@ -159,6 +153,9 @@ const DistanceGrab = ({ user, setGlobalState, globalState }) => {
                     {/* </Card.Body>
                     </Card> */}
                 </>
+                <Button className="w-75 button-control" onClick={() => changeLocation()}>
+                    Change Location
+                </Button>
             </div>
         </Container >
     );

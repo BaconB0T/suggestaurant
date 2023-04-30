@@ -12,22 +12,7 @@ import validateJSON from '../security/web';
 const ChangeLocation = () => {
     const [cookies, setCookie] = useCookies(['user']);
     const navigate = useNavigate();
-    const getenv = require('getenv')
-    const [apiKey, setApiKey] = useState('');
-
-    useEffect(() => {
-        // get Maps API key
-        fetch('https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/google-maps-key')
-            .then(validateJSON)
-            .then((json) => {
-                setApiKey(json.key);
-                console.log(apiKey)
-                Geocode.setApiKey(json.key);
-                Geocode.setLanguage("en");
-                Geocode.enableDebug();
-                Geocode.setLocationType("ROOFTOP");
-            });
-    }, []);
+    const apiKey = 'AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I';
 
     async function handleSubmit(place) {
         console.log(place)
@@ -90,6 +75,7 @@ const ChangeLocation = () => {
                         console.log(place)
                         handleSubmit(place);
                     }}
+                    placeholder="e.g. Pittsburgh, PA"
                 />;
                 <br></br>
                 <br></br>

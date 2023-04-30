@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import './PopupStyling.css';
+import '../styles/PopupStyling.css';
+import { useState } from "react";
 
 const Popup = props => {
 
@@ -21,25 +22,25 @@ const Popup = props => {
 };
 
 export const TimedPopup = props => {
-  const { content } = props;
-
-  function closePopup() {
-    document.getElementById('timed-popup').classList.add('fade-out');
-  }
-
-  function closePopupCallback() {
-    const onClose = props.onClose;
-    closePopup();
-    onClose && onClose();
-  }
+  const { content, onClose } = props;
+  const [manuallyClosed, setClosed] = useState(false);
 
   useEffect(() => {
-    setTimeout(closePopupCallback, 2_000);
-  }, []);
+    function timeoutPopup() {
+      const popup = document.getElementById('timed-popup')
+      if (popup) popup.classList.add('fade-out');
+      setTimeout(() => setClosed(true), 3_000)
+    }
+    setTimeout(timeoutPopup, 2_000);
+  }, [setClosed]);
+
+  useEffect(() => {
+    if (manuallyClosed) onClose && onClose()
+  }, [manuallyClosed, onClose])
 
   return (
     <div id='timed-popup' className='timed-popup'>
-      <Popup content={content} onClose={closePopupCallback}/>
+      <Popup content={content} onClose={() => setClosed(true)}/>
     </div>
   );
 }
