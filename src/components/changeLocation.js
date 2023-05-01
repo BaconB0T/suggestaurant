@@ -11,26 +11,31 @@ import { useState } from 'react';
 import { useRef } from 'react';
 
 const ChangeLocation = () => {
+    const defaultDistance = 25;
     const [error, setError] = useState("");
     const [cookies, setCookie] = useCookies(['user']);
-    const [latlong, setLatlong] = useState({});
+    const [latlong, setLatlong] = useState({
+        distance: cookies['latlong']['distance'] || defaultDistance,
+        latitude: null,
+        longitude: null,
+    });
     const distRef = useRef();
     const placeRef = useRef();
     const navigate = useNavigate();
     const apiKey = 'AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I';
     Geocode.setApiKey(apiKey);
 
-    async function handleChange(place) {
+    async function changeLatlong(place) {
+        console.log(place);
         const formatted_address = (typeof place === "string") ? place : place.formatted_address;
         try {
             const response = await Geocode.fromAddress(formatted_address)
             const { lat, lng } = response.results[0].geometry.location;
-            setLatlong(prev => ({
-                ...prev,
+            return {
+                ...latlong,
                 latitude: lat,
                 longitude: lng
-            }));
-            return true;
+            }
         } catch (error) {
             console.error(error);
             setError("Invalid city/location.");
@@ -38,21 +43,21 @@ const ChangeLocation = () => {
         }
     }
 
-    async function validateForm(latlong) {
+    async function validateForm(newLatlong) {
         try {
-            if (!(await handleChange(placeRef.current.value))) {
+            if (!newLatlong) {
                 throw new Error("We can't find that city, please double check the spelling and try again.")
             }
-            if(!latlong.latitude || !latlong.longitude) {
+            if(!newLatlong.latitude || !newLatlong.longitude) {
                 throw new Error("You must select a city from the dropdown below.")
             }
-            if (!latlong.distance) {
+            if (!newLatlong.distance) {
                 throw new Error("You must specify a distance.")
             }
-            if (latlong.distance < 1) {
+            if (newLatlong.distance < 1) {
                 throw new Error("Distance must be at least 1 mile.");
             }
-            if (isNaN(latlong.distance)) {
+            if (isNaN(newLatlong.distance)) {
                 throw new Error("Distance must be a number.");
             }
             return true;
@@ -65,11 +70,12 @@ const ChangeLocation = () => {
     async function handleSubmit(event) {
         event.preventDefault();
         setError("");
-        if(await validateForm(latlong)) {
-            setCookie('latlong', latlong, { path: '/' });
+        const newLatlong = await changeLatlong(placeRef.current.value);
+        if(await validateForm(newLatlong)) {
+            setCookie('latlong', newLatlong, { path: '/' });
             
             if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
-                updateGroupHost(cookies['groupCode'], 'latlong', latlong);
+                updateGroupHost(cookies['groupCode'], 'latlong', newLatlong);
             }
     
             navigate("/dietaryRestrictions");
@@ -100,7 +106,7 @@ const ChangeLocation = () => {
                                 apiKey={apiKey}
                                 ref={placeRef}
                                 onPlaceSelected={(place) => {
-                                    handleChange(place);
+                                    changeLatlong(place);
                                 }}
                                 placeholder="Pittsburgh, PA"
                                 required={true}
@@ -111,8 +117,8 @@ const ChangeLocation = () => {
                         <Form.FloatingLabel label="Distance in Miles">
                             <Form.Control
                                 ref={distRef} required
-                                defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25}
-                                placeholder="25"
+                                defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : defaultDistance}
+                                placeholder={defaultDistance}
                                 onChange={() => setLatlong(prev => ({...prev, distance: distRef.current.value}))}
                             />
                         </Form.FloatingLabel>

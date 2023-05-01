@@ -53,7 +53,11 @@ class Recommendations extends React.Component {
   }
 
   updateIndex(val) {
-    this.state.index = val;
+    this.setState(prevState => ({
+      ...prevState,
+      index: val
+    }));
+    // fine to not be in setState
     this.state.currentIndexRef.current = val;
   }
 
@@ -77,17 +81,7 @@ class Recommendations extends React.Component {
         )
       )
     return canSwipe;
-    // return this.state.index < this.state.restIds.length;
   }
-
-  //FUNCTION NOT NEEDED
-  // displayBackButton(state) {
-  //   if (state.groupCode == 0) {
-  //     return true
-  //   } else {
-  //     return false
-  //   }
-  // }
 
   swiped(direction, nameToDelete, index, state) {
     this.updateIndex(index - 1);
@@ -108,18 +102,27 @@ class Recommendations extends React.Component {
       if (this.state.index < 0) { // if there are no more recommendations
         if (this.state.host === 'true') { // Navigate to increase radius if host.
           // *** host decrements numUsersReady in /expandRadius. ***
-          this.state.showNoRecs = true;
+          this.setState(prevState => ({
+            ...prevState,
+            showNoRecs: true
+          }));
         } else { // group members wait for host.
           updateGroupMember(state.groupCode, 'numUsersReady', null);
-          this.state.showNoRecsGroupMember = true
+          this.setState(prevState => ({
+            ...prevState,
+            showNoRecsGroupMember: true
+          }));
         }
       }
     } else { // Not in a group.
-      if (direction === 'right') { // Go to next recommendation.
+      if (direction === 'right') { // Go to Map Screen.
         this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index] })
       } // Navigate to increase radius if last recommendation is swiped.
-      if (this.state.index === this.state.childRefs.length) {
-        this.state.showNoRecs = true;
+      if (this.state.index === (this.state.childRefs.length)) {
+        this.setState(prevState => ({
+          ...prevState,
+          showNoRecs: true
+        }));
       }
     }
   }
@@ -155,18 +158,16 @@ class Recommendations extends React.Component {
   }
 
   navToMap({setGlobalState, business_id}) {
-    setGlobalState({
-      ...this.state.globalState, 
+    setGlobalState(prevState => ({
+      ...prevState, 
       business_id: business_id
-    });
+    }));
     
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        showMap: true,
-        showMapBusinessId: business_id
-      }
-    })
+    this.setState(prevState => ({
+      ...prevState,
+      showMap: true,
+      showMapBusinessId: business_id
+    }));
   }
 
   // interval stuff
