@@ -3,6 +3,9 @@ from geopy.distance import geodesic
 from functools import partial
 from datetime import datetime
 
+mp = multiprocessing.get_context('spawn')
+
+
 def distanceFilter(user_loc, req, x):
 	if geodesic(user_loc,(x["location"]['latitude'], x["location"]['longitude'])).miles < int(req):
 		return x
@@ -43,11 +46,12 @@ def distanceHandlerParallel(user_loc, req, id_list):
     except NotImplementedError:
         cpus = 2   # arbitrary default
     print("Check 1 2")
-    pool = multiprocessing.Pool(processes=cpus)
+    pool = mp.Pool(processes=cpus, maxtasksperchild=1)
     print("Check 1 2")
     parallelized = pool.map(partial(distanceFilter, user_loc, req["latlong"]["distance"]), id_list)
     print("Check 1 2")
     ret_list = [x for x in parallelized if x]
+    pool.close()
     return ret_list
 
 def allergyHandlerParallel(req, id_list):
@@ -55,11 +59,12 @@ def allergyHandlerParallel(req, id_list):
         cpus = multiprocessing.cpu_count()
     except NotImplementedError:
         cpus = 2   # arbitrary default
-    pool = multiprocessing.Pool(processes=cpus)
+    pool = mp.Pool(processes=cpus)
     parallelized = pool.map(initDietFilter, id_list)
     parallelized = [x for x in parallelized if x]
     parallelized = pool.map(partial(dietFilter, req), id_list)
     ret_list = [x for x in parallelized if x]
+    pool.close()
     return ret_list
 
 def timeHandlerParallel(time, id_list):
@@ -67,7 +72,8 @@ def timeHandlerParallel(time, id_list):
         cpus = multiprocessing.cpu_count()
     except NotImplementedError:
         cpus = 2   # arbitrary default
-    pool = multiprocessing.Pool(processes=cpus)
+    pool = mp.Pool(processes=cpus)
     parallelized = pool.map(partial(timeFilter, time), id_list)
     ret_list = [x for x in parallelized if x]
-    return ret_list
+    pool.close()
+    return ret_list 

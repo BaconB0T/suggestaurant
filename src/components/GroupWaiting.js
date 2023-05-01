@@ -54,7 +54,7 @@ const GroupWaiting = ({globalState, setGlobalState}) => {
         navigate("/recommendations/waiting");
         try {
             console.log('inside try catch');
-            fetch("https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/data", {
+            fetch("https://still-protocol-381312.uc.r.appspot.com/data", {
                 method: "POST",
                 cache: "no-cache",
                 headers: {
