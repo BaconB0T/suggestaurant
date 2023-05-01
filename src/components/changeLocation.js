@@ -20,16 +20,11 @@ const ChangeLocation = () => {
     const apiKey = 'AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I';
     Geocode.setApiKey(apiKey);
 
-
     async function handleChange(place) {
-        console.log('handleChange place');
-        console.log(place);
         const formatted_address = (typeof place === "string") ? place : place.formatted_address;
-        console.log(formatted_address);
         try {
             const response = await Geocode.fromAddress(formatted_address)
             const { lat, lng } = response.results[0].geometry.location;
-            console.log(lat, lng);
             setLatlong(prev => ({
                 ...prev,
                 latitude: lat,
@@ -46,6 +41,9 @@ const ChangeLocation = () => {
     async function validateForm(latlong) {
         try {
             if (!(await handleChange(placeRef.current.value))) {
+                throw new Error("We can't find that city, please double check the spelling and try again.")
+            }
+            if(!latlong.latitude || !latlong.longitude) {
                 throw new Error("You must select a city from the dropdown below.")
             }
             if (!latlong.distance) {
@@ -67,10 +65,6 @@ const ChangeLocation = () => {
     async function handleSubmit(event) {
         event.preventDefault();
         setError("");
-        console.log("changeLocation handleSubmit");
-        console.log(latlong);
-        latlong.distance = distRef.current.value;
-        console.log(latlong);
         if(await validateForm(latlong)) {
             setCookie('latlong', latlong, { path: '/' });
             
@@ -106,9 +100,7 @@ const ChangeLocation = () => {
                                 apiKey={apiKey}
                                 ref={placeRef}
                                 onPlaceSelected={(place) => {
-                                    // console.log(place)
                                     handleChange(place);
-                                    // handleSubmit(place);
                                 }}
                                 placeholder="Pittsburgh, PA"
                                 required={true}
@@ -121,6 +113,7 @@ const ChangeLocation = () => {
                                 ref={distRef} required
                                 defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25}
                                 placeholder="25"
+                                onChange={() => setLatlong(prev => ({...prev, distance: distRef.current.value}))}
                             />
                         </Form.FloatingLabel>
                     </Form.Group>
