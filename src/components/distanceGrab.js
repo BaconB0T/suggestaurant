@@ -128,6 +128,9 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                                             <Form.Group id="distance" className="w-75 mb-2 center">
                                                 <Form.FloatingLabel label="Distance in Miles">
                                                     <Form.Control
+                                                        type = "number"
+                                                        min="1"
+                                                        step="1"
                                                         ref={distRef} required
                                                         defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25}
                                                         placeholder="Miles"
