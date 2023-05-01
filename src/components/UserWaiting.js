@@ -55,8 +55,8 @@ const UserWaiting = ({ globalState, setGlobalState }) => {
     async function runAlgorithm(e) {
         console.log(globalState.jsonData);
         //this is fetch code block from keywords
-       //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
-       fetch("http://10.182.0.2:5000/data", {
+        //https://suggestaurantapp-3sgrjmlphq-uc.a.run.app/
+    fetch("https://still-protocol-381312.uc.r.appspot.com/data", {
         method: "POST",
         cache: "no-cache",
         headers: {

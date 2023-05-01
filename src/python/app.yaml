@@ -1,0 +1,12 @@
+runtime: python
+
+env: flex
+
+entrypoint: gunicorn -t 600 -b :8080 server:app
+resources:
+  cpu: 4
+  memory_gb: 24
+  disk_size_gb: 20
+  
+runtime_config:
+    operating_system: "ubuntu22"

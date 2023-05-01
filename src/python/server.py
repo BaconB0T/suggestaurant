@@ -8,6 +8,7 @@ from dotenv import load_dotenv;
 from google.api_core.retry import Retry
 import numpy as np
 import pandas as pd
+from nltk.corpus import stopwords 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import WordPunctTokenizer
@@ -16,6 +17,7 @@ import nltk
 import pickle
 import string
 import time as t
+import copy
 import random
 
 # load environment for map
@@ -40,7 +42,6 @@ config = {
 }
 
 nltk.download('stopwords')
-stopwords = stopwords.words('english')
 
 # prep algorithm parser
 stop = []
@@ -242,4 +243,4 @@ def google_maps_key():
 	
 # Running app
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=True, port=8080)
