@@ -338,7 +338,7 @@ const Recommendation = (props) => {
         preventSwipe={['up', 'down']}
       >
         <h1>{restaurant.name}</h1>
-        <img src={imageURL}></img>
+        {/* <img src={imageURL}></img> */}
         <table>
           <tbody>
             <tr>
