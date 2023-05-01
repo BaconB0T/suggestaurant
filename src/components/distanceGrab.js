@@ -25,21 +25,6 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
             userDecisionTimeout: 5000,
         });
 
-    async function changeLocation()
-    {
-        const latlong = {
-            latitude: latRef.current.value,
-            longitude: longRef.current.value,
-            distance: distRef.current.value
-        }
-
-        setCookie('latlong', latlong, { path: '/' });
-        if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
-            updateGroupHost(cookies['groupCode'], 'latlong', latlong);
-        }
-        navigate("/changeLocation");
-    }
-
     async function handleSubmit(e) {
         e.preventDefault(); // don't refresh the page
         try {
@@ -128,6 +113,9 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                                             <Form.Group id="distance" className="w-75 mb-2 center">
                                                 <Form.FloatingLabel label="Distance in Miles">
                                                     <Form.Control
+                                                        type = "number"
+                                                        min="1"
+                                                        step="1"
                                                         ref={distRef} required
                                                         defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25}
                                                         placeholder="Miles"
@@ -153,7 +141,7 @@ const DistanceGrab = ({ setGlobalState, globalState }) => {
                     {/* </Card.Body>
                     </Card> */}
                 </>
-                <Button className="w-75 button-control" onClick={() => changeLocation()}>
+                <Button className="w-75 button-control" onClick={() => navigate('/changeLocation')}>
                     Change Location
                 </Button>
             </div>
