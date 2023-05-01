@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Container, Form, Button, Alert } from 'react-bootstrap'
+import React from 'react';
+import { Container, Button, Form, Alert } from 'react-bootstrap'
 import { useCookies } from 'react-cookie';
 import { Navigate, useNavigate } from 'react-router-dom'
 import { updateGroupHost } from '../firestore';
@@ -7,39 +7,78 @@ import car from './../images/Transportation.png'; // Tell webpack this JS file u
 import { BackButton } from './Buttons';
 import Geocode from "react-geocode";
 import Autocomplete from "react-google-autocomplete";
-import validateJSON from '../security/web';
+import { useState } from 'react';
+import { useRef } from 'react';
 
 const ChangeLocation = () => {
+    const [error, setError] = useState("");
     const [cookies, setCookie] = useCookies(['user']);
+    const [latlong, setLatlong] = useState({});
+    const distRef = useRef();
+    const placeRef = useRef();
     const navigate = useNavigate();
     const apiKey = 'AIzaSyAp8sYE38PFm7ZUDyBCbSejwQyclvHtW6I';
+    Geocode.setApiKey(apiKey);
 
-    async function handleSubmit(place) {
-        console.log(place)
+
+    async function handleChange(place) {
+        console.log('handleChange place');
+        console.log(place);
+        const formatted_address = (typeof place === "string") ? place : place.formatted_address;
+        console.log(formatted_address);
         try {
-            Geocode.fromAddress(place.formatted_address).then(
-                (response) => {
-                    const { lat, lng } = response.results[0].geometry.location;
-                    console.log(lat, lng);
-                    const latlong = {
-                        latitude: lat,
-                        longitude: lng,
-                        distance: cookies['latlong']['distance']
-                    }   
-                    setCookie('latlong', latlong, { path: '/' });
-                    if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
-                        updateGroupHost(cookies['groupCode'], 'latlong', latlong);
-                    }
+            const response = await Geocode.fromAddress(formatted_address)
+            const { lat, lng } = response.results[0].geometry.location;
+            console.log(lat, lng);
+            setLatlong(prev => ({
+                ...prev,
+                latitude: lat,
+                longitude: lng
+            }));
+            return true;
+        } catch (error) {
+            console.error(error);
+            setError("Invalid city/location.");
+            return false;
+        }
+    }
 
-                    navigate("/dietaryRestrictions");
-                    },
-                (error) => {
-                    console.error(error);
-                }
-              );
+    async function validateForm(latlong) {
+        try {
+            if (!(await handleChange(placeRef.current.value))) {
+                throw new Error("You must select a city from the dropdown below.")
+            }
+            if (!latlong.distance) {
+                throw new Error("You must specify a distance.")
+            }
+            if (latlong.distance < 1) {
+                throw new Error("Distance must be at least 1 mile.");
+            }
+            if (isNaN(latlong.distance)) {
+                throw new Error("Distance must be a number.");
+            }
+            return true;
         } catch (e) {
-            // else set an error
-            console.log(e)
+            setError(e.message);
+            return false;
+        }
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        setError("");
+        console.log("changeLocation handleSubmit");
+        console.log(latlong);
+        latlong.distance = distRef.current.value;
+        console.log(latlong);
+        if(await validateForm(latlong)) {
+            setCookie('latlong', latlong, { path: '/' });
+            
+            if (cookies['groupCode'] != 0 && cookies['host'] === 'true') {
+                updateGroupHost(cookies['groupCode'], 'latlong', latlong);
+            }
+    
+            navigate("/dietaryRestrictions");
         }
     }
 
@@ -47,17 +86,6 @@ const ChangeLocation = () => {
         return (
             <Navigate to='/dietaryRestrictions' />
         );
-    }
-
-    if(apiKey === '' || apiKey === null) {
-        // restaurant has not been fetched yet.
-        // console.log('loading')
-        return (
-            <>
-                <p className='loading-animation'>Loading...</p>
-            </>
-        );
-        // apiKey !== '' && apiKey !== null &&
     }
 
     return (
@@ -69,18 +97,39 @@ const ChangeLocation = () => {
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
                 <img src={car} className="image-control" alt="Car" />
                 <h3 className="text-center mb-4">Enter a Location!</h3>
-                <Autocomplete
-                    apiKey={apiKey}
-                    onPlaceSelected={(place) => {
-                        console.log(place)
-                        handleSubmit(place);
-                    }}
-                    placeholder="e.g. Pittsburgh, PA"
-                />;
-                <br></br>
-                <br></br>
+                <Form onSubmit={handleSubmit}>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    <Form.Group id="place" className="w-75 mb-2 center">
+                        <Form.FloatingLabel label="City">
+                            <Autocomplete
+                                className='form-control'
+                                apiKey={apiKey}
+                                ref={placeRef}
+                                onPlaceSelected={(place) => {
+                                    // console.log(place)
+                                    handleChange(place);
+                                    // handleSubmit(place);
+                                }}
+                                placeholder="Pittsburgh, PA"
+                                required={true}
+                                />
+                        </Form.FloatingLabel>
+                    </Form.Group>
+                    <Form.Group id="distance" className="w-75 mb-2 center">
+                        <Form.FloatingLabel label="Distance in Miles">
+                            <Form.Control
+                                ref={distRef} required
+                                defaultValue={cookies["latlong"] != "false" ? cookies["latlong"]["distance"] : 25}
+                                placeholder="25"
+                            />
+                        </Form.FloatingLabel>
+                    </Form.Group>
+                    <Button className="w-75 mt-10 button-control" type="submit">
+                        Next
+                    </Button>
+                </Form>
             </div>
-        </Container >
+        </Container>
     );
 };
 export default ChangeLocation;
