@@ -46,19 +46,16 @@ class Signup extends React.Component {
       const acc = await getAccount('username', docData.username);
 
       if (acc && acc.uid) {
-        alert(errorMessage = "That username is already in use.");
         this.setState({
-          'error': errorMessage
+          'error': "That username is already in use."
         });
       } else {
         const resp = await createUserEmailPassword(docData.username, docData.email, docData.password);
         if (resp === null) {
           // error codes [here](https://firebase.google.com/docs/reference/js/auth#autherrorcodes)
-          errorMessage = 'That email is invalid.';
           this.setState({
-            'error': errorMessage
+            'error': 'That email is invalid.'
           });
-          alert(errorMessage);
         } else {
           // passed!
           // to render the Navigate component.
@@ -67,12 +64,6 @@ class Signup extends React.Component {
           });
         }
       }
-    } else {
-      // Either empty fields or too short password.
-      this.setState({
-        'error': 'All fields must be filled out!'
-      });
-      alert("All fields must be filled out!");
     }
   }
 
@@ -88,28 +79,40 @@ class Signup extends React.Component {
       this.setState({
         'error': "Invalid username."
       });
-      alert("Invalid username");
+      // alert("Invalid username");
+      return false;
+    }
+    if (1 > usernameField.value.length || usernameField.value.length > 20) {
+      this.setState({
+        'error': "Username must be between 1 and 20 characters long"
+      });
       return false;
     }
     if (emailField.value === '' || emailField.value == null/* validate email */) {
       this.setState({
         'error': "That email is invalid."
       });
-      alert("Invalid email");
+      // alert("Invalid email");
       return false;
     }
-    if (passwordField.value === '' || passwordField.value.length < 8) {
+    if (passwordField.value === '') {
       this.setState({
-        'error': "Invalid password."
+        'error': "You must include a password."
       });
-      alert("Invalid password")
+      // alert("Invalid password")
+      return false;
+    }
+    if (passwordField.value.length < 8) {
+      this.setState({
+        'error': "Password must be between 8 and 32 characters long."
+      });
       return false;
     }
     if (passwordField.value !== confirmPasswordField.value) {
       this.setState({
         'error': "Passwords do not match."
       });
-      alert("Passwords do not match!");
+      // alert("Passwords do not match!");
       return false;
     }
     return true;
@@ -132,16 +135,16 @@ class Signup extends React.Component {
             <Card>
               <Card.Body>
                 <Form.Group id="username" className="mb-2">
-                  <Form.Control placeholder="Username" type="text" id="username" name="username" value={this.state.username} onChange={this.handleChange} required />
+                  <Form.Control placeholder="Username" type="text" id="username" name="username" maxLength="20" minLength="1" value={this.state.username} onChange={this.handleChange} required />
                 </Form.Group>
                 <Form.Group id="email" className="mb-2">
                   <Form.Control placeholder="Email" type="email" id="email" name="email" value={this.state.email} onChange={this.handleChange} required />
                 </Form.Group>
                 <Form.Group id="password" className="mb-2">
-                  <Form.Control placeholder="Password" type="password" id="password" name="password" minLength="8" value={this.state.password} onChange={this.handleChange} required />
+                  <Form.Control placeholder="Password" type="password" id="password" name="password" maxLength="32" minLength="8" value={this.state.password} onChange={this.handleChange} required />
                 </Form.Group>
                 <Form.Group id="confirmPassword" className="mb-2">
-                  <Form.Control placeholder="Confirm Password" type="password" id="confirmPassword" name="confirmPassword" minLength="8" value={this.state.confirmPassword} onChange={this.handleChange} required />
+                  <Form.Control placeholder="Confirm Password" type="password" id="confirmPassword" name="confirmPassword" maxLength="32" minLength="8" value={this.state.confirmPassword} onChange={this.handleChange} required />
                 </Form.Group>
                 <div className="w-100 text-center mt-2">
                   Already have an account? <Link to="/login">Login</Link>
