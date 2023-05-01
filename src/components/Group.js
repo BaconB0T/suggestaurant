@@ -17,7 +17,7 @@ const Member = ({ globalState, setGlobalState }) => {
   async function handleSubmit(e) {
     e.preventDefault(); // don't refresh the page
     setError('');
-    const code = groupCodeRef.current;
+    const code = groupCodeRef.current.value;
     // errors are set inside of validateForm;
     if (validateForm(code)) {
       groupExists(code).then((val) => {
@@ -56,7 +56,6 @@ const Member = ({ globalState, setGlobalState }) => {
 
   function handleChange(event) {
     const value = event.target.value;
-    setGroupCode(value);
     if (value.length !== 6) {
       setVariant('warning');
       setError('Code must be 6 digits long.')
@@ -165,9 +164,8 @@ const Host = ({ setGlobalState }) => {
                 <Form.Label>Share this Code with your Friends!</Form.Label>
                 <Form.Control name='code' defaultValue={code} required disabled readOnly />
               </Form.Group>
-              <Button className="w-40 mt-10" type="submit">
-                Create Group
-              </Button> <CopyButton textToCopy={code}/>
+              <Button className="w-40 mt-10" type="submit">Create Group</Button> 
+              <CopyButton textToCopy={code}/>
             </Form>
 
           </Card.Body>
