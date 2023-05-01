@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import Popup from './Popup';
 import { getFilters, getHistory, getLastVisitedRestaurant, hasDietaryRestrictions, rateRestaurant, setLastVisitedRestaurant } from "../firestore.js";
 import logo from './../images/logo.png'; // Tell webpack this JS file uses this image
-import { AccountOrLoginButton, SettingsButton } from './Buttons';
+import { AccountOrLoginButton } from './Buttons';
 import { useGeolocated } from "react-geolocated";
 
 
@@ -176,7 +176,6 @@ const HomePage = ({ bob, setGlobalState, globalState }) => {
             style={{ minHeight: "100vh" }}
         >
             {loginOrAccount}
-            <SettingsButton />
             <div className="w-100" style={{ maxWidth: "400px", marginTop: "-5px" }}>
 
                 <div>
