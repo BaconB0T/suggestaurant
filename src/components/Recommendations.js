@@ -10,6 +10,7 @@ import memoize from "memoize-one";
 
 import '../styles/Recommendations.css';
 import { BackButton, HomeButton } from "./Buttons";
+import { MdSwipe } from "react-icons/md";
 
 class Recommendations extends React.Component {
   constructor(props) {
@@ -221,6 +222,7 @@ class Recommendations extends React.Component {
     const buttons =
       (<div className="recommendation--buttons">
         <button className='reject' onClick={() => this.swipe('left')}>Reject</button>
+        <MdSwipe className="w-20 icon-control"/>
         <button className='accept' onClick={() => this.swipe('right')}>Accept</button>
       </div>);
 
@@ -338,7 +340,7 @@ const Recommendation = (props) => {
         preventSwipe={['up', 'down']}
       >
         <h1>{restaurant.name}</h1>
-        <img src={imageURL}></img>
+        {/* <img src={imageURL}></img> */}
         <table>
           <tbody>
             <tr>
