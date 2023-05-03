@@ -53,10 +53,7 @@ class Recommendations extends React.Component {
   }
 
   updateIndex(val) {
-    this.setState(prevState => ({
-      ...prevState,
-      index: val
-    }));
+    this.state.index = val;
     // fine to not be in setState
     this.state.currentIndexRef.current = val;
   }
