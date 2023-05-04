@@ -58,17 +58,17 @@ const Account = ({ user }) => {
                   <br/>
 
                   <div className = 'account-btn'>
-                    <Button><Link to='/account/allergies' className='button-info'>Allergies</Link></Button>
+                    <Button onClick={() => {navigate('/account/allergies')}}>Allergies</Button>
                   </div>
                   <div className = 'account-btn'>
-                    <Button><Link to='/account/filters' className='button-info'>Restaurant Preferences</Link></Button>
+                    <Button onClick={() => {navigate('/account/filters')}}>Restaurant Preferences</Button>
                   </div>
                   <div className = 'account-btn'>
-                    <Button><Link to='/history' className='button-info'>Restaurant History</Link></Button>
+                    <Button onClick={() => {navigate('/history')}}>Restaurant History</Button>
                   </div>
                   <div className = 'account-btn'>
-                    <Button>
-                      <Link to='/change-password' className='button-info'>Change Password</Link>
+                    <Button onClick={() => {navigate('/change-password')}}>
+                     Change Password
                     </Button>
                   </div>
                   <div className = 'account-btn'>
