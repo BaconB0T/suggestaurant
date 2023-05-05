@@ -151,7 +151,7 @@ const HomePage = ({ bob, setGlobalState, globalState }) => {
         const zeroFilledHours = ('00'+currentDate.getHours()).slice(-2);
         const zeroFilledMinutes = ('00'+currentDate.getMinutes()).slice(-2);
 
-        const filterInfo = bob.isAnonymous ? false : await getFilters(bob.uid).filters;
+        const filterInfo = bob.isAnonymous ? false : userData.filters;
         const userInfo =  filterInfo === false ? false : {
             fastFood: filterInfo.preferences.includeFastFood,
             exclude: filterInfo.excludedCuisines,
