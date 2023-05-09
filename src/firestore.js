@@ -22,7 +22,7 @@ const auth = getAuth(firebaseApp);
 const supportedMemberGroupKeys = ['numUsersReady', 'diet', 'keywords', 'price', 'users', 'suggestions'];
 const supportedHostGroupKeys = supportedMemberGroupKeys.concat('haveSuggestions', 'latlong', 'time', 'skip', 'decision');
 // document keys that require atomic read/write operations go in transactionKeys
-const transactionKeys = ['numUsersReady', 'keywords'];
+const transactionKeys = ['numUsersReady', 'keywords', 'suggestions'];
 // localize OAuth flow to user's preferred language.
 auth.languageCode = 'it';
 auth.useDeviceLanguage();
@@ -810,11 +810,6 @@ async function updateGroupMember(code, key, value) {
     case 'diet':
       userData[key] = value;
       break;
-    case 'suggestions':
-      const [acceptedRestaurantId, accepted] = value;
-      const vk = accepted ? 'numAccepted' : 'numRejected';
-      groupDoc[key][acceptedRestaurantId][vk] += 1;
-      break;
     default:
       console.log(`Invalid group update key: ${key}`);
       return false;
@@ -850,12 +845,24 @@ function updateGroupMemberTransaction(key, value, user, groupDocRef) {
           groupDoc['numUsersReady'] = Math.min(groupDoc['numUsersReady']+1, groupDoc['numUsers']);
         }
         break;
+      case 'suggestions':
+        const [acceptedRestaurantId, accepted] = value;
+        const vk = accepted ? 'numAccepted' : 'numRejected';
+        // ideally the 'voted' array would be created in the Recommendations API with the other suggestion data,
+        // but I really don't want to redeploy that now.
+        if (!groupDoc[key][acceptedRestaurantId]['voted']) groupDoc[key][acceptedRestaurantId]['voted'] = []
+        // if that user didn't already vote, count it and store uid in voted array
+        if(!groupDoc[key][acceptedRestaurantId]['voted'].includes(user.uid)) {
+          groupDoc[key][acceptedRestaurantId]['voted'].push(user.uid);
+          groupDoc[key][acceptedRestaurantId][vk] += 1;
+        }
+        break;
       default:
         try {
-          console.error(`invalid atomic transaction key ${key}, must be one of: ['keywords', 'numUsersReady']`);
+          console.error(`invalid atomic transaction key ${key}, must be one of: ${transactionKeys}`);
         } catch(e) {
           console.error('Invalid atomic transaction key:');
-          console.print(key);
+          console.error(key);
         }
         break;
     }

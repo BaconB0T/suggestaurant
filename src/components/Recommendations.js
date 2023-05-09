@@ -81,8 +81,9 @@ class Recommendations extends React.Component {
   }
 
   swiped(direction, nameToDelete, index, state) {
+    // When using touch events to swipe the card, this gets called multiple times. why?
     this.updateIndex(index - 1);
-    if (state.groupCode != 0) { // in group
+    if (state.groupCode != '0') { // in group
       if (!nameToDelete.includes('groupDecision')) { // Regular card, host and member vote on suggestion.
         this.memberAction(direction === 'right');
       } else {  // After vote, Host must decide
@@ -92,6 +93,7 @@ class Recommendations extends React.Component {
               this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
             }
           });
+          // prevent other suggestions from showing.
         } else if (direction === 'right') { // not the host, if accepted go to map
           this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index + 1] });
         }
@@ -115,7 +117,7 @@ class Recommendations extends React.Component {
       if (direction === 'right') { // Go to Map Screen.
         this.navToMap({ setGlobalState: this.state.setGlobalState, business_id: this.state.restIds[index] })
       } // Navigate to increase radius if last recommendation is swiped.
-      if (this.state.index === (this.state.childRefs.length)) {
+      if (this.state.index < 0) {
         this.setState(prevState => ({
           ...prevState,
           showNoRecs: true
@@ -130,7 +132,7 @@ class Recommendations extends React.Component {
   }
 
   async swipe(dir) {
-    if (this.canSwipe()) {// && this.state.index < this.state.restIds.length) {
+    if (this.canSwipe()) {
       // exists, but value is null. obv can't swipe on it.
       await this.state.childRefs()[this.state.index].current.swipe(dir) // Swipe the card!
     } else {
